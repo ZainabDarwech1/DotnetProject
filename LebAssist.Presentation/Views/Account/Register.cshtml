@@ -1,0 +1,165 @@
+﻿@model LebAssist.Presentation.ViewModels.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Create Account</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="Register" method="post" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="PhoneNumber" class="form-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                            <small class="text-muted">Min 8 chars, uppercase, lowercase, digit, special char</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="ConfirmPassword" class="form-label"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Your Location</label>
+                        <div id="map" style="height: 300px; border: 1px solid #ddd; border-radius: 5px;"></div>
+                        <small class="text-muted">Click on the map to set your location</small>
+                        <input asp-for="Latitude" type="hidden" id="latitude" />
+                        <input asp-for="Longitude" type="hidden" id="longitude" />
+                        <span asp-validation-for="Latitude" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ProfilePhoto" class="form-label"></label>
+                        <input asp-for="ProfilePhoto" class="form-control" type="file" accept="image/*" />
+                        <span asp-validation-for="ProfilePhoto" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="AcceptTerms" class="form-check-input" />
+                        <label asp-for="AcceptTerms" class="form-check-label">
+                            I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
+                        </label>
+                        <br />
+                        <span asp-validation-for="AcceptTerms" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <p>Already have an account? <a asp-action="Login">Login here</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>By using LebAssist, you agree to these terms...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <script>
+        let map, marker;
+
+        function initMap() {
+            // Default to Beirut
+            const defaultLocation = { lat: 33.8938, lng: 35.5018 };
+
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: defaultLocation,
+                zoom: 12
+            });
+
+            marker = new google.maps.Marker({
+                position: defaultLocation,
+                map: map,
+                draggable: true
+            });
+
+            // Set initial values
+            document.getElementById('latitude').value = defaultLocation.lat;
+            document.getElementById('longitude').value = defaultLocation.lng;
+
+            // Click on map to move marker
+            map.addListener('click', function (e) {
+                marker.setPosition(e.latLng);
+                updateLocation(e.latLng);
+            });
+
+            // Drag marker
+            marker.addListener('dragend', function () {
+                updateLocation(marker.getPosition());
+            });
+
+            // Try to get user's current location
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function (position) {
+                    const userLocation = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude
+                    };
+                    map.setCenter(userLocation);
+                    marker.setPosition(userLocation);
+                    updateLocation(userLocation);
+                });
+            }
+        }
+
+        function updateLocation(latLng) {
+            document.getElementById('latitude').value = latLng.lat;
+            document.getElementById('longitude').value = latLng.lng;
+        }
+    </script>
+}
