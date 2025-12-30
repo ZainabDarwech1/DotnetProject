@@ -23,7 +23,7 @@ namespace Domain.Entities
 
         // Navigation Properties
         public virtual ServiceCategory Category { get; set; } = null!;
-        public virtual ICollection<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
+        public virtual ICollection<ProviderServiceEntity> ProviderServices { get; set; } = new List<ProviderServiceEntity>();
         public virtual ICollection<ProviderWorkingHours> WorkingHours { get; set; } = new List<ProviderWorkingHours>();
         public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
         public virtual ICollection<EmergencyRequest> EmergencyRequests { get; set; } = new List<EmergencyRequest>();

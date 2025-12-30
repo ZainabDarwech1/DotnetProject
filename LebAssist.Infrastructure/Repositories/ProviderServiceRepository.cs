@@ -5,13 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LebAssist.Infrastructure.Repositories
 {
-    public class ProviderServiceRepository : GenericRepository<ProviderService>, IProviderServiceRepository
+    public class ProviderServiceRepository : GenericRepository<ProviderServiceEntity>, IProviderServiceRepository
     {
         public ProviderServiceRepository(ApplicationDbContext context) : base(context)
         {
         }
 
-        public async Task<IEnumerable<ProviderService>> GetByProviderIdAsync(int providerId)
+        public async Task<IEnumerable<ProviderServiceEntity>> GetByProviderIdAsync(int providerId)
         {
             return await _dbSet
                 .Include(ps => ps.Service)
@@ -20,7 +20,7 @@ namespace LebAssist.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<ProviderService>> GetByServiceIdAsync(int serviceId)
+        public async Task<IEnumerable<ProviderServiceEntity>> GetByServiceIdAsync(int serviceId)
         {
             return await _dbSet
                 .Include(ps => ps.Provider)
@@ -28,7 +28,7 @@ namespace LebAssist.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<ProviderService?> GetByProviderAndServiceAsync(int providerId, int serviceId)
+        public async Task<ProviderServiceEntity?> GetByProviderAndServiceAsync(int providerId, int serviceId)
         {
             return await _dbSet
                 .FirstOrDefaultAsync(ps => ps.ClientId == providerId && ps.ServiceId == serviceId);

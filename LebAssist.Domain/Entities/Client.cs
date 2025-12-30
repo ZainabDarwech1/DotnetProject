@@ -47,7 +47,7 @@ namespace Domain.Entities
 
 
         // Navigation Properties
-        public virtual ICollection<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();
+        public virtual ICollection<ProviderServiceEntity> ProviderServices { get; set; } = new List<ProviderServiceEntity>();
         public virtual ICollection<ProviderWorkingHours> WorkingHours { get; set; } = new List<ProviderWorkingHours>();
         public virtual ICollection<ProviderPortfolio> PortfolioPhotos { get; set; } = new List<ProviderPortfolio>();
         public virtual ICollection<Booking> ClientBookings { get; set; } = new List<Booking>();

@@ -2,10 +2,10 @@
 
 namespace Domain.Interfaces
 {
-    public interface IProviderServiceRepository : IRepository<ProviderService>
+    public interface IProviderServiceRepository : IRepository<ProviderServiceEntity>
     {
-        Task<IEnumerable<ProviderService>> GetByProviderIdAsync(int providerId);
-        Task<IEnumerable<ProviderService>> GetByServiceIdAsync(int serviceId);
-        Task<ProviderService?> GetByProviderAndServiceAsync(int providerId, int serviceId);
+        Task<IEnumerable<ProviderServiceEntity>> GetByProviderIdAsync(int providerId);
+        Task<IEnumerable<ProviderServiceEntity>> GetByServiceIdAsync(int serviceId);
+        Task<ProviderServiceEntity?> GetByProviderAndServiceAsync(int providerId, int serviceId);
     }
 }

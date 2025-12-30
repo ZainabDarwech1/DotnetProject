@@ -1,8 +1,6 @@
 ﻿using Domain.Entities;
-
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using YourApp.Domain.Entities;
 
 namespace LebAssist.Infrastructure.Data
 {
@@ -17,7 +15,7 @@ namespace LebAssist.Infrastructure.Data
         public DbSet<Client> Clients { get; set; } = null!;
         public DbSet<ServiceCategory> ServiceCategories { get; set; } = null!;
         public DbSet<Service> Services { get; set; } = null!;
-        public DbSet<ProviderService> ProviderServices { get; set; } = null!;
+        public DbSet<ProviderServiceEntity> ProviderServices { get; set; } = null!;
         public DbSet<ProviderWorkingHours> ProviderWorkingHours { get; set; } = null!;
         public DbSet<ProviderPortfolio> ProviderPortfolios { get; set; } = null!;
         public DbSet<ProviderAvailability> ProviderAvailabilities { get; set; } = null!;

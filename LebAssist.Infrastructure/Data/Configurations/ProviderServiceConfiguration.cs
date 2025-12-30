@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace LebAssist.Infrastructure.Data.Configurations
 {
-    public class ProviderServiceConfiguration : IEntityTypeConfiguration<ProviderService>
+    public class ProviderServiceConfiguration : IEntityTypeConfiguration<ProviderServiceEntity>
     {
-        public void Configure(EntityTypeBuilder<ProviderService> builder)
+        public void Configure(EntityTypeBuilder<ProviderServiceEntity> builder)
         {
             builder.HasKey(ps => ps.ProviderServiceId);
 

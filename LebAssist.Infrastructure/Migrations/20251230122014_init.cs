@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LebAssist.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,7 +67,9 @@ namespace LebAssist.Infrastructure.Migrations
                     ProviderStatus = table.Column<int>(type: "int", nullable: true),
                     Bio = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
                     YearsOfExperience = table.Column<int>(type: "int", nullable: true),
-                    DateRegistered = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    DateRegistered = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ProviderAverageRating = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    TotalReviews = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -80,10 +82,11 @@ namespace LebAssist.Infrastructure.Migrations
                 {
                     NotificationId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", maxLength: 450, nullable: false),
                     Type = table.Column<int>(type: "int", nullable: false),
                     ReferenceId = table.Column<int>(type: "int", nullable: true),
-                    Message = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Message = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: false),
                     IsRead = table.Column<bool>(type: "bit", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: true)
@@ -341,7 +344,8 @@ namespace LebAssist.Infrastructure.Migrations
                     RequestDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     AcceptedDateTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Status = table.Column<int>(type: "int", nullable: false),
-                    CompletedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                    CompletedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    AcceptedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -476,8 +480,10 @@ namespace LebAssist.Infrastructure.Migrations
                     ProviderId = table.Column<int>(type: "int", nullable: false),
                     Rating = table.Column<int>(type: "int", nullable: false),
                     Comment = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
-                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false)
+                    ReviewDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsAnonymous = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    AdminModerated = table.Column<bool>(type: "bit", nullable: false, defaultValue: false)
                 },
                 constraints: table =>
                 {
@@ -608,14 +614,14 @@ namespace LebAssist.Infrastructure.Migrations
                 column: "CreatedDate");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Notifications_IsRead",
-                table: "Notifications",
-                column: "IsRead");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Notifications_UserId",
                 table: "Notifications",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_UserId_IsRead",
+                table: "Notifications",
+                columns: new[] { "UserId", "IsRead" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ProviderAvailabilities_ClientId",
@@ -691,9 +697,14 @@ namespace LebAssist.Infrastructure.Migrations
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_ProviderId",
+                name: "IX_Reviews_IsVisible_AdminModerated",
                 table: "Reviews",
-                column: "ProviderId");
+                columns: new[] { "IsVisible", "AdminModerated" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Reviews_ProviderId_IsVisible_ReviewDate",
+                table: "Reviews",
+                columns: new[] { "ProviderId", "IsVisible", "ReviewDate" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ServiceCategories_DisplayOrder",

@@ -327,6 +327,6 @@ namespace LebAssist.Application.Services
         public async Task<bool> IsProviderAvailableAsync(int providerId)
         {
             return await _unitOfWork.Clients.IsProviderAvailableAsync(providerId);
-        }B
+        }
     }
 }

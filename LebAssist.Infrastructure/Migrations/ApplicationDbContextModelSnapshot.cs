@@ -38,7 +38,6 @@ namespace LebAssist.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CompletedDate")
-                        .HasMaxLength(1000)
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Latitude")
@@ -127,7 +126,13 @@ namespace LebAssist.Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("nvarchar(255)");
 
+                    b.Property<decimal?>("ProviderAverageRating")
+                        .HasColumnType("decimal(18,2)");
+
                     b.Property<int?>("ProviderStatus")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalReviews")
                         .HasColumnType("int");
 
                     b.Property<int?>("YearsOfExperience")
@@ -314,7 +319,7 @@ namespace LebAssist.Infrastructure.Migrations
                     b.ToTable("ProviderPortfolios");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProviderService", b =>
+            modelBuilder.Entity("Domain.Entities.ProviderServiceEntity", b =>
                 {
                     b.Property<int>("ProviderServiceId")
                         .ValueGeneratedOnAdd()
@@ -448,6 +453,11 @@ namespace LebAssist.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
 
+                    b.Property<bool>("AdminModerated")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<int>("BookingId")
                         .HasColumnType("int");
 
@@ -458,8 +468,15 @@ namespace LebAssist.Infrastructure.Migrations
                         .HasMaxLength(1000)
                         .HasColumnType("nvarchar(1000)");
 
+                    b.Property<bool>("IsAnonymous")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
                     b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<int>("ProviderId")
                         .HasColumnType("int");
@@ -468,7 +485,9 @@ namespace LebAssist.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETUTCDATE()");
 
                     b.HasKey("ReviewId");
 
@@ -477,7 +496,9 @@ namespace LebAssist.Infrastructure.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("ProviderId");
+                    b.HasIndex("IsVisible", "AdminModerated");
+
+                    b.HasIndex("ProviderId", "IsVisible", "ReviewDate");
 
                     b.ToTable("Reviews");
                 });
@@ -827,7 +848,7 @@ namespace LebAssist.Infrastructure.Migrations
                     b.Navigation("Provider");
                 });
 
-            modelBuilder.Entity("Domain.Entities.ProviderService", b =>
+            modelBuilder.Entity("Domain.Entities.ProviderServiceEntity", b =>
                 {
                     b.HasOne("Domain.Entities.Client", "Provider")
                         .WithMany("ProviderServices")

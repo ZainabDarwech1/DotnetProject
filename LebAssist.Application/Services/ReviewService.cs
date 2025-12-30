@@ -87,7 +87,7 @@ namespace LebAssist.Application.Services
                         provider.AspNetUserId,
                         NotificationType.Review,
                         $"{clientName} left you a {dto.Rating}-star review!",
-                        review.ReviewId
+                        review.Comment ?? ""
                     );
                 }
 
