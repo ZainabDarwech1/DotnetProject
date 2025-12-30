@@ -1,0 +1,211 @@
+﻿@model LebAssist.Presentation.ViewModels.Review.EditReviewViewModel
+@{
+    ViewData["Title"] = "Edit Review";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-dark">
+                    <h4 class="mb-0">
+                        <i class="bi bi-pencil-fill me-2"></i>Edit Your Review
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Edit Window Warning -->
+                    @if (Model.DaysRemaining <= 2)
+                    {
+                        <div class="alert alert-warning mb-4">
+                            <i class="bi bi-clock me-2"></i>
+                            <strong>@Model.DaysRemaining day(s) remaining</strong> to edit this review.
+                            After @Model.EditDeadline.ToString("MMM dd, yyyy"), you won't be able to make changes.
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            You can edit this review until @Model.EditDeadline.ToString("MMMM dd, yyyy").
+                        </div>
+                    }
+
+                    <!-- Booking Info -->
+                    <div class="bg-light rounded p-3 mb-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Service Provider</small>
+                                <p class="mb-1 fw-semibold">@Model.ProviderName</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Service</small>
+                                <p class="mb-1 fw-semibold">@Model.ServiceName</p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Original Review Date</small>
+                                <p class="mb-0">@Model.ReviewDate.ToString("MMM dd, yyyy")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="ReviewId" />
+                        <input type="hidden" asp-for="BookingId" />
+
+                        <!-- Star Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Your Rating <span class="text-danger">*</span></label>
+                            <div class="star-rating-input" id="starRatingInput">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star@(i)" name="Rating" value="@i"
+                                           class="d-none" @(Model.Rating == i ? "checked" : "") />
+                                    <label for="star@(i)" class="star-label @(i <= Model.Rating ? "active" : "")"
+                                           data-rating="@i">
+                                        <i class="bi bi-star-fill fs-2"></i>
+                                    </label>
+                                }
+                            </div>
+                            <div id="ratingText" class="text-warning fw-semibold mt-2">
+                                @{
+                                    var ratingTexts = new Dictionary<int, string>
+                                                                {
+                                                                { 1, "Poor - Very disappointed" },
+                                                                { 2, "Fair - Below expectations" },
+                                                                { 3, "Good - Met expectations" },
+                                                                { 4, "Very Good - Exceeded expectations" },
+                                                                { 5, "Excellent - Outstanding service!" }
+                                                                };
+                                }
+                                @ratingTexts.GetValueOrDefault(Model.Rating, "Click to rate")
+                            </div>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="mb-4">
+                            <label asp-for="Comment" class="form-label fw-semibold">Your Review (Optional)</label>
+                            <textarea asp-for="Comment" class="form-control" rows="4"
+                                      placeholder="Share your experience with this service provider..."
+                                      maxlength="1000">@Model.Comment</textarea>
+                            <div class="form-text">
+                                <span id="charCount">@(Model.Comment?.Length ?? 0)</span>/1000 characters
+                            </div>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <!-- Anonymous Option -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="IsAnonymous" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsAnonymous" class="form-check-label">
+                                    Post anonymously
+                                </label>
+                            </div>
+                            <small class="text-muted">Your name won't be shown with this review</small>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-warning flex-grow-1">
+                                <i class="bi bi-check-lg me-2"></i>Update Review
+                            </button>
+                            <a asp-action="MyReviews" class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .star-rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.25rem;
+        }
+
+        .star-label {
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s ease;
+        }
+
+            .star-label:hover,
+            .star-label:hover ~ .star-label,
+            .star-label.active,
+            .star-label.active ~ .star-label {
+                color: #ffc107;
+            }
+
+        .star-rating-input input:checked ~ .star-label {
+            color: #ffc107;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ratingTexts = {
+                1: 'Poor - Very disappointed',
+                2: 'Fair - Below expectations',
+                3: 'Good - Met expectations',
+                4: 'Very Good - Exceeded expectations',
+                5: 'Excellent - Outstanding service!'
+            };
+
+            const stars = document.querySelectorAll('.star-label');
+            const ratingText = document.getElementById('ratingText');
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.dataset.rating;
+                    document.getElementById('star' + rating).checked = true;
+
+                    stars.forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    let sibling = this.nextElementSibling;
+                    while (sibling) {
+                        if (sibling.classList.contains('star-label')) {
+                            sibling.classList.add('active');
+                        }
+                        sibling = sibling.nextElementSibling;
+                    }
+
+                    ratingText.textContent = ratingTexts[rating];
+                });
+
+                star.addEventListener('mouseenter', function() {
+                    const rating = this.dataset.rating;
+                    ratingText.textContent = ratingTexts[rating];
+                });
+            });
+
+            document.querySelector('.star-rating-input').addEventListener('mouseleave', function() {
+                const checked = document.querySelector('.star-rating-input input:checked');
+                if (checked) {
+                    ratingText.textContent = ratingTexts[checked.value];
+                }
+            });
+
+            // Character counter
+            const commentField = document.getElementById('Comment');
+            const charCount = document.getElementById('charCount');
+
+            if (commentField) {
+                commentField.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+        });
+    </script>
+}

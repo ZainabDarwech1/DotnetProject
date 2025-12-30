@@ -1,0 +1,142 @@
+﻿@model IEnumerable<LebAssist.Application.DTOs.NotificationDto>
+@using Domain.Enums
+@{
+    ViewData["Title"] = "Notifications";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-bell"></i> Notifications</h2>
+        @if (Model.Any(n => !n.IsRead))
+        {
+            <button class="btn btn-outline-primary" onclick="markAllAsRead()">
+                <i class="bi bi-check-all"></i> Mark All as Read
+            </button>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> You have no notifications.
+        </div>
+    }
+    else
+    {
+        <div class="list-group">
+            @foreach (var notification in Model)
+            {
+                <div class="list-group-item list-group-item-action @(!notification.IsRead ? "bg-light border-start border-primary border-4" : "")"
+                     data-notification-id="@notification.NotificationId">
+                    <div class="d-flex w-100 justify-content-between">
+                        <div class="d-flex align-items-start">
+                            <span class="me-3 fs-4">
+                                @switch (notification.Type)
+                                {
+                                    case NotificationType.Booking:
+                                        <i class="bi bi-calendar-check text-primary"></i>
+                                        break;
+                                    case NotificationType.Emergency:
+                                        <i class="bi bi-exclamation-triangle text-danger"></i>
+                                        break;
+                                    case NotificationType.Review:
+                                        <i class="bi bi-star text-warning"></i>
+                                        break;
+                                    case NotificationType.Admin:
+                                        <i class="bi bi-shield-check text-info"></i>
+                                        break;
+                                    default:
+                                        <i class="bi bi-bell text-secondary"></i>
+                                        break;
+                                }
+                            </span>
+                            <div>
+                                <h6 class="mb-1 @(!notification.IsRead ? "fw-bold" : "")">
+                                    @notification.Title
+                                    @if (!notification.IsRead)
+                                    {
+                                        <span class="badge bg-primary ms-2">New</span>
+                                    }
+                                </h6>
+                                <p class="mb-1 text-muted">@notification.Message</p>
+                                <small class="text-muted">@notification.TimeAgo</small>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-column align-items-end">
+                            <small class="text-muted mb-2">@notification.CreatedDate.ToString("MMM dd, HH:mm")</small>
+                            <div class="btn-group btn-group-sm">
+                                @if (!notification.IsRead)
+                                {
+                                    <button class="btn btn-outline-primary btn-sm" onclick="markAsRead(@notification.NotificationId)" title="Mark as Read">
+                                        <i class="bi bi-check"></i>
+                                    </button>
+                                }
+                                <button class="btn btn-outline-danger btn-sm" onclick="deleteNotification(@notification.NotificationId)" title="Delete">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function markAsRead(id) {
+            fetch('/Notification/MarkAsRead?id=' + id, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        var element = document.querySelector('[data-notification-id="' + id + '"]');
+                        element.classList.remove('bg-light', 'border-start', 'border-primary', 'border-4');
+                        var badge = element.querySelector('.badge');
+                        if (badge) badge.remove();
+                        var title = element.querySelector('h6');
+                        if (title) title.classList.remove('fw-bold');
+                        var readBtn = element.querySelector('.btn-outline-primary');
+                        if (readBtn) readBtn.remove();
+                        updateBadgeCount();
+                    }
+                });
+        }
+
+        function markAllAsRead() {
+            fetch('/Notification/MarkAllAsRead', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    }
+                });
+        }
+
+        function deleteNotification(id) {
+            if (confirm('Delete this notification?')) {
+                fetch('/Notification/Delete?id=' + id, { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            var element = document.querySelector('[data-notification-id="' + id + '"]');
+                            element.remove();
+                            updateBadgeCount();
+                        }
+                    });
+            }
+        }
+
+        function updateBadgeCount() {
+            fetch('/Notification/GetUnreadCount')
+                .then(response => response.json())
+                .then(data => {
+                    var badge = document.getElementById('notification-badge');
+                    if (badge) {
+                        badge.textContent = data.count;
+                        badge.style.display = data.count > 0 ? 'inline' : 'none';
+                    }
+                });
+        }
+    </script>
+}

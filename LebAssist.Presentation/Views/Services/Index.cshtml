@@ -1,0 +1,60 @@
+@model IEnumerable<LebAssist.Application.DTOs.CategoryDto>
+@{
+    ViewData["Title"] = "Browse Services";
+}
+
+<div class="container mt-4">
+    <div class="text-center mb-4">
+        <h1 class="display-4">Browse Our Services</h1>
+        <p class="lead text-muted">Find the perfect service provider for your needs</p>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var category in Model)
+            {
+                <div class="col-md-6 col-lg-3">
+                    <a href="@Url.Action("Category", "Services", new { id = category.CategoryId })" class="text-decoration-none">
+                        <div class="card h-100 shadow-sm hover-shadow">
+                            <div class="card-body text-center">
+                                @if (!string.IsNullOrEmpty(category.IconPath))
+                                {
+                                    <img src="@category.IconPath" alt="@category.CategoryName" class="mb-3" style="width: 80px; height: 80px; object-fit: contain;">
+                                }
+                                else
+                                {
+                                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                                        <i class="bi bi-gear-fill" style="font-size: 40px;"></i>
+                                    </div>
+                                }
+                                <h5 class="card-title">@category.CategoryName</h5>
+                                <p class="card-text text-muted small">@category.Description</p>
+                                <span class="badge bg-info">@category.ServiceCount Services</span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info text-center">
+            <i class="bi bi-info-circle"></i> No service categories available at the moment.
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        .hover-shadow {
+            transition: all 0.3s ease;
+        }
+        .hover-shadow:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
+        }
+    </style>
+}

@@ -1,6 +1,7 @@
 ﻿using Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Domain.Entities;
 
 namespace Domain.Entities
 {
@@ -39,7 +40,9 @@ namespace Domain.Entities
         public virtual Client Client { get; set; } = null!;
         public virtual Client Provider { get; set; } = null!;
         public virtual Service Service { get; set; } = null!;
-        public virtual Review? Review { get; set; }
+        public Review? Review { get; set; }
+
+
         public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
     }
 }

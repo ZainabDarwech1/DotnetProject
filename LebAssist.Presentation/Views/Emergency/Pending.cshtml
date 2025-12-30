@@ -1,0 +1,86 @@
+﻿@model List<LebAssist.Presentation.ViewModels.Emergency.EmergencyListItemViewModel>
+@{
+    ViewData["Title"] = "Pending Emergencies";
+}
+
+<div class="container">
+    <h2 class="mb-4"><i class="bi bi-exclamation-triangle text-danger"></i> Pending Emergency Requests</h2>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show">
+            @TempData["Info"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No pending emergency requests at this time.
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-lightning"></i> <strong>@Model.Count</strong> emergency request(s) waiting for a provider!
+        </div>
+
+        <div class="row">
+            @foreach (var emergency in Model)
+            {
+                <div class="col-md-6 mb-3">
+                    <div class="card border-danger">
+                        <div class="card-header bg-danger text-white d-flex justify-content-between">
+                            <span><strong>@emergency.ServiceName</strong></span>
+                            @if (emergency.Distance.HasValue)
+                            {
+                                <span class="badge bg-light text-dark">
+                                    <i class="bi bi-geo-alt"></i> @emergency.Distance.Value.ToString("F1") km
+                                </span>
+                            }
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">@emergency.Details.Substring(0, Math.Min(emergency.Details.Length, 150))...</p>
+                            <p class="text-muted small">
+                                <i class="bi bi-clock"></i> @emergency.RequestDateTime.ToString("MMM dd, yyyy HH:mm")
+                            </p>
+                        </div>
+                        <div class="card-footer d-flex gap-2">
+                            <form asp-action="Accept" method="post" class="d-inline">
+                                <input type="hidden" name="emergencyId" value="@emergency.EmergencyRequestId" />
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="bi bi-check-circle"></i> Accept
+                                </button>
+                            </form>
+                            <form asp-action="Decline" method="post" class="d-inline">
+                                <input type="hidden" name="emergencyId" value="@emergency.EmergencyRequestId" />
+                                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-x-circle"></i> Decline
+                                </button>
+                            </form>
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=@emergency.Latitude,@emergency.Longitude"
+                               target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-signpost-2"></i> Directions
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

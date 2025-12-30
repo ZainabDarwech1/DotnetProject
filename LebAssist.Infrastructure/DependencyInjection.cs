@@ -1,6 +1,8 @@
 ﻿using Domain.Interfaces;
+using LebAssist.Application.Interfaces;
 using LebAssist.Infrastructure.Data;
 using LebAssist.Infrastructure.Repositories;
+using LebAssist.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +19,10 @@ namespace LebAssist.Infrastructure
                     b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IFileStorageService, LocalFileStorageService>();
+
+            // R12: Email Service
+            services.AddScoped<IEmailService, EmailService>();
 
             return services;
         }

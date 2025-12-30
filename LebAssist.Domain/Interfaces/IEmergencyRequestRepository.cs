@@ -4,9 +4,9 @@ namespace Domain.Interfaces
 {
     public interface IEmergencyRequestRepository : IRepository<EmergencyRequest>
     {
-        Task<IEnumerable<EmergencyRequest>> GetActiveEmergencyRequestsAsync();
-        Task<EmergencyRequest?> GetEmergencyByIdWithDetailsAsync(int id);
-        Task<IEnumerable<EmergencyRequest>> GetClientEmergenciesAsync(int clientId);
-        Task<IEnumerable<EmergencyRequest>> GetProviderEmergenciesAsync(int providerId);
+        Task<EmergencyRequest?> GetWithDetailsAsync(int emergencyId);
+        Task<IEnumerable<EmergencyRequest>> GetByClientIdAsync(int clientId);
+        Task<IEnumerable<EmergencyRequest>> GetPendingAsync();
+        Task<IEnumerable<EmergencyRequest>> GetByProviderIdAsync(int providerId);
     }
 }

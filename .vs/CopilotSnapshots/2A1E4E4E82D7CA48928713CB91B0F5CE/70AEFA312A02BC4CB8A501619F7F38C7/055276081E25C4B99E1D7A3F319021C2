@@ -1,0 +1,238 @@
+﻿using Domain.Entities;
+using Domain.Interfaces;
+using LebAssist.Application.DTOs;
+using LebAssist.Application.Interfaces;
+using Microsoft.Extensions.Logging;
+
+namespace LebAssist.Application.Services
+{
+    public class ServiceService : IServiceService
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileStorageService _fileStorageService;
+        private readonly ILogger<ServiceService> _logger;
+
+        public ServiceService(
+            IUnitOfWork unitOfWork,
+            IFileStorageService fileStorageService,
+            ILogger<ServiceService> logger)
+        {
+            _unitOfWork = unitOfWork;
+            _fileStorageService = fileStorageService;
+            _logger = logger;
+        }
+
+        public async Task<IEnumerable<ServiceDto>> GetAllServicesAsync()
+        {
+            var services = await _unitOfWork.Services.GetAllAsync();
+
+            return services.Select(s => new ServiceDto
+            {
+                ServiceId = s.ServiceId,
+                CategoryId = s.CategoryId,
+                CategoryName = s.Category?.CategoryName ?? string.Empty,
+                ServiceName = s.ServiceName,
+                ServiceDescription = s.ServiceDescription,
+                IsActive = s.IsActive,
+                ServiceIconPath = s.ServiceIconPath
+            });
+        }
+
+        public async Task<IEnumerable<ServiceDto>> GetActiveServicesAsync()
+        {
+            var services = await _unitOfWork.Services.GetAllAsync();
+
+            return services
+                .Where(s => s.IsActive && s.Category.IsActive)
+                .Select(s => new ServiceDto
+                {
+                    ServiceId = s.ServiceId,
+                    CategoryId = s.CategoryId,
+                    CategoryName = s.Category.CategoryName,
+                    ServiceName = s.ServiceName,
+                    ServiceDescription = s.ServiceDescription,
+                    IsActive = s.IsActive,
+                    ServiceIconPath = s.ServiceIconPath
+                });
+        }
+
+        public async Task<IEnumerable<ServiceDto>> GetServicesByCategoryAsync(int categoryId)
+        {
+            var services = await _unitOfWork.Services.GetAllAsync();
+
+            return services
+                .Where(s => s.CategoryId == categoryId)
+                .Select(s => new ServiceDto
+                {
+                    ServiceId = s.ServiceId,
+                    CategoryId = s.CategoryId,
+                    CategoryName = s.Category?.CategoryName ?? string.Empty,
+                    ServiceName = s.ServiceName,
+                    ServiceDescription = s.ServiceDescription,
+                    IsActive = s.IsActive,
+                    ServiceIconPath = s.ServiceIconPath
+                });
+        }
+
+        public async Task<ServiceDto?> GetServiceByIdAsync(int serviceId)
+        {
+            var service = await _unitOfWork.Services.GetByIdAsync(serviceId);
+            if (service == null)
+                return null;
+
+            return new ServiceDto
+            {
+                ServiceId = service.ServiceId,
+                CategoryId = service.CategoryId,
+                CategoryName = service.Category?.CategoryName ?? string.Empty,
+                ServiceName = service.ServiceName,
+                ServiceDescription = service.ServiceDescription,
+                IsActive = service.IsActive,
+                ServiceIconPath = service.ServiceIconPath
+            };
+        }
+
+        public async Task<int> CreateServiceAsync(CreateServiceDto dto)
+        {
+            try
+            {
+                var category = await _unitOfWork.Categories.GetByIdAsync(dto.CategoryId);
+                if (category == null)
+                {
+                    throw new InvalidOperationException("Category not found");
+                }
+
+                string? iconPath = null;
+                if (dto.ServiceIconData != null && !string.IsNullOrEmpty(dto.ServiceIconFileName))
+                {
+                    if (_fileStorageService.ValidateImageFile(dto.ServiceIconFileName, dto.ServiceIconData.Length))
+                    {
+                        iconPath = await _fileStorageService.SaveFileAsync(
+                            dto.ServiceIconData,
+                            dto.ServiceIconFileName,
+                            "services");
+                    }
+                }
+
+                var service = new Service
+                {
+                    CategoryId = dto.CategoryId,
+                    ServiceName = dto.ServiceName,
+                    ServiceDescription = dto.ServiceDescription,
+                    IsActive = true,
+                    ServiceIconPath = iconPath
+                };
+
+                await _unitOfWork.Services.AddAsync(service);
+                await _unitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation("Service created with ID {ServiceId}", service.ServiceId);
+                return service.ServiceId;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating service {ServiceName}", dto.ServiceName);
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateServiceAsync(int serviceId, UpdateServiceDto dto)
+        {
+            try
+            {
+                var service = await _unitOfWork.Services.GetByIdAsync(serviceId);
+                if (service == null)
+                    return false;
+
+                var category = await _unitOfWork.Categories.GetByIdAsync(dto.CategoryId);
+                if (category == null)
+                    return false;
+
+                if (dto.ServiceIconData != null && !string.IsNullOrEmpty(dto.ServiceIconFileName))
+                {
+                    if (_fileStorageService.ValidateImageFile(dto.ServiceIconFileName, dto.ServiceIconData.Length))
+                    {
+                        if (!string.IsNullOrEmpty(service.ServiceIconPath))
+                        {
+                            await _fileStorageService.DeleteFileAsync(service.ServiceIconPath);
+                        }
+
+                        service.ServiceIconPath = await _fileStorageService.SaveFileAsync(
+                            dto.ServiceIconData,
+                            dto.ServiceIconFileName,
+                            "services");
+                    }
+                }
+
+                service.CategoryId = dto.CategoryId;
+                service.ServiceName = dto.ServiceName;
+                service.ServiceDescription = dto.ServiceDescription;
+
+                await _unitOfWork.Services.UpdateAsync(service);
+                await _unitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation("Service updated with ID {ServiceId}", serviceId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating service {ServiceId}", serviceId);
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteServiceAsync(int serviceId)
+        {
+            try
+            {
+                var service = await _unitOfWork.Services.GetByIdAsync(serviceId);
+                if (service == null)
+                    return false;
+
+                if (service.ProviderServices.Any() || service.Bookings.Any())
+                {
+                    _logger.LogWarning("Cannot delete service {ServiceId} because it's in use", serviceId);
+                    return false;
+                }
+
+                if (!string.IsNullOrEmpty(service.ServiceIconPath))
+                {
+                    await _fileStorageService.DeleteFileAsync(service.ServiceIconPath);
+                }
+
+                await _unitOfWork.Services.DeleteAsync(serviceId);
+                await _unitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation("Service deleted with ID {ServiceId}", serviceId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting service {ServiceId}", serviceId);
+                return false;
+            }
+        }
+
+        public async Task<bool> ToggleServiceStatusAsync(int serviceId)
+        {
+            try
+            {
+                var service = await _unitOfWork.Services.GetByIdAsync(serviceId);
+                if (service == null)
+                    return false;
+
+                service.IsActive = !service.IsActive;
+                await _unitOfWork.Services.UpdateAsync(service);
+                await _unitOfWork.SaveChangesAsync();
+
+                _logger.LogInformation("Service {ServiceId} status toggled to {IsActive}", serviceId, service.IsActive);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error toggling service status {ServiceId}", serviceId);
+                return false;
+            }
+        }
+    }
+}

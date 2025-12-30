@@ -1,0 +1,28 @@
+﻿@* Usage: @await Html.PartialAsync("_StarRating", new { Rating = 4.5, ShowValue = true }) *@
+@{
+    double rating = ViewData["Rating"] != null ? Convert.ToDouble(ViewData["Rating"]) : 0;
+    bool showValue = ViewData["ShowValue"] != null && Convert.ToBoolean(ViewData["ShowValue"]);
+    string size = ViewData["Size"]?.ToString() ?? "";
+}
+
+<span class="star-rating @size">
+    @for (int i = 1; i <= 5; i++)
+    {
+        if (i <= Math.Floor(rating))
+        {
+            <i class="bi bi-star-fill text-warning"></i>
+        }
+        else if (i - 0.5 <= rating)
+        {
+            <i class="bi bi-star-half text-warning"></i>
+        }
+        else
+        {
+            <i class="bi bi-star text-muted"></i>
+        }
+    }
+    @if (showValue)
+    {
+        <span class="ms-1">@rating.ToString("0.0")</span>
+    }
+</span>

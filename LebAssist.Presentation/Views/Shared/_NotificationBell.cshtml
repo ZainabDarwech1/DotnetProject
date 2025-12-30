@@ -1,0 +1,42 @@
+﻿@using System.Security.Claims
+@using LebAssist.Application.Interfaces
+@inject INotificationService NotificationService
+
+@if (User.Identity?.IsAuthenticated == true)
+{
+    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var unreadCount = 0;
+    if (!string.IsNullOrEmpty(userId))
+    {
+        unreadCount = await NotificationService.GetUnreadCountAsync(userId);
+    }
+
+    <li class="nav-item dropdown">
+        <a class="nav-link position-relative" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-bell fs-5"></i>
+            @if (unreadCount > 0)
+            {
+                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    @(unreadCount > 99 ? "99+" : unreadCount.ToString())
+                </span>
+            }
+            else
+            {
+                <span id="notification-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="display: none;">
+                    0
+                </span>
+            }
+        </a>
+        <div class="dropdown-menu dropdown-menu-end notification-dropdown" style="width: 350px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdown">
+            <div class="d-flex justify-content-between align-items-center px-3 py-2 border-bottom">
+                <h6 class="mb-0">Notifications</h6>
+                <a href="/Notification" class="text-decoration-none small">View All</a>
+            </div>
+            <div id="notification-list">
+                <div class="text-center py-3 text-muted">
+                    <i class="bi bi-bell"></i> Loading...
+                </div>
+            </div>
+        </div>
+    </li>
+}

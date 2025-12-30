@@ -42,6 +42,9 @@ namespace Domain.Entities
         public int? YearsOfExperience { get; set; }
 
         public DateTime DateRegistered { get; set; } = DateTime.UtcNow;
+        public decimal? ProviderAverageRating { get; set; }  // e.g. 4.7
+        public int TotalReviews { get; set; } = 0;
+
 
         // Navigation Properties
         public virtual ICollection<ProviderService> ProviderServices { get; set; } = new List<ProviderService>();

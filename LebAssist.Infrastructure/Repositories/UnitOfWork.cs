@@ -2,6 +2,7 @@
 using LebAssist.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace LebAssist.Infrastructure.Repositories
@@ -10,6 +11,7 @@ namespace LebAssist.Infrastructure.Repositories
     {
         private readonly ApplicationDbContext _context;
         private IDbContextTransaction? _transaction;
+        private readonly Dictionary<Type, object> _repositories;
 
         // Lazy-loaded repository fields
         private IClientRepository? _clients;
@@ -26,6 +28,7 @@ namespace LebAssist.Infrastructure.Repositories
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
+            _repositories = new Dictionary<Type, object>();
         }
 
         // Lazy-loaded repository properties
@@ -37,6 +40,7 @@ namespace LebAssist.Infrastructure.Repositories
 
         public IServiceRepository Services =>
             _services ??= new ServiceRepository(_context);
+
 
         public IBookingRepository Bookings =>
             _bookings ??= new BookingRepository(_context);
@@ -58,6 +62,17 @@ namespace LebAssist.Infrastructure.Repositories
 
         public IProviderWorkingHoursRepository ProviderWorkingHours =>
             _providerWorkingHours ??= new ProviderWorkingHoursRepository(_context);
+
+        public IRepository<T> Repository<T>() where T : class
+        {
+            var type = typeof(T);
+            if (!_repositories.ContainsKey(type))
+            {
+                _repositories[type] = new GenericRepository<T>(_context);
+            }
+
+            return (IRepository<T>)_repositories[type];
+        }
 
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {

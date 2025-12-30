@@ -1,0 +1,137 @@
+﻿@using Microsoft.Extensions.Options
+@using LebAssist.Application.Common
+@inject IOptions<GoogleMapsSettings> GoogleMapsSettings
+@model LebAssist.Presentation.ViewModels.Emergency.CreateEmergencyViewModel
+@{
+    ViewData["Title"] = "Create Emergency Request";
+    var apiKey = GoogleMapsSettings.Value.ApiKey;
+    var initialLat = Model.Latitude != 0 ? Model.Latitude : 33.8938;
+    var initialLng = Model.Longitude != 0 ? Model.Longitude : 35.5018;
+}
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Create Emergency Request</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i> <strong>Emergency requests</strong> are sent to ALL available providers immediately. Use this for urgent situations only.
+                    </div>
+
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="ServiceId" class="form-label">Service Needed</label>
+                            <select asp-for="ServiceId" class="form-select">
+                                <option value="">-- Select Service --</option>
+                                @foreach (var group in Model.Services.GroupBy(s => s.CategoryName))
+                                {
+                                    <optgroup label="@group.Key">
+                                        @foreach (var service in group)
+                                        {
+                                            <option value="@service.ServiceId">@service.ServiceName</option>
+                                        }
+                                    </optgroup>
+                                }
+                            </select>
+                            <span asp-validation-for="ServiceId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label">Describe Your Emergency</label>
+                            <textarea asp-for="Description" class="form-control" rows="4"
+                                      placeholder="Describe your emergency situation in detail..."></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+
+                        <!-- Location Selection -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Pick emergency location:</strong></label>
+                            <div class="text-muted mb-2">Click on the map to drop a pin.</div>
+
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="Latitude" id="Latitude" />
+                            <input type="hidden" asp-for="Longitude" id="Longitude" />
+                            <input type="hidden" asp-for="LocationAddress" />
+
+                            <!-- Map -->
+                            <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
+
+                            <!-- Display coordinates -->
+                            <div class="mt-2">
+                                <span class="badge bg-secondary">Lat: <span id="latText">-</span></span>
+                                <span class="badge bg-secondary">Lng: <span id="lngText">-</span></span>
+                            </div>
+
+                            <span asp-validation-for="Latitude" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Photo" class="form-label">Photo (Optional)</label>
+                            <input asp-for="Photo" class="form-control" type="file" accept="image/*" />
+                            <span asp-validation-for="Photo" class="text-danger"></span>
+                            <small class="text-muted">Upload a photo of the situation if helpful</small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="bi bi-send-fill"></i> Send Emergency Request
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pass values to JavaScript -->
+<script>
+    var mapConfig = {
+        lat: @initialLat.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        lng: @initialLng.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        apiKey: '@apiKey'
+    };
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        var map;
+        var marker;
+
+        function initMap() {
+            var defaultCenter = { lat: mapConfig.lat, lng: mapConfig.lng };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: defaultCenter,
+            });
+
+            map.addListener("click", function(e) {
+                var lat = e.latLng.lat();
+                var lng = e.latLng.lng();
+
+                if (!marker) {
+                    marker = new google.maps.Marker({
+                        position: { lat: lat, lng: lng },
+                        map: map,
+                    });
+                } else {
+                    marker.setPosition({ lat: lat, lng: lng });
+                }
+
+                document.getElementById("Latitude").value = lat;
+                document.getElementById("Longitude").value = lng;
+                document.getElementById("latText").innerText = lat.toFixed(6);
+                document.getElementById("lngText").innerText = lng.toFixed(6);
+            });
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap"></script>
+}

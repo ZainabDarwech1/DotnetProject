@@ -12,28 +12,18 @@ namespace LebAssist.Infrastructure.Repositories
         {
         }
 
-        public async Task<IEnumerable<EmergencyRequest>> GetActiveEmergencyRequestsAsync()
+        public async Task<EmergencyRequest?> GetWithDetailsAsync(int emergencyId)
         {
-            return await _dbSet
+            return await _context.EmergencyRequests
                 .Include(e => e.Client)
-                .Include(e => e.Service)
-                .Where(e => e.Status == EmergencyStatus.Pending)
-                .OrderByDescending(e => e.RequestDateTime)
-                .ToListAsync();
-        }
-
-        public async Task<EmergencyRequest?> GetEmergencyByIdWithDetailsAsync(int id)
-        {
-            return await _dbSet
-                .Include(e => e.Client)
-                .Include(e => e.Service)
                 .Include(e => e.Provider)
-                .FirstOrDefaultAsync(e => e.EmergencyRequestId == id);
+                .Include(e => e.Service)
+                .FirstOrDefaultAsync(e => e.EmergencyRequestId == emergencyId);
         }
 
-        public async Task<IEnumerable<EmergencyRequest>> GetClientEmergenciesAsync(int clientId)
+        public async Task<IEnumerable<EmergencyRequest>> GetByClientIdAsync(int clientId)
         {
-            return await _dbSet
+            return await _context.EmergencyRequests
                 .Include(e => e.Service)
                 .Include(e => e.Provider)
                 .Where(e => e.ClientId == clientId)
@@ -41,9 +31,19 @@ namespace LebAssist.Infrastructure.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<EmergencyRequest>> GetProviderEmergenciesAsync(int providerId)
+        public async Task<IEnumerable<EmergencyRequest>> GetPendingAsync()
         {
-            return await _dbSet
+            return await _context.EmergencyRequests
+                .Include(e => e.Client)
+                .Include(e => e.Service)
+                .Where(e => e.Status == EmergencyStatus.Pending && e.ProviderId == null)
+                .OrderByDescending(e => e.RequestDateTime)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<EmergencyRequest>> GetByProviderIdAsync(int providerId)
+        {
+            return await _context.EmergencyRequests
                 .Include(e => e.Client)
                 .Include(e => e.Service)
                 .Where(e => e.ProviderId == providerId)

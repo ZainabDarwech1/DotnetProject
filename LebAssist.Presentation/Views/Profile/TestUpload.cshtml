@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Test File Upload";
+}
+
+<div class="container mt-4">
+    <h2>Test File Upload (R11)</h2>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Profile Photo Upload</h5>
+        </div>
+        <div class="card-body">
+            <form id="profilePhotoForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="profilePhoto" class="form-label">Select Profile Photo</label>
+                    <input type="file" class="form-control" id="profilePhoto" name="file" accept=".jpg,.jpeg,.png,.webp">
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Profile Photo</button>
+            </form>
+            <div id="profileResult" class="mt-3"></div>
+            <img id="profilePreview" class="mt-3" style="max-width: 200px; display: none;" />
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5>Portfolio Photos Upload (Provider Only)</h5>
+        </div>
+        <div class="card-body">
+            @if (User.IsInRole("Provider"))
+            {
+                <form id="portfolioForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="portfolioPhotos" class="form-label">Select Portfolio Photos (Max 20)</label>
+                        <input type="file" class="form-control" id="portfolioPhotos" name="files" multiple accept=".jpg,.jpeg,.png,.webp">
+                    </div>
+                    <button type="submit" class="btn btn-success">Upload Portfolio Photos</button>
+                </form>
+                <div id="portfolioResult" class="mt-3"></div>
+                <div id="portfolioPreview" class="mt-3 d-flex flex-wrap gap-2"></div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i> Only Providers can upload portfolio photos.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Profile Photo Upload
+        document.getElementById('profilePhotoForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('profilePhoto');
+            if (!fileInput.files[0]) {
+                alert('Please select a file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            const resultDiv = document.getElementById('profileResult');
+            resultDiv.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+
+            try {
+                const response = await fetch('/api/File/profile-photo', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Check if response is JSON
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    if (response.status === 401) {
+                        resultDiv.innerHTML = '<div class="alert alert-danger">Please login first.</div>';
+                    } else if (response.status === 403) {
+                        resultDiv.innerHTML = '<div class="alert alert-danger">Access denied.</div>';
+                    } else {
+                        resultDiv.innerHTML = '<div class="alert alert-danger">Server error. Please try again.</div>';
+                    }
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    resultDiv.innerHTML = '<div class="alert alert-success">Upload successful!</div>';
+                    document.getElementById('profilePreview').src = data.photoUrl;
+                    document.getElementById('profilePreview').style.display = 'block';
+                } else {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        });
+
+        // Portfolio Photos Upload (only if form exists)
+        const portfolioForm = document.getElementById('portfolioForm');
+        if (portfolioForm) {
+            portfolioForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+
+                const fileInput = document.getElementById('portfolioPhotos');
+                if (!fileInput.files.length) {
+                    alert('Please select files');
+                    return;
+                }
+
+                const formData = new FormData();
+                for (let file of fileInput.files) {
+                    formData.append('files', file);
+                }
+
+                const resultDiv = document.getElementById('portfolioResult');
+                resultDiv.innerHTML = '<div class="alert alert-info">Uploading...</div>';
+
+                try {
+                    const response = await fetch('/api/File/portfolio', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        if (response.status === 401) {
+                            resultDiv.innerHTML = '<div class="alert alert-danger">Please login first.</div>';
+                        } else if (response.status === 403) {
+                            resultDiv.innerHTML = '<div class="alert alert-danger">Only Providers can upload portfolio photos.</div>';
+                        } else {
+                            resultDiv.innerHTML = '<div class="alert alert-danger">Server error. Please try again.</div>';
+                        }
+                        return;
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        resultDiv.innerHTML = `<div class="alert alert-success">Uploaded ${data.uploadedCount} photos!</div>`;
+
+                        const previewDiv = document.getElementById('portfolioPreview');
+                        previewDiv.innerHTML = '';
+
+                        data.photos.forEach(photo => {
+                            const img = document.createElement('img');
+                            img.src = photo.url;
+                            img.style.maxWidth = '150px';
+                            img.style.maxHeight = '150px';
+                            img.className = 'border rounded';
+                            previewDiv.appendChild(img);
+                        });
+
+                        if (data.errors.length > 0) {
+                            resultDiv.innerHTML += `<div class="alert alert-warning mt-2">Errors: ${data.errors.join(', ')}</div>`;
+                        }
+                    } else {
+                        resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${data.error}</div>`;
+                    }
+                } catch (error) {
+                    resultDiv.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+                }
+            });
+        }
+    </script>
+}

@@ -9,5 +9,6 @@ namespace Domain.Interfaces
         Task<IEnumerable<Client>> GetProvidersNearLocationAsync(decimal lat, decimal lon, int radiusKm);
         Task<IEnumerable<Client>> GetProvidersByServiceAsync(int serviceId);
         Task<IEnumerable<Client>> GetActiveProvidersAsync();
+        Task<bool> IsProviderAvailableAsync(int providerId);
     }
 }

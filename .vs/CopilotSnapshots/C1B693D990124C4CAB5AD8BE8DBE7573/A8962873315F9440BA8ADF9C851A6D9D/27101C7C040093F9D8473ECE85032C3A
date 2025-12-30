@@ -1,0 +1,48 @@
+﻿using Domain.Enums;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using YourApp.Domain.Entities;
+
+namespace Domain.Entities
+{
+    public class Booking
+    {
+        [Key]
+        public int BookingId { get; set; }
+
+        public int ClientId { get; set; }
+
+        public int ProviderId { get; set; }
+
+        public int ServiceId { get; set; }
+
+        public DateTime RequestDate { get; set; } = DateTime.UtcNow;
+
+        public DateTime ScheduledDateTime { get; set; }
+
+        [Column(TypeName = "decimal(9,6)")]
+        public decimal Latitude { get; set; }
+
+        [Column(TypeName = "decimal(9,6)")]
+        public decimal Longitude { get; set; }
+
+        public BookingStatus Status { get; set; } = BookingStatus.Pending;
+
+        [MaxLength(1000)]
+        public string? Notes { get; set; }[MaxLength(1000)]
+
+        public DateTime? CompletedDate { get; set; }
+
+        [MaxLength(500)]
+        public string? CancellationReason { get; set; }
+
+        // Navigation Properties
+        public virtual Client Client { get; set; } = null!;
+        public virtual Client Provider { get; set; } = null!;
+        public virtual Service Service { get; set; } = null!;
+        public Review? Review { get; set; }
+
+
+        public virtual ICollection<Report> Reports { get; set; } = new List<Report>();
+    }
+}

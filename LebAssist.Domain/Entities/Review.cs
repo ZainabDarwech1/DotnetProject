@@ -1,16 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Entities;
+using System.ComponentModel.DataAnnotations;
 
-namespace Domain.Entities
+namespace 
 {
     public class Review
     {
-        [Key]
         public int ReviewId { get; set; }
 
+        // one review per booking
         public int BookingId { get; set; }
 
+        // reviewer client
         public int ClientId { get; set; }
 
+        // reviewed provider (also in Client table)
         public int ProviderId { get; set; }
 
         [Range(1, 5)]
@@ -23,9 +26,15 @@ namespace Domain.Entities
 
         public bool IsVisible { get; set; } = true;
 
-        // Navigation Properties
-        public virtual Booking Booking { get; set; } = null!;
-        public virtual Client Client { get; set; } = null!;
-        public virtual Client Provider { get; set; } = null!;
+        // Optional features you mentioned:
+        public bool IsAnonymous { get; set; } = false;
+
+        // Useful for moderation workflows
+        public bool AdminModerated { get; set; } = false;
+
+        // Navigation
+        public Booking Booking { get; set; } = null!;
+        public Client Client { get; set; } = null!;
+        public Client Provider { get; set; } = null!;
     }
 }

@@ -1,0 +1,116 @@
+@model IEnumerable<LebAssist.Presentation.Areas.Admin.ViewModels.CategoryViewModel>
+@{
+    ViewData["Title"] = "Manage Categories";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1><i class="bi bi-folder"></i> Service Categories</h1>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Create Category
+        </a>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Icon</th>
+                    <th>Category Name</th>
+                    <th>Description</th>
+                    <th>Services</th>
+                    <th>Order</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var category in Model.OrderBy(c => c.DisplayOrder))
+                {
+                    <tr>
+                        <td>
+                            @if (!string.IsNullOrEmpty(category.IconPath))
+                            {
+                                <img src="@category.IconPath" alt="Icon" style="width: 40px; height: 40px; object-fit: contain;">
+                            }
+                            else
+                            {
+                                <i class="bi bi-folder text-muted" style="font-size: 30px;"></i>
+                            }
+                        </td>
+                        <td><strong>@category.CategoryName</strong></td>
+                        <td>@category.Description</td>
+                        <td><span class="badge bg-info">@category.ServiceCount</span></td>
+                        <td>@category.DisplayOrder</td>
+                        <td>
+                            @if (category.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Inactive</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="@Url.Action("Edit", new { id = category.CategoryId })" class="btn btn-outline-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-warning toggle-status" data-id="@category.CategoryId">
+                                    <i class="bi bi-toggle-on"></i>
+                                </button>
+                                <form asp-action="Delete" asp-route-id="@category.CategoryId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Delete this category?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script>
+        document.querySelectorAll('.toggle-status').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const id = this.dataset.id;
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
+                
+                const response = await fetch('@Url.Action("ToggleStatus")', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    location.reload();
+                }
+            });
+        });
+    </script>
+    @Html.AntiForgeryToken()
+}

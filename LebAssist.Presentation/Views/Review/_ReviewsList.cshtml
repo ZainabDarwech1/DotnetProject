@@ -1,0 +1,49 @@
+﻿@model List<LebAssist.Application.DTOs.ReviewDto>
+
+@foreach (var review in Model)
+{
+    <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+            <div class="d-flex">
+                @if (!review.IsAnonymous && !string.IsNullOrEmpty(review.ClientPhotoPath))
+                {
+                    <img src="@review.ClientPhotoPath" alt="@review.ClientName"
+                         class="rounded-circle me-3"
+                         style="width: 50px; height: 50px; object-fit: cover;">
+                }
+                else
+                {
+                    <div class="bg-secondary rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width: 50px; height: 50px;">
+                        <i class="bi bi-person-fill text-white"></i>
+                    </div>
+                }
+                <div class="flex-grow-1">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-0">@review.ClientName</h6>
+                            <small class="text-muted">@review.ServiceName • @review.TimeAgo</small>
+                        </div>
+                        <div>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Rating)
+                                {
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star text-muted"></i>
+                                }
+                            }
+                        </div>
+                    </div>
+                    @if (!string.IsNullOrEmpty(review.Comment))
+                    {
+                        <p class="mt-2 mb-0">@review.Comment</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}

@@ -1,0 +1,489 @@
+﻿@model Domain.Entities.Booking
+@inject LebAssist.Application.Interfaces.IReviewService ReviewService
+@{
+    ViewData["Title"] = "Booking Details";
+    var review = await ReviewService.GetReviewByBookingIdAsync(Model.BookingId);
+    var hasReview = review != null;
+}
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Home</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Booking" asp-action="MyBookings">My Bookings</a></li>
+            <li class="breadcrumb-item active">Booking #@Model.BookingId</li>
+        </ol>
+    </nav>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-circle me-2"></i>@TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row">
+        <!-- Main Booking Info -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
+                        <i class="bi bi-calendar-check me-2"></i>Booking Details
+                    </h4>
+                    <span class="badge fs-6 @GetStatusBadgeClass(Model.Status)">
+                        @Model.Status
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Service</label>
+                            <p class="fw-semibold mb-0">@Model.Service?.ServiceName</p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Category</label>
+                            <p class="fw-semibold mb-0">@Model.Service?.Category?.CategoryName</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="text-muted small">Provider</label>
+                            <p class="fw-semibold mb-0">
+                                @Model.Provider?.FirstName @Model.Provider?.LastName
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="text-muted small">Scheduled Date & Time</label>
+                            <p class="fw-semibold mb-0">
+                                <i class="bi bi-clock me-1"></i>
+                                @Model.ScheduledDateTime.ToString("dddd, MMMM dd, yyyy 'at' hh:mm tt")
+                            </p>
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="mb-3">
+                            <label class="text-muted small">Notes</label>
+                            <div class="bg-light rounded p-3">
+                                <p class="mb-0">@Model.Notes</p>
+                            </div>
+                        </div>
+                    }
+
+                    @if (Model.Status == Domain.Enums.BookingStatus.Cancelled && !string.IsNullOrEmpty(Model.CancellationReason))
+                    {
+                        <div class="alert alert-warning">
+                            <label class="text-muted small">Cancellation Reason</label>
+                            <p class="mb-0">@Model.CancellationReason</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Timeline Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-clock-history me-2"></i>Booking Timeline
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="timeline">
+                        <!-- Requested -->
+                        <div class="timeline-item completed">
+                            <div class="timeline-marker bg-success">
+                                <i class="bi bi-check"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-0">Requested</h6>
+                                <small class="text-muted">@Model.RequestDate.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                            </div>
+                        </div>
+
+                        <!-- Accepted -->
+                        <div class="timeline-item @(Model.Status >= Domain.Enums.BookingStatus.Accepted ? "completed" : "")">
+                            <div class="timeline-marker @(Model.Status >= Domain.Enums.BookingStatus.Accepted ? "bg-success" : "bg-secondary")">
+                                @if (Model.Status >= Domain.Enums.BookingStatus.Accepted)
+                                {
+                                    <i class="bi bi-check"></i>
+                                }
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-0">Accepted</h6>
+                                @if (Model.Status >= Domain.Enums.BookingStatus.Accepted)
+                                {
+                                    <small class="text-muted">Provider accepted the booking</small>
+                                }
+                                else if (Model.Status == Domain.Enums.BookingStatus.Rejected)
+                                {
+                                    <small class="text-danger">Booking was rejected</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Waiting for provider</small>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- In Progress -->
+                        <div class="timeline-item @(Model.Status >= Domain.Enums.BookingStatus.InProgress ? "completed" : "")">
+                            <div class="timeline-marker @(Model.Status >= Domain.Enums.BookingStatus.InProgress ? "bg-success" : "bg-secondary")">
+                                @if (Model.Status >= Domain.Enums.BookingStatus.InProgress)
+                                {
+                                    <i class="bi bi-check"></i>
+                                }
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-0">In Progress</h6>
+                                @if (Model.Status >= Domain.Enums.BookingStatus.InProgress)
+                                {
+                                    <small class="text-muted">Service started</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Pending</small>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Completed -->
+                        <div class="timeline-item @(Model.Status == Domain.Enums.BookingStatus.Completed ? "completed" : "")">
+                            <div class="timeline-marker @(Model.Status == Domain.Enums.BookingStatus.Completed ? "bg-success" : "bg-secondary")">
+                                @if (Model.Status == Domain.Enums.BookingStatus.Completed)
+                                {
+                                    <i class="bi bi-check"></i>
+                                }
+                            </div>
+                            <div class="timeline-content">
+                                <h6 class="mb-0">Completed</h6>
+                                @if (Model.Status == Domain.Enums.BookingStatus.Completed && Model.CompletedDate.HasValue)
+                                {
+                                    <small class="text-muted">@Model.CompletedDate.Value.ToString("MMM dd, yyyy 'at' hh:mm tt")</small>
+                                }
+                                else
+                                {
+                                    <small class="text-muted">Pending</small>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Section - Only show for completed bookings -->
+            @if (Model.Status == Domain.Enums.BookingStatus.Completed)
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">
+                            <i class="bi bi-star-fill text-warning me-2"></i>Review
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (hasReview)
+                        {
+                            <!-- Show existing review -->
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="flex-grow-1">
+                                    <div class="mb-2">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            if (i <= review!.Rating)
+                                            {
+                                                <i class="bi bi-star-fill text-warning fs-5"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="bi bi-star text-muted fs-5"></i>
+                                            }
+                                        }
+                                        <span class="ms-2 fw-semibold">@review!.Rating/5</span>
+                                        @if (review.IsAnonymous)
+                                        {
+                                            <span class="badge bg-secondary ms-2">Anonymous</span>
+                                        }
+                                    </div>
+
+                                    @if (!string.IsNullOrEmpty(review.Comment))
+                                    {
+                                        <p class="mb-2">@review.Comment</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted fst-italic mb-2">No written comment</p>
+                                    }
+
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>
+                                        Reviewed on @review.ReviewDate.ToString("MMMM dd, yyyy")
+                                    </small>
+                                </div>
+
+                                @if (review.CanEdit)
+                                {
+                                    <div class="ms-3">
+                                        <a asp-controller="Review" asp-action="Edit" asp-route-id="@review.ReviewId"
+                                           class="btn btn-outline-warning btn-sm">
+                                            <i class="bi bi-pencil me-1"></i>Edit
+                                        </a>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (review.CanEdit)
+                            {
+                                <div class="alert alert-info mt-3 mb-0">
+                                    <small>
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        You can edit this review until @review.ReviewDate.AddDays(7).ToString("MMMM dd, yyyy")
+                                    </small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <!-- Show leave review prompt -->
+                            <div class="text-center py-3">
+                                <i class="bi bi-star display-4 text-warning mb-3"></i>
+                                <h5>How was your experience?</h5>
+                                <p class="text-muted mb-4">
+                                    Share your feedback to help other clients and support the provider.
+                                </p>
+                                <a asp-controller="Review" asp-action="Create" asp-route-bookingId="@Model.BookingId"
+                                   class="btn btn-warning btn-lg">
+                                    <i class="bi bi-star-fill me-2"></i>Leave a Review
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Provider Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Service Provider</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.Provider?.ProfilePhotoPath))
+                    {
+                        <img src="@Model.Provider.ProfilePhotoPath" alt="@Model.Provider.FirstName"
+                             class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3"
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-person-fill text-white fs-2"></i>
+                        </div>
+                    }
+                    <h5 class="mb-1">@Model.Provider?.FirstName @Model.Provider?.LastName</h5>
+
+                    @if (Model.Provider?.ProviderAverageRating.HasValue == true)
+                    {
+                        <div class="mb-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(Model.Provider.ProviderAverageRating.Value))
+                                {
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star text-muted"></i>
+                                }
+                            }
+                            <span class="ms-1">@Model.Provider.ProviderAverageRating.Value.ToString("0.0")</span>
+                            <small class="text-muted">(@Model.Provider.TotalReviews reviews)</small>
+                        </div>
+                    }
+
+                    <a asp-controller="Review" asp-action="ProviderReviews" asp-route-providerId="@Model.ProviderId"
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-star me-1"></i>View All Reviews
+                    </a>
+                </div>
+            </div>
+
+            <!-- Actions Card (for Provider) -->
+            @if (User.IsInRole("Provider"))
+            {
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Provider Actions</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.Status == Domain.Enums.BookingStatus.Pending)
+                        {
+                            <form asp-action="Accept" method="post" class="mb-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-lg me-2"></i>Accept Booking
+                                </button>
+                            </form>
+                            <form asp-action="Reject" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                                <button type="submit" class="btn btn-outline-danger w-100"
+                                        onclick="return confirm('Are you sure you want to reject this booking?');">
+                                    <i class="bi bi-x-lg me-2"></i>Reject Booking
+                                </button>
+                            </form>
+                        }
+                        else if (Model.Status == Domain.Enums.BookingStatus.Accepted)
+                        {
+                            <form asp-action="Start" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="bi bi-play-fill me-2"></i>Start Service
+                                </button>
+                            </form>
+                        }
+                        else if (Model.Status == Domain.Enums.BookingStatus.InProgress)
+                        {
+                            <form asp-action="Complete" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                                <button type="submit" class="btn btn-success w-100">
+                                    <i class="bi bi-check-circle me-2"></i>Mark as Complete
+                                </button>
+                            </form>
+                        }
+                        else if (Model.Status == Domain.Enums.BookingStatus.Completed)
+                        {
+                            <div class="text-center text-success">
+                                <i class="bi bi-check-circle-fill fs-1"></i>
+                                <p class="mb-0 mt-2">Service Completed</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <!-- Location Card -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="bi bi-geo-alt me-2"></i>Service Location
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="map" style="height: 200px; border-radius: 8px;"></div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            Coordinates: @Model.Latitude, @Model.Longitude
+                        </small>
+                    </div>
+                    <a href="https://www.google.com/maps?q=@Model.Latitude,@Model.Longitude"
+                       target="_blank" class="btn btn-outline-primary btn-sm w-100 mt-2">
+                        <i class="bi bi-box-arrow-up-right me-1"></i>Open in Google Maps
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetStatusBadgeClass(Domain.Enums.BookingStatus status)
+    {
+        return status switch
+        {
+            Domain.Enums.BookingStatus.Pending => "bg-warning text-dark",
+            Domain.Enums.BookingStatus.Accepted => "bg-info",
+            Domain.Enums.BookingStatus.Rejected => "bg-danger",
+            Domain.Enums.BookingStatus.InProgress => "bg-primary",
+            Domain.Enums.BookingStatus.Completed => "bg-success",
+            Domain.Enums.BookingStatus.Cancelled => "bg-secondary",
+            _ => "bg-secondary"
+        };
+    }
+}
+
+@section Styles {
+    <style>
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+            .timeline::before {
+                content: '';
+                position: absolute;
+                left: 10px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: #dee2e6;
+            }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 20px;
+        }
+
+            .timeline-item:last-child {
+                padding-bottom: 0;
+            }
+
+        .timeline-marker {
+            position: absolute;
+            left: -25px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .timeline-item.completed .timeline-marker {
+            background-color: #198754 !important;
+        }
+
+        .timeline-content {
+            padding-left: 10px;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const lat = @Model.Latitude;
+            const lng = @Model.Longitude;
+
+            const map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: parseFloat(lat), lng: parseFloat(lng) },
+                zoom: 15,
+                disableDefaultUI: true,
+                zoomControl: true
+            });
+
+            new google.maps.Marker({
+                position: { lat: parseFloat(lat), lng: parseFloat(lng) },
+                map: map,
+                title: 'Service Location'
+            });
+        });
+    </script>
+}

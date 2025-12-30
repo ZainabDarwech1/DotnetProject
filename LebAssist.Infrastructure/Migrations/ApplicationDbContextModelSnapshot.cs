@@ -38,6 +38,7 @@ namespace LebAssist.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("CompletedDate")
+                        .HasMaxLength(1000)
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("Latitude")
@@ -152,6 +153,9 @@ namespace LebAssist.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("EmergencyRequestId"));
 
+                    b.Property<DateTime>("AcceptedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<DateTime?>("AcceptedDateTime")
                         .HasColumnType("datetime2");
 
@@ -216,26 +220,32 @@ namespace LebAssist.Infrastructure.Migrations
 
                     b.Property<string>("Message")
                         .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
 
                     b.Property<int?>("ReferenceId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
+                        .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("NotificationId");
 
                     b.HasIndex("CreatedDate");
 
-                    b.HasIndex("IsRead");
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("UserId", "IsRead");
 
                     b.ToTable("Notifications");
                 });

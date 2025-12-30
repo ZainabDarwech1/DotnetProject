@@ -1,13 +1,17 @@
-﻿@model LebAssist.Presentation.ViewModels.Account.RegisterViewModel
+﻿@using Microsoft.Extensions.Options
+@using LebAssist.Application.Common
+@inject IOptions<GoogleMapsSettings> GoogleMapsSettings
+@model LebAssist.Presentation.ViewModels.Account.RegisterViewModel
 @{
     ViewData["Title"] = "Register";
+    var apiKey = GoogleMapsSettings.Value.ApiKey;
 }
 
 <div class="row justify-content-center">
     <div class="col-md-8">
         <div class="card shadow">
             <div class="card-header bg-primary text-white">
-                <h4 class="mb-0">Create Account</h4>
+                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Create Account</h4>
             </div>
             <div class="card-body">
                 <form asp-action="Register" method="post" enctype="multipart/form-data">
@@ -41,23 +45,35 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" />
+                            <input asp-for="Password" class="form-control" type="password" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                             <small class="text-muted">Min 8 chars, uppercase, lowercase, digit, special char</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" />
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" />
                             <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
                         </div>
                     </div>
 
+                    <!-- Location Selection -->
                     <div class="mb-3">
-                        <label class="form-label">Your Location</label>
-                        <div id="map" style="height: 300px; border: 1px solid #ddd; border-radius: 5px;"></div>
-                        <small class="text-muted">Click on the map to set your location</small>
-                        <input asp-for="Latitude" type="hidden" id="latitude" />
-                        <input asp-for="Longitude" type="hidden" id="longitude" />
+                        <label class="form-label"><strong>Pick your location:</strong></label>
+                        <div class="text-muted mb-2">Click on the map to drop a pin.</div>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" asp-for="Latitude" id="Latitude" />
+                        <input type="hidden" asp-for="Longitude" id="Longitude" />
+
+                        <!-- Map -->
+                        <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
+
+                        <!-- Display coordinates -->
+                        <div class="mt-2">
+                            <span class="badge bg-secondary">Lat: <span id="latText">-</span></span>
+                            <span class="badge bg-secondary">Lng: <span id="lngText">-</span></span>
+                        </div>
+
                         <span asp-validation-for="Latitude" class="text-danger"></span>
                     </div>
 
@@ -109,57 +125,37 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
     <script>
-        let map, marker;
+        var map;
+        var marker;
 
         function initMap() {
-            // Default to Beirut
-            const defaultLocation = { lat: 33.8938, lng: 35.5018 };
+            var defaultCenter = { lat: 33.8938, lng: 35.5018 };
 
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: defaultLocation,
-                zoom: 12
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: defaultCenter,
             });
 
-            marker = new google.maps.Marker({
-                position: defaultLocation,
-                map: map,
-                draggable: true
+            map.addListener("click", function(e) {
+                var lat = e.latLng.lat();
+                var lng = e.latLng.lng();
+
+                if (!marker) {
+                    marker = new google.maps.Marker({
+                        position: { lat: lat, lng: lng },
+                        map: map,
+                    });
+                } else {
+                    marker.setPosition({ lat: lat, lng: lng });
+                }
+
+                document.getElementById("Latitude").value = lat;
+                document.getElementById("Longitude").value = lng;
+                document.getElementById("latText").innerText = lat.toFixed(6);
+                document.getElementById("lngText").innerText = lng.toFixed(6);
             });
-
-            // Set initial values
-            document.getElementById('latitude').value = defaultLocation.lat;
-            document.getElementById('longitude').value = defaultLocation.lng;
-
-            // Click on map to move marker
-            map.addListener('click', function (e) {
-                marker.setPosition(e.latLng);
-                updateLocation(e.latLng);
-            });
-
-            // Drag marker
-            marker.addListener('dragend', function () {
-                updateLocation(marker.getPosition());
-            });
-
-            // Try to get user's current location
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function (position) {
-                    const userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    map.setCenter(userLocation);
-                    marker.setPosition(userLocation);
-                    updateLocation(userLocation);
-                });
-            }
-        }
-
-        function updateLocation(latLng) {
-            document.getElementById('latitude').value = latLng.lat;
-            document.getElementById('longitude').value = latLng.lng;
         }
     </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap"></script>
 }

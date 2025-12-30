@@ -6,32 +6,53 @@ namespace LebAssist.Infrastructure.Data.Configurations
 {
     public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
-        public void Configure(EntityTypeBuilder<Review> builder)
+        public void Configure(EntityTypeBuilder<Review> entity)
         {
-            builder.HasKey(r => r.ReviewId);
+            entity.HasKey(r => r.ReviewId);
 
-            // One-to-One: Each booking has one review
-            builder.HasIndex(r => r.BookingId).IsUnique();
-            builder.HasIndex(r => r.ClientId);
-            builder.HasIndex(r => r.ProviderId);
+            // One review per booking
+            entity.HasIndex(r => r.BookingId).IsUnique();
 
-            // Relationship: Review belongs to Booking (One-to-One)
-            builder.HasOne(r => r.Booking)
-                   .WithOne(b => b.Review)
-                   .HasForeignKey<Review>(r => r.BookingId)
-                   .OnDelete(DeleteBehavior.Cascade);
+            entity.Property(r => r.Rating)
+                  .IsRequired();
 
-            // Relationship: Review written by Client
-            builder.HasOne(r => r.Client)
-                   .WithMany(c => c.ReviewsWritten)
-                   .HasForeignKey(r => r.ClientId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            entity.Property(r => r.Comment)
+                  .HasMaxLength(1000);
 
-            // Relationship: Review for Provider
-            builder.HasOne(r => r.Provider)
-                   .WithMany(c => c.ReviewsReceived)
-                   .HasForeignKey(r => r.ProviderId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            entity.Property(r => r.ReviewDate)
+                  .HasDefaultValueSql("GETUTCDATE()");
+
+            entity.Property(r => r.IsVisible)
+                  .HasDefaultValue(true);
+
+            entity.Property(r => r.IsAnonymous)
+                  .HasDefaultValue(false);
+
+            entity.Property(r => r.AdminModerated)
+                  .HasDefaultValue(false);
+
+            // Booking (1) <-> (0..1) Review
+            entity.HasOne(r => r.Booking)
+                  .WithOne(b => b.Review)
+                  .HasForeignKey<Review>(r => r.BookingId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            // Reviewer (Client) - ReviewsWritten collection
+            entity.HasOne(r => r.Client)
+                  .WithMany(c => c.ReviewsWritten)
+                  .HasForeignKey(r => r.ClientId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Reviewed Provider - ReviewsReceived collection
+            entity.HasOne(r => r.Provider)
+                  .WithMany(c => c.ReviewsReceived)
+                  .HasForeignKey(r => r.ProviderId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            // Indexes for performance
+            entity.HasIndex(r => new { r.ProviderId, r.IsVisible, r.ReviewDate });
+            entity.HasIndex(r => r.ClientId);
+            entity.HasIndex(r => new { r.IsVisible, r.AdminModerated });
         }
     }
 }

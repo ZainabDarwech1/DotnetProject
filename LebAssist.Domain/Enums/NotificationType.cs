@@ -2,10 +2,10 @@
 {
     public enum NotificationType
     {
-        Booking = 0,
-        Emergency = 1,
-        System = 2,
-        Admin = 3,
-        Review = 4
+        Booking = 1,
+        Emergency = 2,
+        System = 3,
+        Admin = 4,
+        Review = 5
     }
 }

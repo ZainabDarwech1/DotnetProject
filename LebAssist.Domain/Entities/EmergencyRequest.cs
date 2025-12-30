@@ -37,5 +37,6 @@ namespace Domain.Entities
         public virtual Client Client { get; set; } = null!;
         public virtual Service Service { get; set; } = null!;
         public virtual Client? Provider { get; set; }
+        public DateTime AcceptedAt { get; set; }
     }
 }

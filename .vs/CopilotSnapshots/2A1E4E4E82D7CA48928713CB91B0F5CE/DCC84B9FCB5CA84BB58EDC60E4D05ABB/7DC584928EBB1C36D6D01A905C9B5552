@@ -1,0 +1,191 @@
+﻿using LebAssist.Application.DTOs;
+using LebAssist.Application.Interfaces;
+using LebAssist.Presentation.Areas.Admin.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LebAssist.Presentation.Areas.Admin.Controllers
+{
+    [Area("Admin")]
+    [Authorize(Roles = "Admin")]
+    public class CategoryController : Controller
+    {
+        private readonly ICategoryService _categoryService;
+        private readonly ILogger<CategoryController> _logger;
+
+        public CategoryController(
+            ICategoryService categoryService,
+            ILogger<CategoryController> logger)
+        {
+            _categoryService = categoryService;
+            _logger = logger;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var categories = await _categoryService.GetAllCategoriesAsync();
+            var model = categories.Select(c => new CategoryViewModel
+            {
+                CategoryId = c.CategoryId,
+                CategoryName = c.CategoryName,
+                Description = c.Description,
+                IconPath = c.IconPath,
+                IsActive = c.IsActive,
+                DisplayOrder = c.DisplayOrder,
+                ServiceCount = c.ServiceCount
+            });
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        //[ValidateAntiForgeryToken]  // Temporarily disabled for testing
+        public async Task<IActionResult> Create(CreateCategoryViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Model state invalid. Errors: {Errors}", 
+                    string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return View(model);
+            }
+
+            try
+            {
+                byte[]? iconData = null;
+                string? iconFileName = null;
+
+                if (model.Icon != null && model.Icon.Length > 0)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await model.Icon.CopyToAsync(memoryStream);
+                    iconData = memoryStream.ToArray();
+                    iconFileName = model.Icon.FileName;
+                }
+
+                var dto = new CreateCategoryDto
+                {
+                    CategoryName = model.CategoryName,
+                    Description = model.Description,
+                    IconData = iconData,
+                    IconFileName = iconFileName,
+                    DisplayOrder = model.DisplayOrder
+                };
+
+                var categoryId = await _categoryService.CreateCategoryAsync(dto);
+
+                TempData["SuccessMessage"] = "Category created successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating category");
+                ModelState.AddModelError(string.Empty, $"An error occurred: {ex.Message}");
+                return View(model);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var category = await _categoryService.GetCategoryByIdAsync(id);
+            if (category == null)
+                return NotFound();
+
+            var model = new EditCategoryViewModel
+            {
+                CategoryId = category.CategoryId,
+                CategoryName = category.CategoryName,
+                Description = category.Description,
+                CurrentIconPath = category.IconPath,
+                DisplayOrder = category.DisplayOrder,
+                IsActive = category.IsActive
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditCategoryViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            try
+            {
+                byte[]? iconData = null;
+                string? iconFileName = null;
+
+                if (model.Icon != null && model.Icon.Length > 0)
+                {
+                    using var memoryStream = new MemoryStream();
+                    await model.Icon.CopyToAsync(memoryStream);
+                    iconData = memoryStream.ToArray();
+                    iconFileName = model.Icon.FileName;
+                }
+
+                var dto = new UpdateCategoryDto
+                {
+                    CategoryName = model.CategoryName,
+                    Description = model.Description,
+                    IconData = iconData,
+                    IconFileName = iconFileName,
+                    DisplayOrder = model.DisplayOrder
+                };
+
+                var result = await _categoryService.UpdateCategoryAsync(model.CategoryId, dto);
+
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to update category.");
+                    return View(model);
+                }
+
+                TempData["SuccessMessage"] = "Category updated successfully!";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating category");
+                ModelState.AddModelError(string.Empty, "An error occurred while updating the category.");
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            var result = await _categoryService.ToggleCategoryStatusAsync(id);
+
+            if (!result)
+                return Json(new { success = false, message = "Failed to toggle category status." });
+
+            return Json(new { success = true });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _categoryService.DeleteCategoryAsync(id);
+
+            if (!result)
+            {
+                TempData["ErrorMessage"] = "Cannot delete category. It may have associated services.";
+            }
+            else
+            {
+                TempData["SuccessMessage"] = "Category deleted successfully!";
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
+}

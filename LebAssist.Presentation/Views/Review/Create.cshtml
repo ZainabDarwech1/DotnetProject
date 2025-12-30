@@ -1,0 +1,186 @@
+﻿@model LebAssist.Presentation.ViewModels.Review.SubmitReviewViewModel
+@{
+    ViewData["Title"] = "Leave a Review";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-star-fill me-2"></i>Leave a Review
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Booking Info -->
+                    <div class="bg-light rounded p-3 mb-4">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <small class="text-muted">Service Provider</small>
+                                <p class="mb-1 fw-semibold">@Model.ProviderName</p>
+                            </div>
+                            <div class="col-sm-6">
+                                <small class="text-muted">Service</small>
+                                <p class="mb-1 fw-semibold">@Model.ServiceName</p>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-12">
+                                <small class="text-muted">Booking Date</small>
+                                <p class="mb-0">@Model.BookingDate.ToString("dddd, MMMM dd, yyyy 'at' hh:mm tt")</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        <input type="hidden" asp-for="BookingId" />
+
+                        <!-- Star Rating -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Your Rating <span class="text-danger">*</span></label>
+                            <div class="star-rating-input" id="starRatingInput">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star@(i)" name="Rating" value="@i" class="d-none" />
+                                    <label for="star@(i)" class="star-label" data-rating="@i">
+                                        <i class="bi bi-star-fill fs-2"></i>
+                                    </label>
+                                }
+                            </div>
+                            <div id="ratingText" class="text-muted mt-2">Click to rate</div>
+                            <span asp-validation-for="Rating" class="text-danger"></span>
+                        </div>
+
+                        <!-- Comment -->
+                        <div class="mb-4">
+                            <label asp-for="Comment" class="form-label fw-semibold">Your Review (Optional)</label>
+                            <textarea asp-for="Comment" class="form-control" rows="4"
+                                      placeholder="Share your experience with this service provider..."
+                                      maxlength="1000"></textarea>
+                            <div class="form-text">
+                                <span id="charCount">0</span>/1000 characters
+                            </div>
+                            <span asp-validation-for="Comment" class="text-danger"></span>
+                        </div>
+
+                        <!-- Anonymous Option -->
+                        <div class="mb-4">
+                            <div class="form-check">
+                                <input asp-for="IsAnonymous" class="form-check-input" type="checkbox" />
+                                <label asp-for="IsAnonymous" class="form-check-label">
+                                    Post anonymously
+                                </label>
+                            </div>
+                            <small class="text-muted">Your name won't be shown with this review</small>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary flex-grow-1">
+                                <i class="bi bi-send me-2"></i>Submit Review
+                            </button>
+                            <a asp-controller="BookingDetails" asp-action="Details" asp-route-id="@Model.BookingId"
+                               class="btn btn-outline-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .star-rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 0.25rem;
+        }
+
+        .star-label {
+            cursor: pointer;
+            color: #ddd;
+            transition: color 0.2s ease;
+        }
+
+        .star-label:hover,
+        .star-label:hover ~ .star-label,
+        .star-label.active,
+        .star-label.active ~ .star-label {
+            color: #ffc107;
+        }
+
+        .star-rating-input input:checked ~ .star-label {
+            color: #ffc107;
+        }
+    </style>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const ratingTexts = {
+                1: 'Poor - Very disappointed',
+                2: 'Fair - Below expectations',
+                3: 'Good - Met expectations',
+                4: 'Very Good - Exceeded expectations',
+                5: 'Excellent - Outstanding service!'
+            };
+
+            const stars = document.querySelectorAll('.star-label');
+            const ratingText = document.getElementById('ratingText');
+
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.dataset.rating;
+                    document.getElementById('star' + rating).checked = true;
+
+                    stars.forEach(s => s.classList.remove('active'));
+                    this.classList.add('active');
+                    let sibling = this.nextElementSibling;
+                    while (sibling) {
+                        if (sibling.classList.contains('star-label')) {
+                            sibling.classList.add('active');
+                        }
+                        sibling = sibling.nextElementSibling;
+                    }
+
+                    ratingText.textContent = ratingTexts[rating];
+                    ratingText.classList.remove('text-muted');
+                    ratingText.classList.add('text-warning', 'fw-semibold');
+                });
+
+                star.addEventListener('mouseenter', function() {
+                    const rating = this.dataset.rating;
+                    ratingText.textContent = ratingTexts[rating];
+                });
+            });
+
+            document.querySelector('.star-rating-input').addEventListener('mouseleave', function() {
+                const checked = document.querySelector('.star-rating-input input:checked');
+                if (checked) {
+                    ratingText.textContent = ratingTexts[checked.value];
+                } else {
+                    ratingText.textContent = 'Click to rate';
+                    ratingText.classList.remove('text-warning', 'fw-semibold');
+                    ratingText.classList.add('text-muted');
+                }
+            });
+
+            // Character counter
+            const commentField = document.getElementById('Comment');
+            const charCount = document.getElementById('charCount');
+
+            if (commentField) {
+                commentField.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+                });
+            }
+        });
+    </script>
+}

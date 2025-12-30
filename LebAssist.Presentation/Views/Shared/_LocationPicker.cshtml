@@ -1,0 +1,215 @@
+﻿@using Microsoft.Extensions.Options
+@using LebAssist.Application.Common
+@inject IOptions<GoogleMapsSettings> GoogleMapsSettings
+@{
+    var apiKey = GoogleMapsSettings.Value?.ApiKey ?? "";
+    var mapId = ViewData["MapId"]?.ToString() ?? "location-map";
+    var initialLat = ViewData["Latitude"] ?? 33.8938;
+    var initialLng = ViewData["Longitude"] ?? 35.5018;
+    var latFieldName = ViewData["LatFieldName"]?.ToString() ?? "Latitude";
+    var lngFieldName = ViewData["LngFieldName"]?.ToString() ?? "Longitude";
+    var height = ViewData["Height"]?.ToString() ?? "350px";
+    var isReadOnly = ViewData["ReadOnly"] != null && ViewData["ReadOnly"] is bool readOnlyVal && readOnlyVal;
+}
+
+<div class="location-picker-container">
+    <!-- Location Selection Methods -->
+    @if (!isReadOnly)
+    {
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <select id="@(mapId)-city-select" class="form-select" onchange="@(mapId)_selectCity()">
+                    <option value="">-- Select City --</option>
+                    <option value="33.8938,35.5018">Beirut</option>
+                    <option value="34.4367,35.8497">Tripoli</option>
+                    <option value="33.2705,35.2038">Sidon (Saida)</option>
+                    <option value="33.2721,35.1964">Tyre (Sour)</option>
+                    <option value="33.8547,35.8623">Zahle</option>
+                    <option value="34.0047,36.2110">Baalbek</option>
+                    <option value="33.5608,35.3733">Nabatieh</option>
+                    <option value="33.8172,35.5361">Jounieh</option>
+                    <option value="34.1236,35.6511">Byblos (Jbeil)</option>
+                    <option value="33.9000,35.5500">Baabda</option>
+                    <option value="33.8333,35.5000">Mount Lebanon</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <button type="button" id="@(mapId)-gps-btn" class="btn btn-outline-primary w-100" onclick="@(mapId)_useGPS()">
+                    <i class="bi bi-geo-alt-fill"></i> Use My GPS Location
+                </button>
+            </div>
+        </div>
+    }
+
+    <!-- Map Container -->
+    <div id="@mapId" style="height: @height; width: 100%; border: 1px solid #ddd; border-radius: 8px;"></div>
+
+    <!-- Location Display -->
+    <div class="mt-2 d-flex justify-content-between align-items-center">
+        <small class="text-muted">
+            <i class="bi bi-pin-map"></i> <span id="@(mapId)-display">Lat: @initialLat, Lng: @initialLng</span>
+        </small>
+        @if (!isReadOnly)
+        {
+            <small class="text-muted">Click on map or drag marker to change location</small>
+        }
+    </div>
+
+    <!-- Hidden Fields -->
+    <input type="hidden" id="@(mapId)-lat" name="@latFieldName" value="@initialLat" />
+    <input type="hidden" id="@(mapId)-lng" name="@lngFieldName" value="@initialLng" />
+</div>
+
+@if (!string.IsNullOrEmpty(apiKey))
+{
+    <!-- Google Maps API -->
+    <script>
+        var @(mapId)_map, @(mapId)_marker;
+
+        function @(mapId)_initMap() {
+            var initialLocation = {
+                lat: parseFloat('@initialLat'.replace(',', '.')),
+                lng: parseFloat('@initialLng'.replace(',', '.'))
+            };
+
+            @(mapId)_map = new google.maps.Map(document.getElementById('@mapId'), {
+                center: initialLocation,
+                zoom: 13,
+                mapTypeControl: true,
+                streetViewControl: false,
+                fullscreenControl: true
+            });
+
+            @(mapId)_marker = new google.maps.Marker({
+                position: initialLocation,
+                map: @(mapId)_map,
+                draggable: @(isReadOnly ? "false" : "true"),
+                animation: google.maps.Animation.DROP,
+                title: 'Selected Location'
+            });
+
+            @if (!isReadOnly)
+            {
+                    <text>
+                    // Click on map to move marker
+                    @(mapId)_map.addListener('click', function(e) {
+                        @(mapId)_marker.setPosition(e.latLng);
+                        @(mapId)_updateLocation(e.latLng.lat(), e.latLng.lng());
+                    });
+
+                    // Drag marker
+                    @(mapId)_marker.addListener('dragend', function() {
+                        var pos = @(mapId)_marker.getPosition();
+                        @(mapId)_updateLocation(pos.lat(), pos.lng());
+                    });
+                    </text>
+            }
+        }
+
+        function @(mapId)_updateLocation(lat, lng) {
+            document.getElementById('@(mapId)-lat').value = lat.toFixed(6);
+            document.getElementById('@(mapId)-lng').value = lng.toFixed(6);
+            document.getElementById('@(mapId)-display').textContent =
+                'Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6);
+        }
+
+        function @(mapId)_selectCity() {
+            var select = document.getElementById('@(mapId)-city-select');
+            if (select.value) {
+                var coords = select.value.split(',');
+                var lat = parseFloat(coords[0]);
+                var lng = parseFloat(coords[1]);
+
+                @(mapId)_map.setCenter({ lat: lat, lng: lng });
+                @(mapId)_map.setZoom(14);
+                @(mapId)_marker.setPosition({ lat: lat, lng: lng });
+                @(mapId)_updateLocation(lat, lng);
+            }
+        }
+
+        function @(mapId)_useGPS() {
+            var btn = document.getElementById('@(mapId)-gps-btn');
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Getting location...';
+            btn.disabled = true;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        var lat = position.coords.latitude;
+                        var lng = position.coords.longitude;
+
+                        @(mapId)_map.setCenter({ lat: lat, lng: lng });
+                        @(mapId)_map.setZoom(15);
+                        @(mapId)_marker.setPosition({ lat: lat, lng: lng });
+                        @(mapId)_updateLocation(lat, lng);
+
+                        btn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My GPS Location';
+                        btn.disabled = false;
+                    },
+                    function(error) {
+                        alert('Could not get your location: ' + error.message);
+                        btn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My GPS Location';
+                        btn.disabled = false;
+                    },
+                    { enableHighAccuracy: true, timeout: 10000 }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+                btn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My GPS Location';
+                btn.disabled = false;
+            }
+        }
+
+        // Initialize map when Google Maps is loaded
+        if (typeof google !== 'undefined' && google.maps) {
+            @(mapId)_initMap();
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=@(mapId)_initMap" async defer></script>
+}
+else
+{
+    <!-- Fallback without Google Maps API -->
+    <script>
+        function @(mapId)_selectCity() {
+            var select = document.getElementById('@(mapId)-city-select');
+            if (select.value) {
+                var coords = select.value.split(',');
+                @(mapId)_updateLocation(parseFloat(coords[0]), parseFloat(coords[1]));
+            }
+        }
+
+        function @(mapId)_useGPS() {
+            var btn = document.getElementById('@(mapId)-gps-btn');
+            btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Getting location...';
+            btn.disabled = true;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        @(mapId)_updateLocation(position.coords.latitude, position.coords.longitude);
+                        btn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My GPS Location';
+                        btn.disabled = false;
+                    },
+                    function(error) {
+                        alert('Could not get your location: ' + error.message);
+                        btn.innerHTML = '<i class="bi bi-geo-alt-fill"></i> Use My GPS Location';
+                        btn.disabled = false;
+                    }
+                );
+            }
+        }
+
+        function @(mapId)_updateLocation(lat, lng) {
+            document.getElementById('@(mapId)-lat').value = lat.toFixed(6);
+            document.getElementById('@(mapId)-lng').value = lng.toFixed(6);
+            document.getElementById('@(mapId)-display').textContent =
+                'Lat: ' + lat.toFixed(6) + ', Lng: ' + lng.toFixed(6);
+        }
+
+        // Show message that map requires API key
+        document.getElementById('@mapId').innerHTML =
+            '<div class="d-flex align-items-center justify-content-center h-100 bg-light text-muted">' +
+            '<div class="text-center"><i class="bi bi-map fs-1"></i><br>Map preview requires Google Maps API key.<br>Use city dropdown or GPS button to set location.</div></div>';
+    </script>
+}

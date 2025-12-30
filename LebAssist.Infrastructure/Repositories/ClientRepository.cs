@@ -71,5 +71,12 @@ namespace LebAssist.Infrastructure.Repositories
         {
             return degrees * Math.PI / 180;
         }
+        public async Task<bool> IsProviderAvailableAsync(int providerId)
+        {
+            var availability = await _context.ProviderAvailabilities
+                .FirstOrDefaultAsync(a => a.ClientId == providerId);
+
+            return availability?.IsAvailable ?? false;
+        }
     }
 }
