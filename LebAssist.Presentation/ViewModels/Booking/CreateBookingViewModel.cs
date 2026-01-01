@@ -14,9 +14,6 @@ namespace LebAssist.Presentation.ViewModels.Booking
         [Required]
         public DateTime BookingDateTime { get; set; }
 
-        [Required]
-        public string LocationAddress { get; set; } = string.Empty;  // Added default value
-
         public double Latitude { get; set; }
 
         public double Longitude { get; set; }
@@ -30,7 +27,6 @@ namespace LebAssist.Presentation.ViewModels.Booking
                 ProviderId = ProviderId,
                 ServiceId = ServiceId,
                 BookingDateTime = BookingDateTime,
-                LocationAddress = LocationAddress,
                 Latitude = Latitude,
                 Longitude = Longitude,
                 Notes = Notes

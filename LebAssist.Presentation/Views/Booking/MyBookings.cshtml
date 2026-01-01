@@ -1,0 +1,38 @@
+﻿@using LebAssist.Application.DTOs
+@model IEnumerable<BookingDetailsDto>
+
+@foreach (var booking in Model)
+{
+    <div class="booking-card">
+        <img src="@booking.ProviderPhotoPath" />
+
+        <h5>@booking.ProviderName</h5>
+        <p>@booking.ServiceName</p>
+        <p>@booking.ScheduledDateTime.ToString("f")</p>
+        <span>@booking.Status</span>
+
+        <a asp-controller="BookingDetails" asp-action="Details" asp-route-id="@booking.BookingId">
+            View Details
+        </a>
+
+        @if (booking.Status == Domain.Enums.BookingStatus.Pending ||
+            booking.Status == Domain.Enums.BookingStatus.Accepted)
+        {
+            <form asp-action="Cancel" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                <input name="reason" required />
+                <button class="btn btn-sm btn-danger">Cancel</button>
+            </form>
+        }
+
+        @if (booking.Status == Domain.Enums.BookingStatus.Completed && !booking.HasReview)
+        {
+            <a asp-controller="Review"
+               asp-action="Create"
+               asp-route-bookingId="@booking.BookingId">
+                Leave Review
+            </a>
+        }
+    </div>
+}

@@ -203,19 +203,107 @@ namespace LebAssist.Presentation.Controllers
                 return View(model);
             }
 
+            // Build working hours from form data
+            var serviceWorkingHours = new List<ProviderWorkingHoursDto>();
+            foreach (var serviceId in model.SelectedServiceIds)
+            {
+                var daySchedules = new List<DayScheduleDto>();
+                
+                // Extract working hours for this service from form
+                for (int day = 0; day < 7; day++)
+                {
+                    var dayKey = $"ServiceWorkingHours[{serviceId}][{day}]";
+                    var startTimeKey = $"startTime_{serviceId}_{day}";
+                    var endTimeKey = $"endTime_{serviceId}_{day}";
+                    var isDayKey = $"isDay_{serviceId}_{day}";
+
+                    // Try to get values from form
+                    if (Request.Form.TryGetValue(startTimeKey, out var startTimeStr) &&
+                        Request.Form.TryGetValue(endTimeKey, out var endTimeStr) &&
+                        Request.Form[isDayKey].ToString() == "on")
+                    {
+                        // Parse times if provided
+                        if (TimeSpan.TryParse(startTimeStr, out var startTime) &&
+                            TimeSpan.TryParse(endTimeStr, out var endTime))
+                        {
+                            daySchedules.Add(new DayScheduleDto
+                            {
+                                DayOfWeek = day,
+                                StartTime = startTime,
+                                EndTime = endTime
+                            });
+                        }
+                    }
+                }
+
+                if (daySchedules.Any())
+                {
+                    serviceWorkingHours.Add(new ProviderWorkingHoursDto
+                    {
+                        ServiceId = serviceId,
+                        DaySchedules = daySchedules
+                    });
+                }
+            }
+
+            // Build the DTO
             var dto = new ProviderApplicationDto
             {
                 Bio = model.Bio,
                 YearsOfExperience = model.YearsOfExperience,
-                SelectedServiceIds = model.SelectedServiceIds
+                SelectedServiceIds = model.SelectedServiceIds,
+                ServiceWorkingHours = serviceWorkingHours
             };
 
+            // Handle profile photo upload
+            if (model.ProfilePhoto != null && model.ProfilePhoto.Length > 0)
+            {
+                using var memoryStream = new MemoryStream();
+                await model.ProfilePhoto.CopyToAsync(memoryStream);
+                var photoData = memoryStream.ToArray();
+
+                var photoPath = await _providerService.SaveProfilePhotoAsync(
+                    userId,
+                    photoData,
+                    model.ProfilePhoto.FileName);
+
+                if (string.IsNullOrEmpty(photoPath))
+                {
+                    TempData["Warning"] = "Profile photo upload failed. Your application will continue.";
+                }
+            }
+
+            // Handle portfolio photos upload
+            if (model.PortfolioPhotos != null && model.PortfolioPhotos.Any())
+            {
+                var profile = await _clientService.GetProfileAsync(userId);
+                if (profile != null)
+                {
+                    foreach (var photo in model.PortfolioPhotos)
+                    {
+                        if (photo.Length > 0)
+                        {
+                            using var memoryStream = new MemoryStream();
+                            await photo.CopyToAsync(memoryStream);
+                            var photoData = memoryStream.ToArray();
+
+                            await _providerService.AddPortfolioPhotoAsync(
+                                profile.ClientId,
+                                photoData,
+                                photo.FileName,
+                                null);
+                        }
+                    }
+                }
+            }
+
+            // Submit application
             var result = await _providerService.ApplyAsProviderAsync(userId, dto);
 
             if (result)
             {
                 TempData["Success"] = "Your provider application has been submitted! Please wait for admin approval.";
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("ApplicationStatus");
             }
             else
             {
@@ -345,13 +433,50 @@ namespace LebAssist.Presentation.Controllers
             if (clientId == null)
                 return RedirectToAction("AccessDenied", "Account");
 
+            // Extract working hours from form
+            var daySchedules = new List<DayScheduleDto>();
+            for (int day = 0; day < 7; day++)
+            {
+                var isDayKey = $"isDay_{day}";
+                var startTimeKey = $"startTime_{day}";
+                var endTimeKey = $"endTime_{day}";
+
+                if (Request.Form.TryGetValue(isDayKey, out var isDayValue) && isDayValue.ToString() == "on")
+                {
+                    if (Request.Form.TryGetValue(startTimeKey, out var startTimeStr) &&
+                        Request.Form.TryGetValue(endTimeKey, out var endTimeStr))
+                    {
+                        if (TimeSpan.TryParse(startTimeStr, out var startTime) &&
+                            TimeSpan.TryParse(endTimeStr, out var endTime))
+                        {
+                            daySchedules.Add(new DayScheduleDto
+                            {
+                                DayOfWeek = day,
+                                StartTime = startTime,
+                                EndTime = endTime
+                            });
+                        }
+                    }
+                }
+            }
+
             var dto = new AddProviderServiceDto
             {
                 ServiceId = model.ServiceId,
                 PricePerHour = model.PricePerHour
             };
 
-            var result = await _providerService.AddProviderServiceAsync(clientId.Value, dto);
+            var workingHours = new List<ProviderWorkingHoursDto>();
+            if (daySchedules.Any())
+            {
+                workingHours.Add(new ProviderWorkingHoursDto
+                {
+                    ServiceId = model.ServiceId,
+                    DaySchedules = daySchedules
+                });
+            }
+
+            var result = await _providerService.AddProviderServiceWithHoursAsync(clientId.Value, dto, workingHours);
 
             if (!result)
             {
@@ -408,6 +533,92 @@ namespace LebAssist.Presentation.Controllers
             var result = await _providerService.UpdateProviderServicePriceAsync(clientId.Value, serviceId, pricePerHour);
 
             return Json(new { success = result });
+        }
+
+        [Authorize(Roles = "Provider")]
+        [HttpGet]
+        public async Task<IActionResult> EditService(int serviceId)
+        {
+            var clientId = await GetCurrentClientIdAsync();
+            if (clientId == null)
+                return RedirectToAction("AccessDenied", "Account");
+
+            var providerServices = await _providerService.GetProviderServicesAsync(clientId.Value);
+            var providerService = providerServices.FirstOrDefault(ps => ps.ServiceId == serviceId);
+
+            if (providerService == null)
+                return NotFound();
+
+            var workingHours = await _providerService.GetServiceWorkingHoursAsync(clientId.Value, serviceId);
+
+            var model = new EditProviderServiceViewModel
+            {
+                ServiceId = serviceId,
+                ProviderServiceId = providerService.ProviderServiceId,
+                ServiceName = providerService.ServiceName,
+                PricePerHour = providerService.PricePerHour,
+                ServiceWorkingHours = workingHours.ToList()
+            };
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Provider")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditService(EditProviderServiceViewModel model)
+        {
+            var clientId = await GetCurrentClientIdAsync();
+            if (clientId == null)
+                return RedirectToAction("AccessDenied", "Account");
+
+            // Extract working hours from form
+            var daySchedules = new List<DayScheduleDto>();
+            for (int day = 0; day < 7; day++)
+            {
+                var isDayKey = $"isDay_{day}";
+                var startTimeKey = $"startTime_{day}";
+                var endTimeKey = $"endTime_{day}";
+
+                if (Request.Form.TryGetValue(isDayKey, out var isDayValue) && isDayValue.ToString() == "on")
+                {
+                    if (Request.Form.TryGetValue(startTimeKey, out var startTimeStr) &&
+                        Request.Form.TryGetValue(endTimeKey, out var endTimeStr))
+                    {
+                        if (TimeSpan.TryParse(startTimeStr, out var startTime) &&
+                            TimeSpan.TryParse(endTimeStr, out var endTime))
+                        {
+                            daySchedules.Add(new DayScheduleDto
+                            {
+                                DayOfWeek = day,
+                                StartTime = startTime,
+                                EndTime = endTime
+                            });
+                        }
+                    }
+                }
+            }
+
+            var workingHours = new List<ProviderWorkingHoursDto>();
+            if (daySchedules.Any())
+            {
+                workingHours.Add(new ProviderWorkingHoursDto
+                {
+                    ServiceId = model.ServiceId,
+                    DaySchedules = daySchedules
+                });
+            }
+
+            var result = await _providerService.UpdateProviderServiceAsync(clientId.Value, model.ServiceId, model.PricePerHour, workingHours);
+
+            if (!result)
+            {
+                TempData["Error"] = "Failed to update service.";
+                return RedirectToAction(nameof(EditService), new { serviceId = model.ServiceId });
+            }
+
+            TempData["Success"] = "Service updated successfully!";
+            return RedirectToAction(nameof(MyServices));
         }
 
         [Authorize(Roles = "Provider")]

@@ -15,5 +15,9 @@ namespace LebAssist.Application.Interfaces
         // NEW - Add these methods
         Task<ClientProfileDto?> GetClientByIdAsync(int clientId);
         Task<ClientProfileDto?> GetClientByAspNetUserIdAsync(string aspNetUserId);
+
+        // List / admin helpers
+        Task<IEnumerable<ClientProfileDto>> GetAllClientsAsync();
+        Task<IEnumerable<ClientProfileDto>> GetPendingProviderApplicationsAsync();
     }
 }

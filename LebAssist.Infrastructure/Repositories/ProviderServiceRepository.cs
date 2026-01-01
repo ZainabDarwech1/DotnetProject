@@ -20,6 +20,15 @@ namespace LebAssist.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<ProviderServiceEntity>> GetAllByProviderIdAsync(int providerId)
+        {
+            return await _dbSet
+                .Include(ps => ps.Service)
+                    .ThenInclude(s => s.Category)
+                .Where(ps => ps.ClientId == providerId)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<ProviderServiceEntity>> GetByServiceIdAsync(int serviceId)
         {
             return await _dbSet

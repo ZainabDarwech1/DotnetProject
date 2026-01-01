@@ -16,7 +16,7 @@ namespace LebAssist.Infrastructure.Repositories
         {
             return await _dbSet
                 .Include(wh => wh.Service)
-                .Where(wh => wh.ClientId == providerId && wh.IsActive)
+                .Where(wh => wh.ClientId == providerId)
                 .OrderBy(wh => wh.DayOfWeek)
                 .ThenBy(wh => wh.StartTime)
                 .ToListAsync();

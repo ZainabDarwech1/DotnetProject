@@ -6,6 +6,7 @@
         Emergency = 2,
         System = 3,
         Admin = 4,
-        Review = 5
+        Review = 5,
+        ProviderApplication = 6
     }
 }

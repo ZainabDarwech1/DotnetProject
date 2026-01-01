@@ -1,0 +1,49 @@
+@model LebAssist.Application.DTOs.ClientProfileDto
+@{
+    ViewData["Title"] = "Application Status";
+}
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">Provider Application Status</h4>
+        </div>
+        <div class="card-body">
+            <p class="mb-2"><strong>Name:</strong> @Model.FirstName @Model.LastName</p>
+            <p class="mb-2"><strong>Applied On:</strong> @Model.DateRegistered.ToString("yyyy-MM-dd")</p>
+
+            <div class="mt-3">
+                @if (Model.IsProvider && Model.ProviderStatus == Domain.Enums.ProviderStatus.Approved)
+                {
+                    <div class="alert alert-success">
+                        <h5 class="mb-1">Application Approved</h5>
+                        <p>Your account has been approved as a provider. You can now manage your services and accept bookings.</p>
+                        <a class="btn btn-primary" asp-controller="Provider" asp-action="Dashboard">Go to Dashboard</a>
+                    </div>
+                }
+                else if (Model.IsProvider == false && Model.ProviderStatus == Domain.Enums.ProviderStatus.Pending)
+                {
+                    <div class="alert alert-info">
+                        <h5 class="mb-1">Application Pending</h5>
+                        <p>Your provider application has been submitted and is pending admin review. You will receive a notification once a decision is made.</p>
+                    </div>
+                }
+                else if (Model.ProviderStatus == Domain.Enums.ProviderStatus.Rejected)
+                {
+                    <div class="alert alert-warning">
+                        <h5 class="mb-1">Application Not Approved</h5>
+                        <p>Your provider application was not approved. Please check your profile and reapply when ready.</p>
+                        <a class="btn btn-outline-primary" asp-controller="Provider" asp-action="Apply">Re-apply</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-secondary">
+                        <p>No provider application found for your account.</p>
+                        <a class="btn btn-primary" asp-controller="Provider" asp-action="Apply">Apply to Become a Provider</a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>

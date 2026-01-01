@@ -76,7 +76,7 @@ namespace LebAssist.Application.Services
 
         public async Task<ServiceDto?> GetServiceByIdAsync(int serviceId)
         {
-            var service = await _unitOfWork.Services.GetByIdAsync(serviceId);
+            var service = await _unitOfWork.Services.GetByIdWithCategoryAsync(serviceId);
             if (service == null)
                 return null;
 

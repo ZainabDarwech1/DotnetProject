@@ -181,8 +181,8 @@
                 </div>
             </div>
 
-            <!-- Review Section - Only show for completed bookings -->
-            @if (Model.Status == Domain.Enums.BookingStatus.Completed)
+            <!-- Review Section - Only show for completed bookings and only to Clients -->
+            @if (User.IsInRole("Client") && Model.Status == Domain.Enums.BookingStatus.Completed)
             {
                 <div class="card shadow-sm mb-4">
                     <div class="card-header">

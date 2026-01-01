@@ -11,6 +11,13 @@ namespace LebAssist.Infrastructure.Repositories
         {
         }
 
+        public async Task<Service?> GetByIdWithCategoryAsync(int serviceId)
+        {
+            return await _context.Services
+                .Include(s => s.Category)
+                .FirstOrDefaultAsync(s => s.ServiceId == serviceId);
+        }
+
         public async Task<IEnumerable<Service>> GetByCategoryIdAsync(int categoryId)
         {
             return await _dbSet

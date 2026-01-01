@@ -1,0 +1,271 @@
+@model LebAssist.Presentation.ViewModels.Booking.CreateBookingViewModel
+@using Microsoft.Extensions.Options
+@using LebAssist.Application.Common
+@inject IOptions<GoogleMapsSettings> GoogleMapsSettings
+
+@{
+    ViewData["Title"] = "Book Service";
+    var provider = ViewBag.Provider;
+    var service = ViewBag.Service;
+    var workingHours = ViewBag.WorkingHours ?? new List<object>();
+    var apiKey = GoogleMapsSettings.Value.ApiKey;
+    var initialLat = Model.Latitude != 0 ? Model.Latitude : 33.8938;
+    var initialLng = Model.Longitude != 0 ? Model.Longitude : 35.5018;
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Book Service</h4>
+                </div>
+
+                <div class="card-body">
+                    <form id="bookingForm" asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+
+                        <input type="hidden" asp-for="ProviderId" />
+                        <input type="hidden" asp-for="ServiceId" />
+                        <input type="hidden" asp-for="BookingDateTime" id="BookingDateTimeHidden" />
+
+                        <!-- Service Info -->
+                        <div class="mb-3">
+                            <label class="form-label">Service</label>
+                            <div class="card p-2">
+                                <div class="d-flex align-items-center">
+                                    @if (!string.IsNullOrEmpty(service?.ServiceIconPath))
+                                    {
+                                        <img src="@service.ServiceIconPath"
+                                             style="width:64px;height:64px;object-fit:cover;border-radius:6px;margin-right:12px;" />
+                                    }
+                                    <div>
+                                        <div class="fw-bold">@service?.ServiceName</div>
+                                        <div class="small text-muted">@service?.CategoryName</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Working Hours -->
+                        <div class="mb-3">
+                            <label class="form-label">Available Schedule</label>
+                            <div class="card p-2">
+                                @if (workingHours is IEnumerable<dynamic> whs && whs.Any())
+                                {
+                                    foreach (var wh in whs)
+                                    {
+                                        <table class="table table-sm mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>Day</th>
+                                                    <th>Start</th>
+                                                    <th>End</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var d in wh.DaySchedules)
+                                                {
+                                                    var dayName = new[]
+                                                    {
+                                                                                "Sunday","Monday","Tuesday",
+                                                                                "Wednesday","Thursday","Friday","Saturday"
+                                                                                }[d.DayOfWeek];
+
+                                                    <tr>
+                                                        <td>@dayName</td>
+                                                        <td>@d.StartTime</td>
+                                                        <td>@d.EndTime</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="text-muted">
+                                        Provider has no working hours for this service.
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Date & Time -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Choose Date</label>
+                                <input type="date"
+                                       id="bookingDate"
+                                       class="form-control"
+                                       min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Choose Time</label>
+                                <select id="bookingTime" class="form-select">
+                                    <option value="">Select time</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Location Selection -->
+                        <div class="mb-3">
+                            <label class="form-label"><strong>Pick emergency location:</strong></label>
+                            <div class="text-muted mb-2">Click on the map to drop a pin.</div>
+
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="Latitude" id="Latitude" />
+                            <input type="hidden" asp-for="Longitude" id="Longitude" />
+
+                            <!-- Map -->
+                            <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
+
+                            <!-- Display coordinates -->
+                            <div class="mt-2">
+                                <span class="badge bg-secondary">Lat: <span id="latText">-</span></span>
+                                <span class="badge bg-secondary">Lng: <span id="lngText">-</span></span>
+                            </div>
+
+                            <span asp-validation-for="Latitude" class="text-danger"></span>
+                        </div>
+
+                        <!-- Notes -->
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Notes (optional)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                Book Now
+                            </button>
+                            <a asp-controller="Services" asp-action="Index"
+                               class="btn btn-secondary">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Pass values to JavaScript -->
+<script>
+    var mapConfig = {
+        lat: @initialLat.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        lng: @initialLng.ToString(System.Globalization.CultureInfo.InvariantCulture),
+        apiKey: '@apiKey'
+    };
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const workingHours = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(workingHours));
+
+            function parseTime(ts) {
+                const p = ts.split(':').map(Number);
+                return { h: p[0], m: p[1] };
+            }
+
+            function format(h, m) {
+                return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+            }
+
+            function generateSlots(start, end) {
+                const s = parseTime(start);
+                const e = parseTime(end);
+                const slots = [];
+                let h = s.h, m = s.m;
+
+                while (h < e.h || (h === e.h && m < e.m)) {
+                    slots.push(format(h, m));
+                    m += 30;
+                    if (m >= 60) { m = 0; h++; }
+                }
+                return slots;
+            }
+
+            function getSchedule(dateStr) {
+                const d = new Date(dateStr);
+                const day = d.getDay();
+                const wh = workingHours[0];
+                return wh?.DaySchedules?.find(x => x.DayOfWeek === day);
+            }
+
+            const bookingDateEl = document.getElementById('bookingDate');
+            const bookingTimeEl = document.getElementById('bookingTime');
+            const bookingFormEl = document.getElementById('bookingForm');
+            const bookingDateTimeHidden = document.getElementById('BookingDateTimeHidden');
+
+            if (bookingDateEl) {
+                bookingDateEl.addEventListener('change', e => {
+                    if (!bookingTimeEl) return;
+                    bookingTimeEl.innerHTML = '<option value="">Select time</option>';
+
+                    const sch = getSchedule(e.target.value);
+                    if (!sch) return;
+
+                    generateSlots(sch.StartTime, sch.EndTime).forEach(t => {
+                        const o = document.createElement('option');
+                        o.value = t;
+                        o.textContent = t;
+                        bookingTimeEl.appendChild(o);
+                    });
+                });
+            }
+
+            if (bookingFormEl) {
+                bookingFormEl.addEventListener('submit', e => {
+                    const d = bookingDateEl ? bookingDateEl.value : null;
+                    const t = bookingTimeEl ? bookingTimeEl.value : null;
+                    if (!d || !t) {
+                        e.preventDefault();
+                        alert('Please select a valid date and time.');
+                        return;
+                    }
+                    if (bookingDateTimeHidden) bookingDateTimeHidden.value = `${d}T${t}`;
+                });
+            }
+        });
+    </script>
+    <script>
+        var map;
+        var marker;
+
+        function initMap() {
+            var defaultCenter = { lat: mapConfig.lat, lng: mapConfig.lng };
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                zoom: 12,
+                center: defaultCenter,
+            });
+
+            map.addListener("click", function(e) {
+                var lat = e.latLng.lat();
+                var lng = e.latLng.lng();
+
+                if (!marker) {
+                    marker = new google.maps.Marker({
+                        position: { lat: lat, lng: lng },
+                        map: map,
+                    });
+                } else {
+                    marker.setPosition({ lat: lat, lng: lng });
+                }
+
+                document.getElementById("Latitude").value = lat;
+                document.getElementById("Longitude").value = lng;
+                document.getElementById("latText").innerText = lat.toFixed(6);
+                document.getElementById("lngText").innerText = lng.toFixed(6);
+            });
+        }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap"></script>
+}

@@ -1,6 +1,6 @@
-@model LebAssist.Presentation.ViewModels.Provider.AddProviderServiceViewModel
+@model LebAssist.Presentation.ViewModels.Provider.EditProviderServiceViewModel
 @{
-    ViewData["Title"] = "Add Service";
+    ViewData["Title"] = "Edit Service";
     string[] days = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
 }
 
@@ -9,37 +9,27 @@
         <div class="col-md-8 offset-md-2">
             <div class="card">
                 <div class="card-header bg-primary text-white">
-                    <h3 class="mb-0"><i class="bi bi-plus-circle"></i> Add Service</h3>
+                    <h3 class="mb-0"><i class="bi bi-pencil-square"></i> Edit Service - @Model.ServiceName</h3>
                 </div>
                 <div class="card-body">
-                    <form asp-action="AddService" method="post">
+                    <form asp-action="EditService" method="post">
                         <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
 
                         <div class="mb-3">
-                            <label asp-for="ServiceId" class="form-label">Select Service *</label>
-                            <select asp-for="ServiceId" class="form-select" id="serviceSelect">
-                                <option value="">-- Select a Service --</option>
-                                @foreach (var group in Model.ServiceCategories)
-                                {
-                                    <optgroup label="@group.CategoryName">
-                                        @foreach (var service in group.Services)
-                                        {
-                                            <option value="@service.ServiceId">@service.ServiceName</option>
-                                        }
-                                    </optgroup>
-                                }
-                            </select>
-                            <span asp-validation-for="ServiceId" class="text-danger"></span>
+                            <label class="form-label">Service</label>
+                            <input type="text" class="form-control" value="@Model.ServiceName" readonly />
+                            <input type="hidden" asp-for="ServiceId" />
+                            <input type="hidden" asp-for="ProviderServiceId" />
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="PricePerHour" class="form-label">Hourly Rate *</label>
                             <div class="input-group">
                                 <span class="input-group-text">$</span>
-                                <input asp-for="PricePerHour" class="form-control" type="number" step="0.01" placeholder="0.00" />
+                                <input asp-for="PricePerHour" class="form-control" type="number" step="0.01" />
                             </div>
                             <span asp-validation-for="PricePerHour" class="text-danger"></span>
-                            <small class="text-muted">Set your hourly rate for this service</small>
+                            <small class="text-muted">Update your hourly rate for this service</small>
                         </div>
 
                         <div class="card mb-3 border-info">
@@ -47,7 +37,7 @@
                                 <h5 class="mb-0">Working Hours</h5>
                             </div>
                             <div class="card-body">
-                                <p class="text-muted mb-3">Set your availability for this service</p>
+                                <p class="text-muted mb-3">Update your availability for this service</p>
                                 <div class="table-responsive">
                                     <table class="table table-sm">
                                         <thead class="table-light">
@@ -61,6 +51,11 @@
                                         <tbody>
                                             @for (int i = 0; i < 7; i++)
                                             {
+                                                var schedule = Model.ServiceWorkingHours
+                                                    .FirstOrDefault()?
+                                                    .DaySchedules
+                                                    .FirstOrDefault(d => d.DayOfWeek == i);
+                                                
                                                 <tr>
                                                     <td>@days[i]</td>
                                                     <td>
@@ -68,23 +63,24 @@
                                                                class="form-check-input day-checkbox" 
                                                                name="isDay_@i"
                                                                value="on"
-                                                               data-day="@i">
+                                                               data-day="@i"
+                                                               @(schedule != null ? "checked" : "")>
                                                     </td>
                                                     <td>
                                                         <input type="time" 
                                                                class="form-control form-control-sm" 
                                                                name="startTime_@i"
-                                                               value="09:00"
+                                                               value="@(schedule?.StartTime.ToString(@"hh\:mm") ?? "09:00")"
                                                                data-day="@i"
-                                                               disabled>
+                                                               @(schedule == null ? "disabled" : "")>
                                                     </td>
                                                     <td>
                                                         <input type="time" 
                                                                class="form-control form-control-sm" 
                                                                name="endTime_@i"
-                                                               value="17:00"
+                                                               value="@(schedule?.EndTime.ToString(@"hh\:mm") ?? "17:00")"
                                                                data-day="@i"
-                                                               disabled>
+                                                               @(schedule == null ? "disabled" : "")>
                                                     </td>
                                                 </tr>
                                             }
@@ -96,7 +92,7 @@
 
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Add Service
+                                <i class="bi bi-check-circle"></i> Save Changes
                             </button>
                             <a href="@Url.Action("MyServices")" class="btn btn-secondary">
                                 <i class="bi bi-x-circle"></i> Cancel

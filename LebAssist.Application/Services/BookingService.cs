@@ -41,18 +41,33 @@ namespace LebAssist.Application.Services
         // =========================
         // R7.4 – Provider View Bookings
         // =========================
-        public async Task<IEnumerable<BookingDtos>> GetProviderBookingsAsync(int providerId)
+        public async Task<IEnumerable<BookingDetailsDto>> GetProviderBookingsAsync(int providerId)
         {
             var bookings = await _unitOfWork.Bookings.GetProviderBookingsAsync(providerId);
 
-            return bookings.Select(b => new BookingDtos
+            return bookings.Select(b => new BookingDetailsDto
             {
+                BookingId = b.BookingId,
+                ClientId = b.ClientId,
+                ClientName = b.Client != null ? $"{b.Client.FirstName} {b.Client.LastName}" : "Unknown",
+                ClientPhotoPath = b.Client?.ProfilePhotoPath,
+                ClientPhone = b.Client?.PhoneNumber,
                 ProviderId = b.ProviderId,
+                ProviderName = b.Provider != null ? $"{b.Provider.FirstName} {b.Provider.LastName}" : "Unknown",
+                ProviderPhotoPath = b.Provider?.ProfilePhotoPath,
                 ServiceId = b.ServiceId,
-                BookingDateTime = b.ScheduledDateTime,
-                Latitude = (double)b.Latitude,
-                Longitude = (double)b.Longitude,
-                Notes = b.Notes
+                ServiceName = b.Service?.ServiceName ?? "Unknown",
+                CategoryName = b.Service?.Category?.CategoryName ?? string.Empty,
+                RequestDate = b.RequestDate,
+                ScheduledDateTime = b.ScheduledDateTime,
+                Latitude = b.Latitude,
+                Longitude = b.Longitude,
+                Status = b.Status,
+                Notes = b.Notes,
+                CompletedDate = b.CompletedDate,
+                CancellationReason = b.CancellationReason,
+                HasReview = b.Review != null,
+                ReviewId = b.Review?.ReviewId
             });
         }
 
@@ -181,6 +196,43 @@ namespace LebAssist.Application.Services
                 HasReview = review != null,
                 ReviewId = review?.ReviewId
             };
+        }
+
+        public async Task<IEnumerable<BookingDetailsDto>> GetClientBookingsAsync(int clientId, BookingStatus? status)
+        {
+            var bookings = await _unitOfWork.Bookings.GetClientBookingsAsync(clientId);
+
+            if (status.HasValue)
+                bookings = bookings.Where(b => b.Status == status);
+
+            return bookings.Select(b => new BookingDetailsDto
+            {
+                BookingId = b.BookingId,
+                ProviderName = $"{b.Provider.FirstName} {b.Provider.LastName}",
+                ProviderPhotoPath = b.Provider.ProfilePhotoPath,
+                ServiceName = b.Service.ServiceName,
+                ScheduledDateTime = b.ScheduledDateTime,
+                Status = b.Status
+            });
+        }
+
+        public async Task<bool> CancelBookingByClientAsync(
+            int bookingId, int clientId, string reason)
+        {
+            var booking = await _unitOfWork.Bookings.GetByIdAsync(bookingId);
+
+            if (booking == null || booking.ClientId != clientId)
+                return false;
+
+            if (booking.Status != BookingStatus.Pending &&
+                booking.Status != BookingStatus.Accepted)
+                return false;
+
+            booking.Status = BookingStatus.Cancelled;
+            booking.CancellationReason = reason;
+
+            await _unitOfWork.SaveChangesAsync();
+            return true;
         }
     }
 }

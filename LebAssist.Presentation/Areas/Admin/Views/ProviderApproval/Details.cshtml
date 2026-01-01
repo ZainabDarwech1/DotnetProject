@@ -1,0 +1,87 @@
+@model LebAssist.Presentation.Areas.Admin.ViewModels.ApplicationDetailsViewModel
+@{
+    ViewData["Title"] = "Application Details";
+    string[] days = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
+}
+
+<div class="container mt-3">
+    <h3>Application Details - @Model.Client?.FirstName @Model.Client?.LastName</h3>
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="@Model.Client?.ProfilePhotoPath" class="img-fluid rounded mb-2" alt="Profile" />
+                    <h5>@Model.Client?.FirstName @Model.Client?.LastName</h5>
+                    <p>@Model.Client?.PhoneNumber</p>
+                    <p>@Model.Client?.Bio</p>
+                    <p>Experience: @Model.Client?.YearsOfExperience years</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">Requested Services</div>
+                <div class="card-body">
+                    <ul>
+                        @foreach (var s in Model.Services)
+                        {
+                            <li>@s.ServiceName (Category: @s.CategoryName)</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card mb-3">
+                <div class="card-header">Working Hours</div>
+                <div class="card-body">
+                    @foreach (var w in Model.WorkingHours)
+                    {
+                        <h6>@Model.Services.FirstOrDefault(s => s.ServiceId == w.ServiceId)?.ServiceName</h6>
+                        <ul>
+                            @foreach (var d in w.DaySchedules)
+                            {
+                                <li>@days[d.DayOfWeek]: @d.StartTime - @d.EndTime</li>
+                            }
+                        </ul>
+                    }
+                </div>
+            </div>
+
+            <div class="d-flex gap-2">
+                <form action="/Admin/ProviderApproval/Approve" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="clientId" value="@Model.Client!.ClientId" />
+                    <button type="submit" class="btn btn-success">Approve</button>
+                </form>
+
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#rejectModal">Reject</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal fade" id="rejectModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reject Application</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="/Admin/ProviderApproval/Reject" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <input type="hidden" name="clientId" value="@Model.Client!.ClientId" />
+                    <div class="mb-3">
+                        <label for="reason" class="form-label">Reason for rejection</label>
+                        <textarea name="reason" id="reason" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Reject Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

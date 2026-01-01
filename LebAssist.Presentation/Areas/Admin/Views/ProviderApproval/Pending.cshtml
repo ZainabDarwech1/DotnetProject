@@ -1,0 +1,30 @@
+@model IEnumerable<LebAssist.Presentation.Areas.Admin.ViewModels.PendingApplicationViewModel>
+@{
+    ViewData["Title"] = "Pending Provider Applications";
+}
+
+<div class="container mt-3">
+    <h3>Pending Provider Applications</h3>
+
+    <table class="table table-striped mt-3">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Date Applied</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var app in Model)
+            {
+                <tr>
+                    <td>@app.FullName</td>
+                    <td>@app.DateApplied.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        <a href="@Url.Action("Details", "ProviderApproval", new { area = "Admin", id = app.ClientId })" class="btn btn-sm btn-primary">View</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

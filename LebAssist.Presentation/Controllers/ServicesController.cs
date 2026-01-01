@@ -1,4 +1,5 @@
 using LebAssist.Application.Interfaces;
+using LebAssist.Presentation.ViewModels.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LebAssist.Presentation.Controllers
@@ -7,15 +8,18 @@ namespace LebAssist.Presentation.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IServiceService _serviceService;
+        private readonly IProviderService _providerService;
         private readonly ILogger<ServicesController> _logger;
 
         public ServicesController(
             ICategoryService categoryService,
             IServiceService serviceService,
+            IProviderService providerService,
             ILogger<ServicesController> logger)
         {
             _categoryService = categoryService;
-            _serviceService = serviceService;
+            _serviceService = serviceService; // will fix
+            _providerService = providerService;
             _logger = logger;
         }
 
@@ -43,6 +47,29 @@ namespace LebAssist.Presentation.Controllers
                 return NotFound();
 
             return View(service);
+        }
+
+        public async Task<IActionResult> Providers(int serviceId)
+        {
+            var service = await _serviceService.GetServiceByIdAsync(serviceId);
+            if (service == null) return NotFound();
+
+            var providers = await _providerService.GetProvidersByServiceIdAsync(serviceId);
+
+            var model = new ServiceProvidersViewModel
+            {
+                Service = service,
+                Providers = providers.Select(p => new ProviderOfferingViewModel
+                {
+                    ProviderId = p.ProviderId,
+                    ProviderName = p.ProviderName,
+                    ProviderPhotoPath = p.ProviderPhotoPath,
+                    ProviderServiceId = p.ProviderServiceId,
+                    PricePerHour = p.PricePerHour
+                }).ToList()
+            };
+
+            return View(model);
         }
     }
 }

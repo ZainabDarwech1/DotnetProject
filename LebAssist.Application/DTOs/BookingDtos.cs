@@ -8,7 +8,6 @@ namespace LebAssist.Application.DTOs
         public int ProviderId { get; set; }
         public int ServiceId { get; set; }
         public DateTime BookingDateTime { get; set; }
-        public string LocationAddress { get; set; } = string.Empty;
         public double Latitude { get; set; }
         public double Longitude { get; set; }
         public string? Notes { get; set; }
@@ -21,6 +20,7 @@ namespace LebAssist.Application.DTOs
         public int ClientId { get; set; }
         public string ClientName { get; set; } = string.Empty;
         public string? ClientPhotoPath { get; set; }
+        public string? ClientPhone { get; set; }
         public int ProviderId { get; set; }
         public string ProviderName { get; set; } = string.Empty;
         public string? ProviderPhotoPath { get; set; }

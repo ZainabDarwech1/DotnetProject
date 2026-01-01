@@ -1,4 +1,5 @@
 using LebAssist.Application.DTOs;
+using System.ComponentModel.DataAnnotations;
 
 namespace LebAssist.Presentation.ViewModels.Provider
 {
@@ -47,10 +48,22 @@ namespace LebAssist.Presentation.ViewModels.Provider
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string PhoneNumber { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(50, ErrorMessage = "Please provide at least 50 characters.")]
+        [MaxLength(500, ErrorMessage = "Bio cannot exceed 500 characters.")]
         public string Bio { get; set; } = string.Empty;
+
+        [Range(0, 50, ErrorMessage = "Years of experience must be between 0 and 50.")]
         public int YearsOfExperience { get; set; }
         public List<int> SelectedServiceIds { get; set; } = new();
         public List<ServiceCategoryGroup> ServiceCategories { get; set; } = new();
+
+        // Profile photo (optional)
+        public IFormFile? ProfilePhoto { get; set; }
+
+        // Portfolio photos (optional, multiple)
+        public List<IFormFile>? PortfolioPhotos { get; set; } = new();
     }
 
     public class ServiceCategoryGroup
@@ -70,6 +83,16 @@ namespace LebAssist.Presentation.ViewModels.Provider
         public int ServiceId { get; set; }
         public decimal PricePerHour { get; set; }
         public List<ServiceCategoryGroup> ServiceCategories { get; set; } = new();
+        public List<ProviderWorkingHoursDto> ServiceWorkingHours { get; set; } = new();
+    }
+
+    public class EditProviderServiceViewModel
+    {
+        public int ServiceId { get; set; }
+        public int ProviderServiceId { get; set; }
+        public string ServiceName { get; set; } = string.Empty;
+        public decimal PricePerHour { get; set; }
+        public List<ProviderWorkingHoursDto> ServiceWorkingHours { get; set; } = new();
     }
 
     public class PortfolioViewModel

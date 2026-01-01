@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    @* Render optional Styles section from views *@
+    @RenderSection("Styles", required: false)
 </head>
 <body data-is-provider="@(User.IsInRole("Provider").ToString().ToLower())">
     <header>
@@ -69,7 +72,7 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li>
-                                        <a class="dropdown-item" asp-controller="Booking" asp-action="Index">
+                                        <a class="dropdown-item" asp-controller="Booking" asp-action="MyBookings">
                                             <i class="bi bi-list"></i> My Bookings
                                         </a>
                                     </li>
@@ -112,7 +115,7 @@
                                         <li><a class="dropdown-item" asp-area="Admin" asp-controller="Category" asp-action="Index"><i class="bi bi-folder"></i> Categories</a></li>
                                         <li><a class="dropdown-item" asp-area="Admin" asp-controller="Service" asp-action="Index"><i class="bi bi-gear"></i> Services</a></li>
                                         <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="ProviderApplication" asp-action="Index"><i class="bi bi-person-check"></i> Provider Applications</a></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="ProviderApproval" asp-action="Pending"><i class="bi bi-person-check"></i> Provider Applications</a></li>
                                         <li><hr class="dropdown-divider"></li>
                                         <li><a class="dropdown-item" asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
                                     </ul>

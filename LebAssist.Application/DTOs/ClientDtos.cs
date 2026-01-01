@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Domain.Enums;
 
 namespace LebAssist.Application.DTOs
 {
@@ -55,8 +56,10 @@ namespace LebAssist.Application.DTOs
         public decimal Longitude { get; set; }
         public string? ProfilePhotoPath { get; set; }
         public bool IsProvider { get; set; }
+        public ProviderStatus? ProviderStatus { get; set; }
         public string? Bio { get; set; }
         public int? YearsOfExperience { get; set; }
+        public DateTime DateRegistered { get; set; }
     }
 
     public class UpdateClientProfileDto

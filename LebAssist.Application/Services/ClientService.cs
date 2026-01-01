@@ -122,8 +122,10 @@ namespace LebAssist.Application.Services
                 Longitude = client.Longitude,
                 ProfilePhotoPath = client.ProfilePhotoPath,
                 IsProvider = client.IsProvider,
+                ProviderStatus = client.ProviderStatus,
                 Bio = client.Bio,
-                YearsOfExperience = client.YearsOfExperience
+                YearsOfExperience = client.YearsOfExperience,
+                DateRegistered = client.DateRegistered
             };
         }
 
@@ -249,6 +251,7 @@ namespace LebAssist.Application.Services
                 return false;
             }
         }
+
         public async Task<ClientProfileDto?> GetClientByIdAsync(int clientId)
         {
             var client = await _unitOfWork.Clients.GetByIdAsync(clientId);
@@ -264,8 +267,10 @@ namespace LebAssist.Application.Services
                 Longitude = client.Longitude,
                 ProfilePhotoPath = client.ProfilePhotoPath,
                 IsProvider = client.IsProvider,
+                ProviderStatus = client.ProviderStatus,
                 Bio = client.Bio,
-                YearsOfExperience = client.YearsOfExperience
+                YearsOfExperience = client.YearsOfExperience,
+                DateRegistered = client.DateRegistered
             };
         }
 
@@ -284,9 +289,72 @@ namespace LebAssist.Application.Services
                 Longitude = client.Longitude,
                 ProfilePhotoPath = client.ProfilePhotoPath,
                 IsProvider = client.IsProvider,
+                ProviderStatus = client.ProviderStatus,
                 Bio = client.Bio,
-                YearsOfExperience = client.YearsOfExperience
+                YearsOfExperience = client.YearsOfExperience,
+                DateRegistered = client.DateRegistered
             };
+        }
+
+        public async Task<IEnumerable<ClientProfileDto>> GetAllClientsAsync()
+        {
+            var clients = await _unitOfWork.Clients.GetAllAsync();
+            var result = new List<ClientProfileDto>();
+
+            foreach (var client in clients)
+            {
+                var user = await _userManager.FindByIdAsync(client.AspNetUserId);
+                result.Add(new ClientProfileDto
+                {
+                    ClientId = client.ClientId,
+                    Email = user?.Email ?? string.Empty,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    PhoneNumber = client.PhoneNumber,
+                    Latitude = client.Latitude,
+                    Longitude = client.Longitude,
+                    ProfilePhotoPath = client.ProfilePhotoPath,
+                    IsProvider = client.IsProvider,
+                    ProviderStatus = client.ProviderStatus,
+                    Bio = client.Bio,
+                    YearsOfExperience = client.YearsOfExperience,
+                    DateRegistered = client.DateRegistered
+                });
+            }
+
+            return result;
+        }
+
+        public async Task<IEnumerable<ClientProfileDto>> GetPendingProviderApplicationsAsync()
+        {
+            var clients = await _unitOfWork.Clients.GetAllAsync();
+            var pending = clients
+                .Where(c => c.ProviderStatus == Domain.Enums.ProviderStatus.Pending)
+                .ToList();
+
+            var result = new List<ClientProfileDto>();
+            foreach (var client in pending)
+            {
+                var user = await _userManager.FindByIdAsync(client.AspNetUserId);
+                result.Add(new ClientProfileDto
+                {
+                    ClientId = client.ClientId,
+                    Email = user?.Email ?? string.Empty,
+                    FirstName = client.FirstName,
+                    LastName = client.LastName,
+                    PhoneNumber = client.PhoneNumber,
+                    Latitude = client.Latitude,
+                    Longitude = client.Longitude,
+                    ProfilePhotoPath = client.ProfilePhotoPath,
+                    IsProvider = client.IsProvider,
+                    ProviderStatus = client.ProviderStatus,
+                    Bio = client.Bio,
+                    YearsOfExperience = client.YearsOfExperience,
+                    DateRegistered = client.DateRegistered
+                });
+            }
+
+            return result;
         }
     }
 }
