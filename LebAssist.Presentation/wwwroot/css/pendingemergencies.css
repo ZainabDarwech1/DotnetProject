@@ -1,0 +1,601 @@
+﻿/* ============================================
+         Pending Emergencies Page Styles
+         ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.pending-emergencies-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+}
+
+/* ============================================
+               Page Header
+               ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--danger) 0%, #dc2626 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+/* Page Title */
+.page-title-section {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+        animation: pulse 2s infinite;
+    }
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Header Alert */
+.header-alert {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.alert-badge {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 32px;
+    background: white;
+    border-radius: 50px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.6s ease-out, alertPulse 2s infinite;
+}
+
+    .alert-badge i {
+        font-size: 2rem;
+        color: var(--warning);
+        animation: flash 1.5s infinite;
+    }
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes alertPulse {
+    0%, 100% {
+        box-shadow: var(--shadow-lg);
+    }
+
+    50% {
+        box-shadow: 0 8px 32px rgba(239, 68, 68, 0.3);
+    }
+}
+
+@keyframes flash {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.alert-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.alert-count {
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--danger);
+}
+
+.alert-label {
+    font-size: 1rem;
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+/* ============================================
+               Emergencies Content
+               ============================================ */
+
+.emergencies-content {
+    padding: 0 20px 60px;
+    margin-top: -30px;
+    position: relative;
+}
+
+/* ============================================
+               Empty State
+               ============================================ */
+
+.empty-state {
+    background: white;
+    border-radius: 24px;
+    padding: 80px 40px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .empty-icon i {
+        font-size: 4rem;
+        color: var(--success);
+        opacity: 0.6;
+    }
+
+.empty-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.empty-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: center;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 24px;
+    background: var(--bg-light);
+    border-radius: 50px;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+}
+
+    .info-item i {
+        font-size: 1.2rem;
+        color: var(--primary);
+    }
+
+/* ============================================
+               Emergency Grid
+               ============================================ */
+
+.emergency-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+/* ============================================
+               Emergency Card
+               ============================================ */
+
+.emergency-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border-left: 5px solid var(--danger);
+    transition: all 0.3s ease;
+}
+
+    .emergency-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
+
+/* Card Header */
+.card-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+    border-bottom: 2px solid rgba(239, 68, 68, 0.1);
+}
+
+.service-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+    .service-badge i {
+        font-size: 1.2rem;
+        color: var(--danger);
+    }
+
+    .service-badge span {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+
+.distance-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: white;
+    border-radius: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+    white-space: nowrap;
+}
+
+    .distance-badge i {
+        font-size: 1rem;
+    }
+
+    .distance-badge span {
+        font-size: 0.9rem;
+    }
+
+/* Card Body */
+.card-body-section {
+    padding: 24px;
+}
+
+.emergency-details {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+    .emergency-details i {
+        font-size: 1.2rem;
+        color: var(--danger);
+        margin-top: 2px;
+        flex-shrink: 0;
+    }
+
+.details-text {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.request-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: var(--bg-light);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+    .request-time i {
+        font-size: 1rem;
+        color: var(--danger);
+    }
+
+/* Card Actions */
+.card-actions-section {
+    padding: 20px 24px;
+    background: var(--bg-light);
+    border-top: 2px solid #e9ecef;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.action-form {
+    width: 100%;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn i {
+        font-size: 1.1rem;
+    }
+
+.btn-accept {
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+    color: white;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    width: 100%;
+    font-size: 1.05rem;
+    padding: 16px 24px;
+}
+
+    .btn-accept:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+    }
+
+.secondary-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-directions {
+    flex: 1;
+    background: white;
+    color: var(--primary);
+    border: 2px solid rgba(67, 97, 238, 0.3);
+}
+
+    .btn-directions:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+        box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    }
+
+.action-form-inline {
+    flex: 0 0 auto;
+}
+
+.btn-decline {
+    background: white;
+    color: var(--text-muted);
+    border: 2px solid #dee2e6;
+    padding: 14px 20px;
+}
+
+    .btn-decline:hover {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .alert-badge {
+        padding: 12px 24px;
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+
+    .alert-content {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .emergency-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-header-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .service-badge,
+    .distance-badge {
+        justify-content: center;
+    }
+
+    .secondary-actions {
+        flex-direction: column;
+    }
+
+    .btn-directions,
+    .btn-decline {
+        width: 100%;
+    }
+
+    .empty-state {
+        padding: 60px 30px;
+    }
+
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+        .empty-icon i {
+            font-size: 3rem;
+        }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .emergency-card {
+        border-radius: 16px;
+    }
+
+    .card-header-section,
+    .card-body-section,
+    .card-actions-section {
+        padding: 16px;
+    }
+
+    .service-badge {
+        padding: 8px 14px;
+    }
+
+    .btn-accept {
+        font-size: 1rem;
+        padding: 14px 20px;
+    }
+}

@@ -3,67 +3,174 @@
     ViewData["Title"] = "My Emergency Requests";
 }
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-exclamation-triangle text-danger"></i> My Emergency Requests</h2>
-        <a asp-action="Create" class="btn btn-danger">
-            <i class="bi bi-plus-circle"></i> New Emergency
-        </a>
+<div class="emergency-requests-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Emergency Requests
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    My Emergency Requests
+                </h1>
+                <p class="page-subtitle">Track and manage your urgent service requests</p>
+            </div>
+
+            <!-- Stats and Action -->
+            <div class="header-actions">
+                @if (Model.Any())
+                {
+                    <div class="stats-badge">
+                        <div class="stat-item">
+                            <i class="bi bi-lightning-charge"></i>
+                            <span class="stat-value">@Model.Count()</span>
+                            <span class="stat-label">@(Model.Count() == 1 ? "Request" : "Requests")</span>
+                        </div>
+                    </div>
+                }
+                <a asp-action="Create" class="btn btn-emergency">
+                    <i class="bi bi-plus-circle"></i>
+                    New Emergency Request
+                </a>
+            </div>
+        </div>
     </div>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> You have no emergency requests.
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var emergency in Model)
-            {
-                <div class="col-md-6 mb-3">
-                    <div class="card @(emergency.Status == Domain.Enums.EmergencyStatus.Pending ? "border-warning" :
-                                                                emergency.Status == Domain.Enums.EmergencyStatus.Accepted ? "border-primary" :
-                                                                emergency.Status == Domain.Enums.EmergencyStatus.InProgress ? "border-info" :
-                                                                emergency.Status == Domain.Enums.EmergencyStatus.Completed ? "border-success" : "")">
-                <div class="card-header d-flex justify-content-between">
-                    <span><strong>@emergency.Service?.ServiceName</strong></span>
-                    <span class="badge @(emergency.Status == Domain.Enums.EmergencyStatus.Pending ? "bg-warning" :
-                                                                           emergency.Status == Domain.Enums.EmergencyStatus.Accepted ? "bg-primary" :
-                                                                           emergency.Status == Domain.Enums.EmergencyStatus.InProgress ? "bg-info" :
-                                                                           emergency.Status == Domain.Enums.EmergencyStatus.Completed ? "bg-success" : "bg-secondary")">
-                        @emergency.Status
-                    </span>
+    <!-- Content Section -->
+    <div class="container emergency-content">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-shield-check"></i>
                 </div>
-                <div class="card-body">
-                    <p class="card-text">@emergency.Details?.Substring(0, Math.Min(emergency.Details?.Length ?? 0, 100))...</p>
-                    <p class="text-muted small">
-                        <i class="bi bi-clock"></i> @emergency.RequestDateTime.ToString("MMM dd, yyyy HH:mm")
-                    </p>
-                    @if (emergency.Provider != null)
-                            {
-                                <p class="text-success">
-                                    <i class="bi bi-person-check"></i> Provider: @emergency.Provider.FirstName @emergency.Provider.LastName
-                                </p>
-                            }
+                <h3 class="empty-title">No Emergency Requests</h3>
+                <p class="empty-description">
+                    You haven't made any emergency service requests yet. When you need urgent assistance, create a request here.
+                </p>
+                <a asp-action="Create" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i>
+                    Create Emergency Request
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Emergency Requests Grid -->
+            <div class="requests-grid">
+                @foreach (var emergency in Model)
+                {
+                    <div class="emergency-card status-@emergency.Status.ToString().ToLower()">
+                        <!-- Card Header -->
+                        <div class="card-header-section">
+                            <div class="service-info">
+                                <i class="bi bi-tools"></i>
+                                <span class="service-name">@emergency.Service?.ServiceName</span>
+                            </div>
+                            <span class="status-badge status-@emergency.Status.ToString().ToLower()">
+                                @if (emergency.Status == Domain.Enums.EmergencyStatus.Pending)
+                                {
+                                    <i class="bi bi-clock-history"></i>
+                                }
+                                else if (emergency.Status == Domain.Enums.EmergencyStatus.Accepted)
+                                {
+                                    <i class="bi bi-check-circle"></i>
+                                }
+                                else if (emergency.Status == Domain.Enums.EmergencyStatus.InProgress)
+                                {
+                                    <i class="bi bi-hourglass-split"></i>
+                                }
+                                else if (emergency.Status == Domain.Enums.EmergencyStatus.Completed)
+                                {
+                                    <i class="bi bi-check-all"></i>
+                                }
+                                @emergency.Status
+                            </span>
                         </div>
-                        <div class="card-footer">
-                            <a asp-action="Details" asp-route-id="@emergency.EmergencyRequestId" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-eye"></i> View Details
+
+                        <!-- Card Body -->
+                        <div class="card-body-section">
+                            <div class="emergency-details">
+                                <i class="bi bi-chat-left-text"></i>
+                                <p class="details-text">
+                                    @if (!string.IsNullOrEmpty(emergency.Details))
+                                    {
+                                        @(emergency.Details.Length > 120 ? emergency.Details.Substring(0, 120) + "..." : emergency.Details)
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">No details provided</span>
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="emergency-meta">
+                                <div class="meta-item">
+                                    <i class="bi bi-clock"></i>
+                                    <span>@emergency.RequestDateTime.ToString("MMM dd, yyyy 'at' hh:mm tt")</span>
+                                </div>
+                                @if (emergency.Provider != null)
+                                {
+                                    <div class="meta-item provider-assigned">
+                                        <i class="bi bi-person-check-fill"></i>
+                                        <span>@emergency.Provider.FirstName @emergency.Provider.LastName</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Card Footer -->
+                        <div class="card-footer-section">
+                            <a asp-action="Details" asp-route-id="@emergency.EmergencyRequestId" class="btn btn-view">
+                                <i class="bi bi-eye"></i>
+                                View Details
                             </a>
                         </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
+                }
+            </div>
+        }
+    </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/emergencyRequests.css" />
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate emergency cards on load
+            const emergencyCards = document.querySelectorAll('.emergency-card');
+
+            emergencyCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+}

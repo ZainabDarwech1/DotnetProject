@@ -1,0 +1,516 @@
+﻿/* ============================================
+                   Service Details Page Styles
+                   ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.service-details-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ============================================
+                   Page Header
+                   ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* ============================================
+                   Breadcrumb
+                   ============================================ */
+
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.page-title-section {
+    text-align: center;
+}
+
+.page-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+                   Service Content Section
+                   ============================================ */
+
+.service-content-section {
+    padding: 0 20px 0px;
+    margin-top: 30px;
+    position: relative;
+}
+
+.service-detail-card {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    margin-bottom: 40px;
+}
+
+/* ============================================
+                   Service Hero
+                   ============================================ */
+
+.service-hero {
+    background: linear-gradient(135deg, var(--bg-light) 0%, #e9ecef 100%);
+    padding: 60px 40px;
+    text-align: center;
+    position: relative;
+}
+
+.service-icon-large {
+    display: inline-block;
+}
+
+.service-hero-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    animation: float 3s ease-in-out infinite;
+}
+
+.service-hero-icon {
+    width: 150px;
+    height: 150px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 4rem;
+    box-shadow: 0 12px 36px rgba(67, 97, 238, 0.3);
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* ============================================
+                   Service Info
+                   ============================================ */
+
+.service-info {
+    padding: 40px;
+}
+
+.service-name {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* ============================================
+                   Badges
+                   ============================================ */
+
+.service-badges {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+    .badge i {
+        font-size: 1rem;
+    }
+
+.badge-category {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+}
+
+.badge-status {
+    background: var(--success);
+    color: white;
+}
+
+.badge-inactive {
+    background: #ef4444;
+    color: white;
+}
+
+/* ============================================
+                   Description Section
+                   ============================================ */
+
+.service-description-section {
+    background: var(--bg-light);
+    padding: 28px;
+    border-radius: 16px;
+    margin-bottom: 32px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+    .section-title i {
+        color: var(--primary);
+        font-size: 1.5rem;
+    }
+
+.service-description {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin: 0;
+}
+
+/* ============================================
+                   Auth Notice
+                   ============================================ */
+
+.auth-notice {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
+    border: 2px solid var(--primary);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 32px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.notice-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.notice-content h4 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.notice-content p {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    font-size: 1rem;
+}
+
+.notice-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.notice-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+    .notice-btn.primary {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+    }
+
+        .notice-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(67, 97, 238, 0.3);
+            color: white;
+        }
+
+    .notice-btn.secondary {
+        background: white;
+        color: var(--primary);
+        border: 2px solid var(--primary);
+    }
+
+        .notice-btn.secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+/* ============================================
+                   Action Buttons
+                   ============================================ */
+
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+    .btn i {
+        font-size: 1.1rem;
+    }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+    }
+
+.btn-secondary {
+    background: var(--text-dark);
+    color: white;
+}
+
+    .btn-secondary:hover {
+        background: #2c3e50;
+        transform: translateY(-2px);
+        color: white;
+    }
+
+.btn-outline {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid #dee2e6;
+}
+
+    .btn-outline:hover {
+        background: var(--bg-light);
+        border-color: var(--primary);
+        color: var(--primary);
+    }
+
+/* ============================================
+                   Info Cards
+                   ============================================ */
+
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+}
+
+.info-card {
+    background: white;
+    padding: 32px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+    .info-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-md);
+    }
+
+.info-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2rem;
+    margin: 0 auto 20px;
+    box-shadow: 0 8px 24px rgba(67, 97, 238, 0.2);
+}
+
+.info-card h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.info-card p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+/* ============================================
+                   Responsive Design
+                   ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .service-name {
+        font-size: 2rem;
+    }
+
+    .service-hero {
+        padding: 40px 20px;
+    }
+
+    .service-info {
+        padding: 28px 20px;
+    }
+
+    .auth-notice {
+        flex-direction: column;
+        text-align: center;
+        padding: 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .notice-actions {
+        flex-direction: column;
+    }
+
+    .notice-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .service-name {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .info-cards {
+        grid-template-columns: 1fr;
+    }
+}

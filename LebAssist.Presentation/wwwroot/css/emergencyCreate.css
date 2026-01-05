@@ -1,0 +1,680 @@
+﻿/* ============================================
+                   Emergency Page Styles
+                   ============================================ */
+:root {
+    --emergency: #dc2626;
+    --emergency-dark: #b91c1c;
+    --emergency-light: #fee2e2;
+    --warning: #f59e0b;
+    --primary: #4361ee;s
+    --success: #10b981;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.emergency-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ============================================
+                   Emergency Header
+                   ============================================ */
+
+.emergency-header {
+    background: linear-gradient(135deg, var(--emergency) 0%, var(--emergency-dark) 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .emergency-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .emergency-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.page-title-section {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.emergency-icon-large {
+    width: 80px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    animation: pulse 2s infinite;
+}
+
+    .emergency-icon-large i {
+        font-size: 3rem;
+        color: white;
+    }
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 15px rgba(255, 255, 255, 0);
+    }
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ============================================
+                   Emergency Content
+                   ============================================ */
+
+.emergency-content {
+    padding: 0 20px 60px;
+    margin-top: 30px;
+    position: relative;
+}
+
+.emergency-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ============================================
+                   Emergency Alert
+                   ============================================ */
+
+.emergency-alert {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+    border: 2px solid var(--warning);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 20px;
+    box-shadow: var(--shadow-sm);
+}
+
+.alert-icon {
+    width: 50px;
+    height: 50px;
+    background: var(--warning);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+    font-size: 1.5rem;
+}
+
+.alert-content h4 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.alert-content p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* ============================================
+                   Form Card
+                   ============================================ */
+
+.emergency-form-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    padding: 32px;
+}
+
+.form-section {
+    margin-bottom: 32px;
+    padding-bottom: 32px;
+    border-bottom: 2px solid var(--bg-light);
+}
+
+    .form-section:last-of-type {
+        border-bottom: none;
+        margin-bottom: 24px;
+    }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+    .section-header i {
+        font-size: 1.5rem;
+        color: var(--emergency);
+    }
+
+    .section-header h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.required {
+    color: var(--emergency);
+}
+
+.optional {
+    font-weight: 400;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+                   Select Input
+                   ============================================ */
+
+.select-wrapper {
+    position: relative;
+}
+
+.form-select {
+    width: 100%;
+    padding: 14px 40px 14px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    appearance: none;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+    .form-select:focus {
+        border-color: var(--emergency);
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        outline: none;
+    }
+
+.select-icon {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none;
+    font-size: 1.2rem;
+}
+
+/* ============================================
+                   Textarea
+                   ============================================ */
+
+.form-control {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    transition: all 0.3s;
+}
+
+    .form-control:focus {
+        border-color: var(--emergency);
+        box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+        outline: none;
+    }
+
+.char-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+/* ============================================
+                   Location Section
+                   ============================================ */
+
+.location-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.location-instruction {
+    background: linear-gradient(135deg, rgba(220, 38, 38, 0.1) 0%, rgba(185, 28, 28, 0.1) 100%);
+    padding: 16px 20px;
+    border-radius: 12px;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+    .location-instruction i {
+        font-size: 1.3rem;
+        color: var(--emergency);
+    }
+
+.map-wrapper {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.map-container {
+    height: 400px;
+    width: 100%;
+}
+
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(220, 38, 38, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+    .map-overlay.hidden {
+        opacity: 0;
+    }
+
+    .map-overlay i {
+        font-size: 3rem;
+        color: var(--emergency);
+    }
+
+    .map-overlay span {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--emergency);
+    }
+
+.coordinates-display {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.coordinate-badge {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-light);
+    padding: 14px 18px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+    .coordinate-badge i {
+        font-size: 1.3rem;
+        color: var(--emergency);
+    }
+
+    .coordinate-badge strong {
+        color: var(--text-dark);
+    }
+
+/* ============================================
+                   File Upload
+                   ============================================ */
+
+.file-upload-wrapper {
+    position: relative;
+}
+
+.file-input {
+    display: none;
+}
+
+.file-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 40px 20px;
+    border: 2px dashed #e9ecef;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--bg-light);
+}
+
+    .file-label:hover {
+        border-color: var(--emergency);
+        background: rgba(220, 38, 38, 0.05);
+    }
+
+    .file-label i {
+        font-size: 2.5rem;
+        color: var(--emergency);
+    }
+
+.file-text {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.file-hint {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.file-preview {
+    position: relative;
+    margin-top: 16px;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .file-preview img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+.remove-file {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--emergency);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s;
+}
+
+    .remove-file:hover {
+        transform: scale(1.1);
+    }
+
+/* ============================================
+                   Important Notes
+                   ============================================ */
+
+.important-notes {
+    background: rgba(16, 185, 129, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid var(--success);
+    margin-bottom: 24px;
+}
+
+.notes-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+    .notes-header i {
+        color: var(--success);
+        font-size: 1.2rem;
+    }
+
+.notes-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .notes-list li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+        .notes-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+/* ============================================
+                   Action Buttons
+                   ============================================ */
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+    .btn i {
+        font-size: 1.2rem;
+    }
+
+.btn-emergency {
+    background: linear-gradient(135deg, var(--emergency) 0%, var(--emergency-dark) 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+    .btn-emergency:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.btn-cancel {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid #dee2e6;
+}
+
+    .btn-cancel:hover {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+.validation-message {
+    color: var(--emergency);
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: block;
+}
+
+.validation-alert {
+    background: var(--emergency-light);
+    border: 2px solid var(--emergency);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 24px;
+    color: var(--emergency-dark);
+}
+
+/* ============================================
+                   Responsive Design
+                   ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .emergency-header {
+        padding: 30px 20px 50px;
+    }
+
+    .emergency-form-card {
+        padding: 24px;
+    }
+
+    .emergency-alert {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+
+    .map-container {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .emergency-form-card {
+        padding: 20px;
+    }
+}

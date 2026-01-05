@@ -1,0 +1,678 @@
+﻿/* ============================================
+       Admin Services Management Styles
+       ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.admin-services-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+}
+
+/* ============================================
+               Page Header
+               ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--info) 0%, #2563eb 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+/* Page Title */
+.page-title-section {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+    }
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 24px;
+}
+
+.btn-create {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    background: white;
+    color: var(--info);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.6s ease-out;
+}
+
+    .btn-create i {
+        font-size: 1.2rem;
+    }
+
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+        background: var(--info);
+        color: white;
+    }
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+               Services Content
+               ============================================ */
+
+.services-content {
+    min-width: 100% !important;
+    padding: 0;
+    position: relative;
+}
+
+/* ============================================
+               Alerts
+               ============================================ */
+
+.alert {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: none;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.alert i:first-child {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.alert span {
+    flex: 1;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+    border-left: 4px solid var(--success);
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border-left: 4px solid var(--danger);
+}
+
+.alert-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    padding: 4px;
+}
+
+    .alert-close:hover {
+        opacity: 1;
+    }
+
+    .alert-close i {
+        font-size: 1.2rem;
+    }
+
+/* ============================================
+               Services Card
+               ============================================ */
+
+.services-card {
+    background: white;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+}
+
+    .services-card .card-header {
+        padding: 24px 28px;
+        background: var(--bg-light);
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .header-content i {
+        font-size: 1.5rem;
+        color: var(--info);
+    }
+
+    .header-content h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+/* Filter Section */
+.filter-section {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.filter-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
+    .filter-label i {
+        color: var(--info);
+    }
+
+.filter-select {
+    padding: 8px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    min-width: 200px;
+    transition: all 0.3s;
+}
+
+    .filter-select:focus {
+        border-color: var(--info);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+.services-card .card-body {
+    padding: 0;
+}
+
+/* ============================================
+               Services Table
+               ============================================ */
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.services-table {
+    width: 100%;
+    margin: 0;
+}
+
+    .services-table thead th {
+        background: white;
+        color: var(--text-dark);
+        font-weight: 700;
+        padding: 20px 24px;
+        text-align: left;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid var(--bg-light);
+        white-space: nowrap;
+    }
+
+.icon-col {
+    width: 80px;
+}
+
+.actions-col {
+    width: 150px;
+}
+
+.services-table tbody tr {
+    border-bottom: 1px solid var(--bg-light);
+    transition: all 0.3s ease;
+}
+
+    .services-table tbody tr:hover {
+        background: rgba(59, 130, 246, 0.02);
+    }
+
+    .services-table tbody tr:last-child {
+        border-bottom: none;
+    }
+
+.services-table tbody td {
+    padding: 20px 24px;
+    vertical-align: middle;
+}
+
+/* Icon Cell */
+.icon-cell {
+    padding: 16px 24px !important;
+}
+
+.service-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg-light);
+    box-shadow: var(--shadow-sm);
+}
+
+    .service-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+.service-icon-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(37, 99, 235, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .service-icon-placeholder i {
+        font-size: 1.5rem;
+        color: var(--info);
+    }
+
+/* Service Name */
+.service-name {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+
+/* Category Badge */
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+    .category-badge i {
+        font-size: 0.9rem;
+    }
+
+/* Service Description */
+.service-description {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+    .status-badge i {
+        font-size: 0.9rem;
+    }
+
+    .status-badge.active {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success);
+    }
+
+    .status-badge.inactive {
+        background: rgba(108, 117, 125, 0.1);
+        color: var(--text-muted);
+    }
+
+/* ============================================
+               Action Buttons
+               ============================================ */
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+    .btn-action i {
+        font-size: 1rem;
+    }
+
+.btn-edit {
+    border-color: rgba(59, 130, 246, 0.3);
+    color: var(--info);
+}
+
+    .btn-edit:hover {
+        background: var(--info);
+        color: white;
+        border-color: var(--info);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+    }
+
+.btn-toggle {
+    border-color: rgba(245, 158, 11, 0.3);
+    color: var(--warning);
+}
+
+    .btn-toggle:hover {
+        background: var(--warning);
+        color: white;
+        border-color: var(--warning);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(245, 158, 11, 0.3);
+    }
+
+.btn-delete {
+    border-color: rgba(239, 68, 68, 0.3);
+    color: var(--danger);
+}
+
+    .btn-delete:hover {
+        background: var(--danger);
+        color: white;
+        border-color: var(--danger);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+    }
+
+.delete-form {
+    display: inline;
+}
+
+/* ============================================
+               DataTables Customization
+               ============================================ */
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    padding: 20px 24px;
+}
+
+    .dataTables_wrapper .dataTables_filter input {
+        padding: 8px 16px;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        margin-left: 8px;
+    }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: var(--info);
+            outline: none;
+        }
+
+    .dataTables_wrapper .dataTables_length select {
+        padding: 6px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        margin: 0 8px;
+    }
+
+.dataTables_wrapper .dataTables_info {
+    padding: 20px 24px;
+    color: var(--text-muted);
+}
+
+.dataTables_wrapper .dataTables_paginate {
+    padding: 20px 24px;
+}
+
+    .dataTables_wrapper .dataTables_paginate .paginate_button {
+        padding: 8px 16px;
+        margin: 0 4px;
+        border-radius: 8px;
+        border: none;
+        background: var(--bg-light);
+        color: var(--text-dark) !important;
+    }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border: none;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: linear-gradient(135deg, var(--info) 0%, #2563eb 100%) !important;
+            color: white !important;
+            border: none;
+        }
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .services-card .card-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .header-content {
+        justify-content: center;
+    }
+
+    .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-select {
+        width: 100%;
+    }
+
+    .services-table thead th,
+    .services-table tbody td {
+        padding: 16px;
+    }
+
+    .action-buttons {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .services-table {
+        font-size: 0.9rem;
+    }
+
+        .services-table thead th {
+            font-size: 0.75rem;
+        }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+    }
+
+        .btn-action i {
+            font-size: 0.9rem;
+        }
+}

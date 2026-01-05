@@ -1,8 +1,8 @@
-﻿using LebAssist.Application.Interfaces;
+﻿using Domain.Enums;
+using LebAssist.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Domain.Enums;
 
 namespace LebAssist.Presentation.Controllers
 {
@@ -55,7 +55,7 @@ namespace LebAssist.Presentation.Controllers
             if (profile == null) return Unauthorized();
 
             await _bookingService.AcceptBookingAsync(bookingId, profile.ClientId);
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { status = "Accepted" });
         }
 
         // POST: Reject booking
@@ -85,7 +85,7 @@ namespace LebAssist.Presentation.Controllers
             if (profile == null) return Unauthorized();
 
             await _bookingService.StartBookingAsync(bookingId, profile.ClientId);
-            return RedirectToAction(nameof(Index), new { status = "Accepted" });
+            return RedirectToAction(nameof(Index), new { status = "InProgress" });
         }
 
         // POST: Complete service
@@ -100,7 +100,7 @@ namespace LebAssist.Presentation.Controllers
             if (profile == null) return Unauthorized();
 
             await _bookingService.CompleteBookingAsync(bookingId, profile.ClientId);
-            return RedirectToAction(nameof(Index), new { status = "InProgress" });
+            return RedirectToAction(nameof(Index), new { status = "Completed" });
         }
     }
 }

@@ -1,0 +1,602 @@
+﻿/* ============================================
+                   Review Page Styles
+                   ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --warning: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.review-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ============================================
+                   Page Header
+                   ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.page-title-section {
+    text-align: center;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+        color: var(--warning);
+    }
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ============================================
+                   Review Content
+                   ============================================ */
+.reviews-content {
+    padding: 0 20px 60px;
+    margin-top: 30px;
+    position: relative;
+}
+
+.reviews-wrapper {
+    margin: 0 auto;
+}
+
+.review-content {
+    padding: 0 20px 60px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
+}
+
+.review-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* ============================================
+                   Booking Info Card
+                   ============================================ */
+
+.booking-info-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+    overflow: hidden;
+}
+
+.info-header {
+    padding: 20px 28px;
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid var(--bg-light);
+}
+
+    .info-header i {
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+
+    .info-header h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+.info-content {
+    padding: 28px;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+    .info-row:last-child {
+        margin-bottom: 0;
+    }
+
+.info-col.full-width {
+    grid-column: 1 / -1;
+}
+
+.info-col label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.info-value {
+    font-size: 1.05rem;
+    color: var(--text-dark);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .info-value i {
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+
+/* ============================================
+                   Review Form Card
+                   ============================================ */
+
+.review-form-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    padding: 32px;
+}
+
+.form-section {
+    margin-bottom: 32px;
+}
+
+.section-label {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.required {
+    color: var(--danger);
+}
+
+.optional {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+/* ============================================
+                   Star Rating
+                   ============================================ */
+
+.star-rating-container {
+    background: var(--bg-light);
+    padding: 32px;
+    border-radius: 16px;
+    text-align: center;
+}
+
+.star-rating-input {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.star-input {
+    display: none;
+}
+
+.star-label {
+    cursor: pointer;
+    color: #ddd;
+    transition: all 0.3s ease;
+    font-size: 3rem;
+}
+
+    .star-label:hover,
+    .star-label:hover ~ .star-label {
+        color: var(--warning);
+        transform: scale(1.1);
+    }
+
+    .star-label.active,
+    .star-label.active ~ .star-label {
+        color: var(--warning);
+    }
+
+.star-input:checked ~ .star-label {
+    color: var(--warning);
+}
+
+.rating-feedback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.rating-text {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    transition: all 0.3s;
+}
+
+    .rating-text.active {
+        color: var(--warning);
+    }
+
+.rating-emoji {
+    font-size: 2rem;
+    transition: all 0.3s;
+}
+
+.validation-message {
+    color: var(--danger);
+    font-size: 0.9rem;
+    margin-top: 8px;
+    display: block;
+}
+
+/* ============================================
+                   Comment Section
+                   ============================================ */
+
+.comment-wrapper {
+    position: relative;
+}
+
+.form-control {
+    width: 100%;
+    padding: 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.3s;
+    resize: vertical;
+}
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+
+.char-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+    .char-counter i {
+        font-size: 1rem;
+    }
+
+/* ============================================
+                   Anonymous Option
+                   ============================================ */
+
+.anonymous-option {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.05) 0%, rgba(114, 9, 183, 0.05) 100%);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid rgba(67, 97, 238, 0.1);
+}
+
+.custom-checkbox {
+    display: flex;
+}
+
+.checkbox-input {
+    display: none;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-box {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--primary);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    background: white;
+}
+
+    .checkbox-box i {
+        color: white;
+        font-size: 0.9rem;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+.checkbox-input:checked + .checkbox-label .checkbox-box {
+    background: var(--primary);
+}
+
+    .checkbox-input:checked + .checkbox-label .checkbox-box i {
+        opacity: 1;
+    }
+
+.checkbox-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+    .checkbox-text strong {
+        color: var(--text-dark);
+        font-size: 1rem;
+    }
+
+.checkbox-desc {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+                   Guidelines Section
+                   ============================================ */
+
+.guidelines-section {
+    background: rgba(16, 185, 129, 0.05);
+    padding: 20px;
+    border-radius: 12px;
+    border-left: 4px solid var(--success);
+    margin-bottom: 32px;
+}
+
+.guidelines-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    font-size: 1rem;
+}
+
+    .guidelines-header i {
+        color: var(--success);
+        font-size: 1.2rem;
+    }
+
+.guidelines-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .guidelines-list li {
+        padding: 6px 0 6px 28px;
+        position: relative;
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+        .guidelines-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+/* ============================================
+                   Action Buttons
+                   ============================================ */
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+    .btn i {
+        font-size: 1.2rem;
+    }
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: #fff;
+    }
+
+.btn-cancel {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid #dee2e6;
+}
+
+    .btn-cancel:hover {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+/* ============================================
+                   Responsive Design
+                   ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .review-form-card {
+        padding: 24px;
+    }
+
+    .star-label {
+        font-size: 2.5rem;
+    }
+
+    .info-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .star-label {
+        font-size: 2rem;
+        gap: 8px;
+    }
+
+    .review-form-card {
+        padding: 20px;
+    }
+}

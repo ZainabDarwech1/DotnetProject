@@ -7,138 +7,261 @@
     var apiKey = GoogleMapsSettings.Value.ApiKey;
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            @if (TempData["Success"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show">
-                    @TempData["Success"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
-            @if (TempData["Error"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show">
-                    @TempData["Error"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            }
+<div class="emergency-details-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Emergency")">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            Emergency Requests
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Request #@Model.EmergencyRequestId
+                    </li>
+                </ol>
+            </nav>
 
-            <div class="card">
-                <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Emergency #@Model.EmergencyRequestId</h4>
-                    <span class="badge bg-light text-dark fs-6">@Model.Status</span>
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Emergency Request #@Model.EmergencyRequestId
+                </h1>
+                <p class="page-subtitle">View details and track progress</p>
+            </div>
+
+            <!-- Status Badge -->
+            <div class="header-status">
+                <span class="status-badge status-@Model.Status.ToString().ToLower()">
+                    @if (Model.Status == "Pending")
+                    {
+                        <i class="bi bi-clock-history"></i>
+                    }
+                    else if (Model.Status == "Accepted")
+                    {
+                        <i class="bi bi-check-circle"></i>
+                    }
+                    else if (Model.Status == "InProgress")
+                    {
+                        <i class="bi bi-hourglass-split"></i>
+                    }
+                    else if (Model.Status == "Completed")
+                    {
+                        <i class="bi bi-check-all"></i>
+                    }
+                    @Model.Status
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="container details-content">
+        <div class="details-wrapper">
+            <!-- Service Info Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-tools"></i>
+                    <h3>Service Information</h3>
                 </div>
-                <div class="card-body">
-                    <!-- Service Info -->
-                    <div class="mb-3">
-                        <h6><i class="bi bi-tools"></i> Service</h6>
-                        <p class="fs-5 mb-0">@Model.ServiceName</p>
+                <div class="card-content">
+                    <div class="service-display">
+                        <i class="bi bi-gear-fill"></i>
+                        <span class="service-name">@Model.ServiceName</span>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Description -->
-                    <div class="mb-3">
-                        <h6><i class="bi bi-card-text"></i> Description</h6>
+            <!-- Description Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-card-text"></i>
+                    <h3>Emergency Details</h3>
+                </div>
+                <div class="card-content">
+                    <div class="details-text">
                         <p>@Model.Details</p>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Client Info -->
-                    <div class="mb-3">
-                        <h6><i class="bi bi-person"></i> Client</h6>
-                        <p class="mb-0">
-                            <strong>@Model.ClientName</strong><br />
+            <!-- People Info Cards -->
+            <div class="people-grid">
+                <!-- Client Info -->
+                <div class="info-card">
+                    <div class="card-header">
+                        <i class="bi bi-person-fill"></i>
+                        <h3>Client Information</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="person-info">
+                            <div class="person-name">@Model.ClientName</div>
                             @if (!string.IsNullOrEmpty(Model.ClientPhone))
                             {
-                                <a href="tel:@Model.ClientPhone"><i class="bi bi-telephone"></i> @Model.ClientPhone</a>
+                                <a href="tel:@Model.ClientPhone" class="person-contact">
+                                    <i class="bi bi-telephone-fill"></i>
+                                    @Model.ClientPhone
+                                </a>
                             }
-                        </p>
+                        </div>
                     </div>
+                </div>
 
-                    <!-- Provider Info (if assigned) -->
-                    @if (!string.IsNullOrEmpty(Model.ProviderName))
-                    {
-                        <div class="mb-3">
-                            <h6><i class="bi bi-person-badge"></i> Assigned Provider</h6>
-                            <p class="text-success mb-0">
-                                <strong>@Model.ProviderName</strong><br />
+                <!-- Provider Info -->
+                @if (!string.IsNullOrEmpty(Model.ProviderName))
+                {
+                    <div class="info-card provider-card">
+                        <div class="card-header">
+                            <i class="bi bi-person-badge-fill"></i>
+                            <h3>Assigned Provider</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="person-info">
+                                <div class="person-name provider-name">
+                                    <i class="bi bi-patch-check-fill"></i>
+                                    @Model.ProviderName
+                                </div>
                                 @if (!string.IsNullOrEmpty(Model.ProviderPhone))
                                 {
-                                    <a href="tel:@Model.ProviderPhone"><i class="bi bi-telephone"></i> @Model.ProviderPhone</a>
+                                    <a href="tel:@Model.ProviderPhone" class="person-contact provider-contact">
+                                        <i class="bi bi-telephone-fill"></i>
+                                        @Model.ProviderPhone
+                                    </a>
                                 }
-                            </p>
-                        </div>
-                    }
-
-                    <!-- Location Map -->
-                    <div class="mb-3">
-                        <h6><i class="bi bi-geo-alt"></i> Location</h6>
-                        <div id="map" style="height: 300px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
-                        <div class="mt-2">
-                            <span class="badge bg-secondary">Lat: @Model.Latitude.ToString("F6")</span>
-                            <span class="badge bg-secondary">Lng: @Model.Longitude.ToString("F6")</span>
-                            <a href="https://www.google.com/maps/dir/?api=1&destination=@Model.Latitude,@Model.Longitude"
-                               target="_blank" class="btn btn-outline-primary btn-sm ms-2">
-                                <i class="bi bi-signpost-2"></i> Get Directions
-                            </a>
+                            </div>
                         </div>
                     </div>
+                }
+            </div>
 
-                    <!-- Timeline -->
-                    <div class="mb-3">
-                        <h6><i class="bi bi-clock-history"></i> Timeline</h6>
-                        <ul class="list-group">
-                            <li class="list-group-item">
-                                <i class="bi bi-circle-fill text-warning"></i>
-                                Requested: @Model.RequestDateTime.ToString("MMM dd, yyyy HH:mm")
-                            </li>
-                            @if (Model.AcceptedDateTime.HasValue)
-                            {
-                                <li class="list-group-item">
-                                    <i class="bi bi-circle-fill text-primary"></i>
-                                    Accepted: @Model.AcceptedDateTime.Value.ToString("MMM dd, yyyy HH:mm")
-                                </li>
-                            }
-                            @if (Model.CompletedDate.HasValue)
-                            {
-                                <li class="list-group-item">
-                                    <i class="bi bi-circle-fill text-success"></i>
-                                    Completed: @Model.CompletedDate.Value.ToString("MMM dd, yyyy HH:mm")
-                                </li>
-                            }
-                        </ul>
+            <!-- Location Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <h3>Location</h3>
+                </div>
+                <div class="card-content">
+                    <div class="map-wrapper">
+                        <div id="map" class="map-container"></div>
                     </div>
+                    <div class="location-details">
+                        <div class="coordinates">
+                            <span class="coord-badge">
+                                <i class="bi bi-geo"></i>
+                                Lat: @Model.Latitude.ToString("F6")
+                            </span>
+                            <span class="coord-badge">
+                                <i class="bi bi-geo"></i>
+                                Lng: @Model.Longitude.ToString("F6")
+                            </span>
+                        </div>
+                        <a href="https://www.google.com/maps/dir/?api=1&destination=@Model.Latitude,@Model.Longitude"
+                           target="_blank"
+                           class="directions-btn">
+                            <i class="bi bi-pin-map"></i>
+                            Get Directions
+                        </a>
+                    </div>
+                </div>
+            </div>
 
-                    <!-- Actions for assigned provider -->
-                    @if (Model.IsAssignedProvider)
+            <!-- Timeline Card -->
+            <div class="info-card">
+                <div class="card-header">
+                    <i class="bi bi-clock-history"></i>
+                    <h3>Timeline</h3>
+                </div>
+                <div class="card-content">
+                    <div class="timeline">
+                        <div class="timeline-item">
+                            <div class="timeline-marker marker-warning">
+                                <i class="bi bi-circle-fill"></i>
+                            </div>
+                            <div class="timeline-content">
+                                <div class="timeline-title">Request Created</div>
+                                <div class="timeline-date">@Model.RequestDateTime.ToString("MMMM dd, yyyy 'at' hh:mm tt")</div>
+                            </div>
+                        </div>
+
+                        @if (Model.AcceptedDateTime.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker marker-primary">
+                                    <i class="bi bi-circle-fill"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">Provider Accepted</div>
+                                    <div class="timeline-date">@Model.AcceptedDateTime.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</div>
+                                </div>
+                            </div>
+                        }
+
+                        @if (Model.CompletedDate.HasValue)
+                        {
+                            <div class="timeline-item">
+                                <div class="timeline-marker marker-success">
+                                    <i class="bi bi-circle-fill"></i>
+                                </div>
+                                <div class="timeline-content">
+                                    <div class="timeline-title">Service Completed</div>
+                                    <div class="timeline-date">@Model.CompletedDate.Value.ToString("MMMM dd, yyyy 'at' hh:mm tt")</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Provider Actions -->
+            @if (Model.IsAssignedProvider)
+            {
+                <div class="actions-card">
+                    @if (Model.Status == "Accepted")
                     {
-                        <div class="d-flex gap-2">
-                            @if (Model.Status == "Accepted")
-                            {
-                                <form asp-action="Start" method="post">
-                                    <input type="hidden" name="emergencyId" value="@Model.EmergencyRequestId" />
-                                    <button type="submit" class="btn btn-info">
-                                        <i class="bi bi-play-circle"></i> Start Work
-                                    </button>
-                                </form>
-                            }
-                            @if (Model.Status == "InProgress")
-                            {
-                                <form asp-action="Complete" method="post">
-                                    <input type="hidden" name="emergencyId" value="@Model.EmergencyRequestId" />
-                                    <button type="submit" class="btn btn-success">
-                                        <i class="bi bi-check-circle"></i> Mark Complete
-                                    </button>
-                                </form>
-                            }
-                        </div>
+                        <form asp-action="Start" method="post" class="action-form">
+                            <input type="hidden" name="emergencyId" value="@Model.EmergencyRequestId" />
+                            <button type="submit" class="btn btn-start">
+                                <i class="bi bi-play-circle"></i>
+                                Start Working
+                            </button>
+                        </form>
+                    }
+                    @if (Model.Status == "InProgress")
+                    {
+                        <form asp-action="Complete" method="post" class="action-form">
+                            <input type="hidden" name="emergencyId" value="@Model.EmergencyRequestId" />
+                            <button type="submit" class="btn btn-complete">
+                                <i class="bi bi-check-circle"></i>
+                                Mark as Complete
+                            </button>
+                        </form>
                     }
                 </div>
-                <div class="card-footer">
-                    <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left"></i> Back to List
-                    </a>
-                </div>
+            }
+
+            <!-- Back Button -->
+            <div class="back-action">
+                <a asp-action="Index" class="btn btn-back">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Requests
+                </a>
             </div>
         </div>
     </div>
@@ -152,19 +275,54 @@
     };
 </script>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/emergencyDetails.css" />
+}
+
 @section Scripts {
     <script>
         function initMap() {
             var pos = { lat: mapConfig.lat, lng: mapConfig.lng };
             var map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 14,
-                center: pos
+                zoom: 15,
+                center: pos,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
             });
+
             new google.maps.Marker({
                 position: pos,
-                map: map
+                map: map,
+                animation: google.maps.Animation.DROP,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: "#ef4444",
+                    fillOpacity: 1,
+                    strokeColor: "#ffffff",
+                    strokeWeight: 2
+                }
             });
         }
+
+        // Animate cards on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.info-card, .actions-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap"></script>
 }

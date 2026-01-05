@@ -5,92 +5,298 @@
     var active = ViewBag.ActiveStatus as string ?? "All";
 }
 
-<div class="container mt-4">
-    <h2>Booking Requests</h2>
+<div class="provider-bookings-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Dashboard", "Provider")">
+                            <i class="bi bi-speedometer2"></i>
+                            Provider Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Booking Requests
+                    </li>
+                </ol>
+            </nav>
 
-    <div class="mb-3">
-        <a class="btn btn-sm @(active=="All"?"btn-primary":"btn-outline-primary")" href="@Url.Action("Index", "ProviderBookings")">All</a>
-        <a class="btn btn-sm @(active=="Pending"?"btn-primary":"btn-outline-primary")" href="@Url.Action("Index", "ProviderBookings", new { status = "Pending" })">Pending</a>
-        <a class="btn btn-sm @(active=="Accepted"?"btn-primary":"btn-outline-primary")" href="@Url.Action("Index", "ProviderBookings", new { status = "Accepted" })">Accepted</a>
-        <a class="btn btn-sm @(active=="InProgress"?"btn-primary":"btn-outline-primary")" href="@Url.Action("Index", "ProviderBookings", new { status = "InProgress" })">In Progress</a>
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-check"></i>
+                    Booking Requests
+                </h1>
+                <p class="page-subtitle">Manage and track all your service bookings</p>
+            </div>
+
+            <div class="stats-badge">
+                <div class="stat-item">
+                    <i class="bi bi-list-check"></i>
+                    <span class="stat-value">@Model.Count()</span>
+                    <span class="stat-label">@(Model.Count() == 1 ? "Booking" : "Bookings")</span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">No booking requests.</div>
-    }
-    else
-    {
-        <div class="row g-3">
-            @foreach (var b in Model)
-            {
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body d-flex align-items-center">
-                            <div class="me-3">
-                                @if (!string.IsNullOrEmpty(b.ClientPhotoPath))
-                                {
-                                    <img src="@b.ClientPhotoPath" class="rounded-circle" style="width:64px;height:64px;object-fit:cover;" />
-                                }
-                                else
-                                {
-                                    <div class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center" style="width:64px;height:64px;">
-                                        <i class="bi bi-person-fill text-white"></i>
+    <!-- Content Section -->
+    <div class="container bookings-content">
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <div class="filter-label">
+                <i class="bi bi-funnel"></i>
+                <span>Filter by Status</span>
+            </div>
+            <div class="filter-buttons">
+                <a class="filter-btn @(active == "All" ? "active" : "")"
+                   href="@Url.Action("Index", "ProviderBookings")">
+                    <i class="bi bi-list-ul"></i>
+                    All
+                </a>
+                <a class="filter-btn @(active == "Pending" ? "active" : "")"
+                   href="@Url.Action("Index", "ProviderBookings", new { status = "Pending" })">
+                    <i class="bi bi-clock-history"></i>
+                    Pending
+                </a>
+                <a class="filter-btn @(active == "Accepted" ? "active" : "")"
+                   href="@Url.Action("Index", "ProviderBookings", new { status = "Accepted" })">
+                    <i class="bi bi-check-circle"></i>
+                    Accepted
+                </a>
+                <a class="filter-btn @(active == "InProgress" ? "active" : "")"
+                   href="@Url.Action("Index", "ProviderBookings", new { status = "InProgress" })">
+                    <i class="bi bi-hourglass-split"></i>
+                    In Progress
+                </a>
+                <a class="filter-btn @(active == "Completed" ? "active" : "")"
+                   href="@Url.Action("Index", "ProviderBookings", new { status = "Completed" })">
+                    <i class="bi bi-check-all"></i>
+                    Completed
+                </a>
+                <a class="filter-btn @(active == "Cancelled" ? "active" : "")"
+                   href="@Url.Action("Index", "ProviderBookings", new { status = "Cancelled" })">
+                    <i class="bi bi-x-circle"></i>
+                    Cancelled
+                </a>
+            </div>
+        </div>
+
+        <!-- Bookings List -->
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3 class="empty-title">No Booking Requests</h3>
+                <p class="empty-description">
+                    @if (active == "All")
+                    {
+                        <text>You don't have any booking requests yet. When clients book your services, they'll appear here.</text>
+                    }
+                    else
+                    {
+                        <text>No bookings found with status: <strong>@active</strong>. Try selecting a different filter.</text>
+                    }
+                </p>
+                @if (active != "All")
+                {
+                    <a href="@Url.Action("Index", "ProviderBookings")" class="btn btn-primary">
+                        <i class="bi bi-arrow-left"></i>
+                        View All Bookings
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bookings-grid">
+                @foreach (var booking in Model)
+                {
+                    <div class="booking-card">
+                        <!-- Client Info Section -->
+                        <div class="booking-header">
+                            <div class="client-info">
+                                <div class="client-avatar">
+                                    @if (!string.IsNullOrEmpty(booking.ClientPhotoPath))
+                                    {
+                                        <img src="@booking.ClientPhotoPath" alt="@booking.ClientName" class="avatar-img" />
+                                    }
+                                    else
+                                    {
+                                        <div class="avatar-placeholder">
+                                            <i class="bi bi-person-fill"></i>
+                                        </div>
+                                    }
+                                    <div class="status-indicator status-@booking.Status.ToString().ToLower()"></div>
+                                </div>
+                                <div class="client-details">
+                                    <h3 class="client-name">@booking.ClientName</h3>
+                                    <div class="client-contact">
+                                        <i class="bi bi-telephone"></i>
+                                        <a href="tel:@booking.ClientPhone">@booking.ClientPhone</a>
                                     </div>
-                                }
+                                </div>
                             </div>
-
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1">@b.ClientName</h5>
-                                <p class="mb-1 small text-muted">@b.ClientPhone</p>
-                                <p class="mb-1">Service: <strong>@b.ServiceName</strong></p>
-                                <p class="mb-1">Location: 
-                                    <a target="_blank" href="https://www.google.com/maps?q=@(b.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)),@(b.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture))" class="btn btn-outline-primary btn-sm">
-                                        View on map
-                                    </a>
-                                </p>
-                                <p class="mb-0 small text-muted">Scheduled: @b.ScheduledDateTime.ToString("f")</p>
-                            </div>
-
-                            <div class="text-end">
-                                @if (b.Status == BookingStatus.Pending)
-                                {
-                                    <form asp-action="Accept" method="post" class="mb-2">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="bookingId" value="@b.BookingId" />
-                                        <button class="btn btn-success btn-sm">Accept</button>
-                                    </form>
-                                    <form asp-action="Reject" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="bookingId" value="@b.BookingId" />
-                                        <button class="btn btn-danger btn-sm" onclick="return confirm('Reject this booking?');">Reject</button>
-                                    </form>
-                                }
-                                else if (b.Status == BookingStatus.Accepted)
-                                {
-                                    <form asp-action="Start" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="bookingId" value="@b.BookingId" />
-                                        <button class="btn btn-primary btn-sm">Start</button>
-                                    </form>
-                                }
-                                else if (b.Status == BookingStatus.InProgress)
-                                {
-                                    <form asp-action="Complete" method="post">
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="bookingId" value="@b.BookingId" />
-                                        <button class="btn btn-success btn-sm">Complete</button>
-                                    </form>
-                                }
-                                else
-                                {
-                                    <span class="badge bg-secondary">@b.Status</span>
-                                }
+                            <div class="booking-status">
+                                <span class="status-badge status-@booking.Status.ToString().ToLower()">
+                                    @booking.Status
+                                </span>
                             </div>
                         </div>
+
+                        <!-- Booking Details -->
+                        <div class="booking-details">
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-tools"></i>
+                                    Service
+                                </div>
+                                <div class="detail-value">@booking.ServiceName</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-calendar-event"></i>
+                                    Scheduled
+                                </div>
+                                <div class="detail-value">@booking.ScheduledDateTime.ToString("dddd, MMM dd, yyyy")</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-clock"></i>
+                                    Time
+                                </div>
+                                <div class="detail-value">@booking.ScheduledDateTime.ToString("hh:mm tt")</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">
+                                    <i class="bi bi-calendar-event"></i>
+                                    Requested Date
+                                </div>
+                                <div class="detail-value">@booking.RequestDate.ToLocalTime().ToString("dddd, MMM dd, yyyy, hh:mm tt")</div>
+                            </div>
+                        </div>
+
+                        <!-- Location -->
+                        <div class="booking-location">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>Service Location</span>
+                            <a target="_blank"
+                               href="https://www.google.com/maps?q=@(booking.Latitude.ToString(System.Globalization.CultureInfo.InvariantCulture)),@(booking.Longitude.ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                               class="location-link">
+                                <i class="bi bi-map"></i>
+                                View on Map
+                            </a>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="booking-actions">
+                            @if (booking.Status == BookingStatus.Pending)
+                            {
+                                <form asp-action="Accept" method="post" class="action-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                    <button type="submit" class="btn btn-accept">
+                                        <i class="bi bi-check-circle"></i>
+                                        Accept Booking
+                                    </button>
+                                </form>
+                                <form asp-action="Reject" method="post" class="action-form"
+                                      onsubmit="return confirm('Are you sure you want to reject this booking? This action cannot be undone.');">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                    <button type="submit" class="btn btn-reject">
+                                        <i class="bi bi-x-circle"></i>
+                                        Reject
+                                    </button>
+                                </form>
+                            }
+                            else if (booking.Status == BookingStatus.Accepted)
+                            {
+                                <form asp-action="Start" method="post" class="action-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                    <button type="submit" class="btn btn-start">
+                                        <i class="bi bi-play-circle"></i>
+                                        Start Service
+                                    </button>
+                                </form>
+                            }
+                            else if (booking.Status == BookingStatus.InProgress)
+                            {
+                                <form asp-action="Complete" method="post" class="action-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="bookingId" value="@booking.BookingId" />
+                                    <button type="submit" class="btn btn-complete">
+                                        <i class="bi bi-check-all"></i>
+                                        Mark as Complete
+                                    </button>
+                                </form>
+                            }
+                        </div>
                     </div>
-                </div>
-            }
-        </div>
-    }
+                }
+            </div>
+        }
+    </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/providerBookings.css" />
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate booking cards on scroll
+            const bookingCards = document.querySelectorAll('.booking-card');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            bookingCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+
+            // Handle action button loading states
+            const actionForms = document.querySelectorAll('.action-form');
+            actionForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const button = this.querySelector('button[type="submit"]');
+                    const originalContent = button.innerHTML;
+                    button.innerHTML = '<i class="bi bi-hourglass-split"></i> Processing...';
+                    button.disabled = true;
+                });
+            });
+        });
+    </script>
+}

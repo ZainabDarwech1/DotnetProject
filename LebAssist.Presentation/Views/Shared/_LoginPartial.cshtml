@@ -2,25 +2,38 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-<ul class="navbar-nav">
-    @if (SignInManager.IsSignedIn(User))
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Manage">Hello @User.Identity?.Name!</a>
-        </li>
-        <li class="nav-item">
-            <form class="form-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
-                <button type="submit" class="nav-link btn btn-link text-dark">Logout</button>
-            </form>
-        </li>
-    }
-    else
-    {
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Register">Register</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-        </li>
-    }
-</ul>
+@if (SignInManager.IsSignedIn(User))
+{
+    <!-- User Profile Section -->
+    <div class="user-profile-section">
+        <a class="user-profile-link" asp-area="" asp-controller="Account" asp-action="Manage" title="Manage Account">
+            <div class="user-avatar">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="user-info">
+                <div class="user-name">@User.Identity?.Name</div>
+                <div class="user-status">Online</div>
+            </div>
+        </a>
+
+        <form class="logout-form" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="logout-btn" title="Logout">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </form>
+    </div>
+}
+else
+{
+    <!-- Auth Links for Non-Authenticated Users -->
+    <div class="auth-links">
+        <a class="auth-link" asp-area="" asp-controller="Account" asp-action="Login" title="Login">
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span class="auth-text">Login</span>
+        </a>
+        <a class="auth-link register" asp-area="" asp-controller="Account" asp-action="Register" title="Register">
+            <i class="bi bi-person-plus"></i>
+            <span class="auth-text">Register</span>
+        </a>
+    </div>
+}

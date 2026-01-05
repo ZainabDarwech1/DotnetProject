@@ -7,99 +7,240 @@
     var apiKey = GoogleMapsSettings.Value.ApiKey;
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white">
-                <h4 class="mb-0"><i class="bi bi-person-plus"></i> Create Account</h4>
+<div class="auth-page">
+    <!-- Header Section -->
+    <div class="auth-header">
+        <div class="container">
+            <div class="auth-hero">
+                <div class="hero-icon">
+                    <i class="bi bi-person-plus"></i>
+                </div>
+                <h1 class="hero-title">Join LebAssist</h1>
+                <p class="hero-subtitle">Create your account and get started</p>
             </div>
-            <div class="card-body">
-                <form asp-action="Register" method="post" enctype="multipart/form-data">
-                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+        </div>
+    </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="FirstName" class="form-label"></label>
-                            <input asp-for="FirstName" class="form-control" />
-                            <span asp-validation-for="FirstName" class="text-danger"></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="LastName" class="form-label"></label>
-                            <input asp-for="LastName" class="form-control" />
-                            <span asp-validation-for="LastName" class="text-danger"></span>
-                        </div>
-                    </div>
+    <!-- Register Form Section -->
+    <div class="container auth-content">
+        <div class="auth-wrapper register-wrapper">
+            <div class="auth-card">
+                <div class="card-header">
+                    <h2>Create Account</h2>
+                    <p>Fill in your details to register</p>
+                </div>
 
-                    <div class="mb-3">
-                        <label asp-for="Email" class="form-label"></label>
-                        <input asp-for="Email" class="form-control" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
-                    </div>
+                <div class="card-body">
+                    <form asp-action="Register" method="post" enctype="multipart/form-data" class="auth-form">
+                        <div asp-validation-summary="ModelOnly" class="validation-alert"></div>
 
-                    <div class="mb-3">
-                        <label asp-for="PhoneNumber" class="form-label"></label>
-                        <input asp-for="PhoneNumber" class="form-control" />
-                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-                    </div>
+                        <!-- Name Fields -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label asp-for="FirstName" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    <span>First Name</span>
+                                </label>
+                                <input asp-for="FirstName"
+                                       class="form-control"
+                                       placeholder="Enter your first name" />
+                                <span asp-validation-for="FirstName" class="validation-message"></span>
+                            </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="Password" class="form-label"></label>
-                            <input asp-for="Password" class="form-control" type="password" />
-                            <span asp-validation-for="Password" class="text-danger"></span>
-                            <small class="text-muted">Min 8 chars, uppercase, lowercase, digit, special char</small>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label asp-for="ConfirmPassword" class="form-label"></label>
-                            <input asp-for="ConfirmPassword" class="form-control" type="password" />
-                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-                        </div>
-                    </div>
-
-                    <!-- Location Selection -->
-                    <div class="mb-3">
-                        <label class="form-label"><strong>Pick your location:</strong></label>
-                        <div class="text-muted mb-2">Click on the map to drop a pin.</div>
-
-                        <!-- Hidden fields -->
-                        <input type="hidden" asp-for="Latitude" id="Latitude" />
-                        <input type="hidden" asp-for="Longitude" id="Longitude" />
-
-                        <!-- Map -->
-                        <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
-
-                        <!-- Display coordinates -->
-                        <div class="mt-2">
-                            <span class="badge bg-secondary">Lat: <span id="latText">-</span></span>
-                            <span class="badge bg-secondary">Lng: <span id="lngText">-</span></span>
+                            <div class="form-group">
+                                <label asp-for="LastName" class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    <span>Last Name</span>
+                                </label>
+                                <input asp-for="LastName"
+                                       class="form-control"
+                                       placeholder="Enter your last name" />
+                                <span asp-validation-for="LastName" class="validation-message"></span>
+                            </div>
                         </div>
 
-                        <span asp-validation-for="Latitude" class="text-danger"></span>
-                    </div>
+                        <!-- Email Field -->
+                        <div class="form-group">
+                            <label asp-for="Email" class="form-label">
+                                <i class="bi bi-envelope"></i>
+                                <span>Email Address</span>
+                            </label>
+                            <input asp-for="Email"
+                                   class="form-control"
+                                   placeholder="Enter your email" />
+                            <span asp-validation-for="Email" class="validation-message"></span>
+                        </div>
 
-                    <div class="mb-3">
-                        <label asp-for="ProfilePhoto" class="form-label"></label>
-                        <input asp-for="ProfilePhoto" class="form-control" type="file" accept="image/*" />
-                        <span asp-validation-for="ProfilePhoto" class="text-danger"></span>
-                    </div>
+                        <!-- Phone Number Field -->
+                        <div class="form-group">
+                            <label asp-for="PhoneNumber" class="form-label">
+                                <i class="bi bi-telephone"></i>
+                                <span>Phone Number</span>
+                            </label>
+                            <input asp-for="PhoneNumber"
+                                   class="form-control"
+                                   placeholder="Enter your phone number" />
+                            <span asp-validation-for="PhoneNumber" class="validation-message"></span>
+                        </div>
 
-                    <div class="mb-3 form-check">
-                        <input asp-for="AcceptTerms" class="form-check-input" />
-                        <label asp-for="AcceptTerms" class="form-check-label">
-                            I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms and conditions</a>
-                        </label>
-                        <br />
-                        <span asp-validation-for="AcceptTerms" class="text-danger"></span>
-                    </div>
+                        <!-- Password Fields -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label asp-for="Password" class="form-label">
+                                    <i class="bi bi-lock"></i>
+                                    <span>Password</span>
+                                </label>
+                                <div class="password-wrapper">
+                                    <input asp-for="Password"
+                                           class="form-control"
+                                           type="password"
+                                           id="passwordInput"
+                                           placeholder="Create a password" />
+                                    <button type="button" class="password-toggle" onclick="togglePassword()">
+                                        <i class="bi bi-eye" id="toggleIcon"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="Password" class="validation-message"></span>
+                                <small class="form-hint">Min 8 chars, uppercase, lowercase, digit, special char</small>
+                            </div>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Register</button>
-                    </div>
+                            <div class="form-group">
+                                <label asp-for="ConfirmPassword" class="form-label">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>Confirm Password</span>
+                                </label>
+                                <div class="password-wrapper">
+                                    <input asp-for="ConfirmPassword"
+                                           class="form-control"
+                                           type="password"
+                                           id="confirmPasswordInput"
+                                           placeholder="Confirm your password" />
+                                    <button type="button" class="password-toggle" onclick="toggleConfirmPassword()">
+                                        <i class="bi bi-eye" id="toggleConfirmIcon"></i>
+                                    </button>
+                                </div>
+                                <span asp-validation-for="ConfirmPassword" class="validation-message"></span>
+                            </div>
+                        </div>
 
-                    <div class="text-center mt-3">
-                        <p>Already have an account? <a asp-action="Login">Login here</a></p>
-                    </div>
-                </form>
+                        <!-- Location Selection -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-geo-alt"></i>
+                                <span>Your Location</span>
+                            </label>
+                            <p class="location-hint">
+                                <i class="bi bi-info-circle"></i>
+                                Click on the map to set your location
+                            </p>
+
+                            <!-- Hidden fields -->
+                            <input type="hidden" asp-for="Latitude" id="Latitude" />
+                            <input type="hidden" asp-for="Longitude" id="Longitude" />
+
+                            <!-- Map -->
+                            <div class="map-container">
+                                <div id="map" class="location-map"></div>
+                            </div>
+
+                            <!-- Display coordinates -->
+                            <div class="coordinates-display">
+                                <span class="coord-badge">
+                                    <i class="bi bi-geo"></i>
+                                    Lat: <span id="latText">Not set</span>
+                                </span>
+                                <span class="coord-badge">
+                                    <i class="bi bi-geo"></i>
+                                    Lng: <span id="lngText">Not set</span>
+                                </span>
+                            </div>
+
+                            <span asp-validation-for="Latitude" class="validation-message"></span>
+                        </div>
+
+                        <!-- Profile Photo -->
+                        <div class="form-group">
+                            <label asp-for="ProfilePhoto" class="form-label">
+                                <i class="bi bi-camera"></i>
+                                <span>Profile Photo (Optional)</span>
+                            </label>
+                            <div class="file-upload-wrapper">
+                                <input asp-for="ProfilePhoto"
+                                       class="file-input"
+                                       type="file"
+                                       accept="image/*"
+                                       id="profilePhotoInput"
+                                       onchange="previewImage(this)" />
+                                <label for="profilePhotoInput" class="file-upload-label">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <span id="fileName">Choose a photo</span>
+                                </label>
+                            </div>
+                            <div id="imagePreview" class="image-preview" style="display: none;">
+                                <img id="previewImg" src="" alt="Preview" />
+                            </div>
+                            <span asp-validation-for="ProfilePhoto" class="validation-message"></span>
+                        </div>
+
+                        <!-- Terms & Conditions -->
+                        <div class="form-group">
+                            <div class="custom-checkbox">
+                                <input asp-for="AcceptTerms"
+                                       class="checkbox-input"
+                                       type="checkbox"
+                                       id="termsCheck" />
+                                <label for="termsCheck" class="checkbox-label">
+                                    <span class="checkbox-box">
+                                        <i class="bi bi-check"></i>
+                                    </span>
+                                    <span class="checkbox-text">
+                                        I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="terms-link">terms and conditions</a>
+                                    </span>
+                                </label>
+                            </div>
+                            <span asp-validation-for="AcceptTerms" class="validation-message"></span>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-person-plus"></i>
+                            <span>Create Account</span>
+                        </button>
+
+                        <!-- Divider -->
+                        <div class="divider">
+                            <span>or</span>
+                        </div>
+
+                        <!-- Login Link -->
+                        <div class="register-section">
+                            <p>Already have an account?</p>
+                            <a asp-action="Login" class="btn btn-outline">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                                <span>Sign In</span>
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Info Cards -->
+            <div class="info-cards">
+                <div class="info-card">
+                    <i class="bi bi-shield-check"></i>
+                    <h4>Free to Join</h4>
+                    <p>Create your account at no cost</p>
+                </div>
+                <div class="info-card">
+                    <i class="bi bi-lightning"></i>
+                    <h4>Quick Setup</h4>
+                    <p>Get started in just a few minutes</p>
+                </div>
+                <div class="info-card">
+                    <i class="bi bi-patch-check"></i>
+                    <h4>Verified Services</h4>
+                    <p>Access trusted service providers</p>
+                </div>
             </div>
         </div>
     </div>
@@ -107,14 +248,27 @@
 
 <!-- Terms Modal -->
 <div class="modal fade" id="termsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Terms and Conditions</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-file-text"></i>
+                    Terms and Conditions
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>By using LebAssist, you agree to these terms...</p>
+                <h6>1. Acceptance of Terms</h6>
+                <p>By using LebAssist, you agree to these terms and conditions...</p>
+
+                <h6>2. User Responsibilities</h6>
+                <p>You are responsible for maintaining the confidentiality of your account...</p>
+
+                <h6>3. Service Usage</h6>
+                <p>LebAssist provides a platform to connect service providers with clients...</p>
+
+                <h6>4. Privacy Policy</h6>
+                <p>We respect your privacy and protect your personal information...</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -122,6 +276,11 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/register.css" asp-append-version="true" />
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -135,6 +294,13 @@
             map = new google.maps.Map(document.getElementById("map"), {
                 zoom: 12,
                 center: defaultCenter,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
             });
 
             map.addListener("click", function(e) {
@@ -145,6 +311,7 @@
                     marker = new google.maps.Marker({
                         position: { lat: lat, lng: lng },
                         map: map,
+                        animation: google.maps.Animation.DROP
                     });
                 } else {
                     marker.setPosition({ lat: lat, lng: lng });
@@ -155,6 +322,53 @@
                 document.getElementById("latText").innerText = lat.toFixed(6);
                 document.getElementById("lngText").innerText = lng.toFixed(6);
             });
+        }
+
+        function togglePassword() {
+            const passwordInput = document.getElementById('passwordInput');
+            const toggleIcon = document.getElementById('toggleIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        }
+
+        function toggleConfirmPassword() {
+            const passwordInput = document.getElementById('confirmPasswordInput');
+            const toggleIcon = document.getElementById('toggleConfirmIcon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        }
+
+        function previewImage(input) {
+            const fileName = document.getElementById('fileName');
+            const imagePreview = document.getElementById('imagePreview');
+            const previewImg = document.getElementById('previewImg');
+
+            if (input.files && input.files[0]) {
+                fileName.textContent = input.files[0].name;
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
         }
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap"></script>

@@ -13,142 +13,199 @@
     var initialLng = Model.Longitude != 0 ? Model.Longitude : 35.5018;
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Book Service</h4>
-                </div>
+<div class="booking-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Services")">
+                            <i class="bi bi-house-door"></i>
+                            Services
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Details", "Services", new { id = Model.ServiceId })">
+                            @service?.ServiceName
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Book Service
+                    </li>
+                </ol>
+            </nav>
 
-                <div class="card-body">
-                    <form id="bookingForm" asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                        <input type="hidden" asp-for="ProviderId" />
-                        <input type="hidden" asp-for="ServiceId" />
-                        <input type="hidden" asp-for="BookingDateTime" id="BookingDateTimeHidden" />
-
-                        <!-- Service Info -->
-                        <div class="mb-3">
-                            <label class="form-label">Service</label>
-                            <div class="card p-2">
-                                <div class="d-flex align-items-center">
-                                    @if (!string.IsNullOrEmpty(service?.ServiceIconPath))
-                                    {
-                                        <img src="@service.ServiceIconPath"
-                                             style="width:64px;height:64px;object-fit:cover;border-radius:6px;margin-right:12px;" />
-                                    }
-                                    <div>
-                                        <div class="fw-bold">@service?.ServiceName</div>
-                                        <div class="small text-muted">@service?.CategoryName</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Working Hours -->
-                        <div class="mb-3">
-                            <label class="form-label">Available Schedule</label>
-                            <div class="card p-2">
-                                @if (workingHours is IEnumerable<dynamic> whs && whs.Any())
-                                {
-                                    foreach (var wh in whs)
-                                    {
-                                        <table class="table table-sm mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th>Day</th>
-                                                    <th>Start</th>
-                                                    <th>End</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var d in wh.DaySchedules)
-                                                {
-                                                    var dayName = new[]
-                                                    {
-                                                                                "Sunday","Monday","Tuesday",
-                                                                                "Wednesday","Thursday","Friday","Saturday"
-                                                                                }[d.DayOfWeek];
-
-                                                    <tr>
-                                                        <td>@dayName</td>
-                                                        <td>@d.StartTime</td>
-                                                        <td>@d.EndTime</td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    }
-                                }
-                                else
-                                {
-                                    <div class="text-muted">
-                                        Provider has no working hours for this service.
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Date & Time -->
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Choose Date</label>
-                                <input type="date"
-                                       id="bookingDate"
-                                       class="form-control"
-                                       min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
-                            </div>
-
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Choose Time</label>
-                                <select id="bookingTime" class="form-select">
-                                    <option value="">Select time</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Location Selection -->
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Pick emergency location:</strong></label>
-                            <div class="text-muted mb-2">Click on the map to drop a pin.</div>
-
-                            <!-- Hidden fields -->
-                            <input type="hidden" asp-for="Latitude" id="Latitude" />
-                            <input type="hidden" asp-for="Longitude" id="Longitude" />
-
-                            <!-- Map -->
-                            <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
-
-                            <!-- Display coordinates -->
-                            <div class="mt-2">
-                                <span class="badge bg-secondary">Lat: <span id="latText">-</span></span>
-                                <span class="badge bg-secondary">Lng: <span id="lngText">-</span></span>
-                            </div>
-
-                            <span asp-validation-for="Latitude" class="text-danger"></span>
-                        </div>
-
-                        <!-- Notes -->
-                        <div class="mb-3">
-                            <label asp-for="Notes" class="form-label">Notes (optional)</label>
-                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
-                        </div>
-
-                        <!-- Actions -->
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                Book Now
-                            </button>
-                            <a asp-controller="Services" asp-action="Index"
-                               class="btn btn-secondary">
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-check"></i>
+                    Book Your Service
+                </h1>
+                <p class="page-subtitle">Complete the form below to schedule your appointment</p>
             </div>
+        </div>
+    </div>
+
+    <!-- Booking Form Section -->
+    <div class="container booking-content">
+        <div class="booking-wrapper">
+            <form id="bookingForm" asp-action="Create" method="post" class="booking-form">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger custom-alert"></div>
+
+                <input type="hidden" asp-for="ProviderId" />
+                <input type="hidden" asp-for="ServiceId" />
+                <input type="hidden" asp-for="BookingDateTime" id="BookingDateTimeHidden" />
+
+                <!-- Provider Schedule Card -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="bi bi-clock-history"></i>
+                        <h3>Provider Schedule</h3>
+                    </div>
+                    <div class="schedule-display">
+                        @if (workingHours is IEnumerable<dynamic> whs && whs.Any())
+                        {
+                            foreach (var wh in whs)
+                            {
+                                <div class="schedule-table-wrapper">
+                                    <table class="schedule-table">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="bi bi-calendar3"></i> Day</th>
+                                                <th><i class="bi bi-clock"></i> Start</th>
+                                                <th><i class="bi bi-clock-fill"></i> End</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var d in wh.DaySchedules)
+                                            {
+                                                var dayName = new[]
+                                                {
+                                                                        "Sunday","Monday","Tuesday",
+                                                                        "Wednesday","Thursday","Friday","Saturday"
+                                                                        }[d.DayOfWeek];
+
+                                                <tr>
+                                                    <td class="day-name">@dayName</td>
+                                                    <td>@d.StartTime</td>
+                                                    <td>@d.EndTime</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="no-schedule">
+                                <i class="bi bi-calendar-x"></i>
+                                <span>Provider has no working hours for this service.</span>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Date & Time Selection -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="bi bi-calendar-event"></i>
+                        <h3>Select Date & Time</h3>
+                    </div>
+                    <div class="datetime-grid">
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-calendar3"></i>
+                                Choose Date
+                            </label>
+                            <input type="date"
+                                   id="bookingDate"
+                                   class="form-control"
+                                   min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" />
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-clock"></i>
+                                Choose Time
+                            </label>
+                            <select id="bookingTime" class="form-select">
+                                <option value="">Select time slot</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Location Selection -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="bi bi-geo-alt"></i>
+                        <h3>Service Location</h3>
+                    </div>
+                    <div class="location-section">
+                        <p class="location-instruction">
+                            <i class="bi bi-cursor"></i>
+                            Click on the map to set your service location
+                        </p>
+
+                        <!-- Hidden fields -->
+                        <input type="hidden" asp-for="Latitude" id="Latitude" />
+                        <input type="hidden" asp-for="Longitude" id="Longitude" />
+
+                        <!-- Map Container -->
+                        <div class="map-wrapper">
+                            <div id="map" class="map-container"></div>
+                        </div>
+
+                        <!-- Coordinates Display -->
+                        <div class="coordinates-display">
+                            <div class="coordinate-badge">
+                                <i class="bi bi-geo-alt-fill"></i>
+                                <span>Latitude: <strong id="latText">0</strong></span>
+                            </div>
+                            <div class="coordinate-badge">
+                                <i class="bi bi-geo-fill"></i>
+                                <span>Longitude: <strong id="lngText">0</strong></span>
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="Latitude" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <!-- Notes Section -->
+                <div class="form-section">
+                    <div class="section-header">
+                        <i class="bi bi-pencil-square"></i>
+                        <h3>Additional Notes</h3>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Notes" class="form-label">Notes (Optional)</label>
+                        <textarea asp-for="Notes" class="form-control" rows="4"
+                                  placeholder="Add any special instructions or requirements..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-calendar-check"></i>
+                        Confirm Booking
+                    </button>
+                    <a asp-controller="Services" asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -161,6 +218,10 @@
         apiKey: '@apiKey'
     };
 </script>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/bookingCreate.css" />
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
@@ -207,7 +268,7 @@
             if (bookingDateEl) {
                 bookingDateEl.addEventListener('change', e => {
                     if (!bookingTimeEl) return;
-                    bookingTimeEl.innerHTML = '<option value="">Select time</option>';
+                    bookingTimeEl.innerHTML = '<option value="">Select time slot</option>';
 
                     const sch = getSchedule(e.target.value);
                     if (!sch) return;
@@ -235,6 +296,7 @@
             }
         });
     </script>
+
     <script>
         var map;
         var marker;
@@ -243,8 +305,25 @@
             var defaultCenter = { lat: mapConfig.lat, lng: mapConfig.lng };
 
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
+                zoom: 13,
                 center: defaultCenter,
+                styles: [
+                    {
+                        featureType: "all",
+                        elementType: "geometry",
+                        stylers: [{ color: "#f5f5f5" }]
+                    },
+                    {
+                        featureType: "water",
+                        elementType: "geometry",
+                        stylers: [{ color: "#c9e6f7" }]
+                    },
+                    {
+                        featureType: "road",
+                        elementType: "geometry",
+                        stylers: [{ color: "#ffffff" }]
+                    }
+                ]
             });
 
             map.addListener("click", function(e) {
@@ -255,6 +334,7 @@
                     marker = new google.maps.Marker({
                         position: { lat: lat, lng: lng },
                         map: map,
+                        animation: google.maps.Animation.DROP,
                     });
                 } else {
                     marker.setPosition({ lat: lat, lng: lng });

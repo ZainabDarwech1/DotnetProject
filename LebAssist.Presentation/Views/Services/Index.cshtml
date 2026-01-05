@@ -3,58 +3,169 @@
     ViewData["Title"] = "Browse Services";
 }
 
-<div class="container mt-4">
-    <div class="text-center mb-4">
-        <h1 class="display-4">Browse Our Services</h1>
-        <p class="lead text-muted">Find the perfect service provider for your needs</p>
+<div class="services-page">
+    <!-- Hero Section -->
+    <div class="services-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Browse Our Services</h1>
+            <p class="hero-subtitle">Find the perfect service provider for your needs</p>
+
+            <!-- Search Bar -->
+            <div class="search-container">
+                <div class="search-box">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="serviceSearch" class="search-input" placeholder="Search for services...">
+                </div>
+            </div>
+        </div>
     </div>
 
-    @if (Model != null && Model.Any())
-    {
-        <div class="row g-4">
-            @foreach (var category in Model)
-            {
-                <div class="col-md-6 col-lg-3">
-                    <a href="@Url.Action("Category", "Services", new { id = category.CategoryId })" class="text-decoration-none">
-                        <div class="card h-100 shadow-sm hover-shadow">
-                            <div class="card-body text-center">
-                                @if (!string.IsNullOrEmpty(category.IconPath))
-                                {
-                                    <img src="@category.IconPath" alt="@category.CategoryName" class="mb-3" style="width: 80px; height: 80px; object-fit: contain;">
-                                }
-                                else
-                                {
-                                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
-                                        <i class="bi bi-gear-fill" style="font-size: 40px;"></i>
-                                    </div>
-                                }
-                                <h5 class="card-title">@category.CategoryName</h5>
-                                <p class="card-text text-muted small">@category.Description</p>
-                                <span class="badge bg-info">@category.ServiceCount Services</span>
+    <!-- Categories Section -->
+    <div class="container categories-container">
+        @if (Model != null && Model.Any())
+        {
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    <div>
+                        <div class="stat-value">@Model.Count()</div>
+                        <div class="stat-label">Categories</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-tools"></i>
+                    <div>
+                        <div class="stat-value">@Model.Sum(c => c.ServiceCount)</div>
+                        <div class="stat-label">Services</div>
+                    </div>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-star-fill"></i>
+                    <div>
+                        <div class="stat-value">Trusted</div>
+                        <div class="stat-label">Providers</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories Grid -->
+            <div class="categories-grid" id="categoriesGrid">
+                @foreach (var category in Model)
+                {
+                    <a href="@Url.Action("Category", "Services", new { id = category.CategoryId })"
+                       class="category-card"
+                       data-category-name="@category.CategoryName.ToLower()">
+                        <div class="category-icon-wrapper">
+                            @if (!string.IsNullOrEmpty(category.IconPath))
+                            {
+                                <img src="@category.IconPath" alt="@category.CategoryName" class="category-icon-img">
+                            }
+                            else
+                            {
+                                <div class="category-icon-default">
+                                    <i class="bi bi-gear-fill"></i>
+                                </div>
+                            }
+                            <div class="category-badge">
+                                <i class="bi bi-bookmark-fill"></i>
+                            </div>
+                        </div>
+
+                        <div class="category-content">
+                            <h3 class="category-title">@category.CategoryName</h3>
+                            <p class="category-description">@category.Description</p>
+
+                            <div class="category-footer">
+                                <span class="service-count">
+                                    <i class="bi bi-tools"></i>
+                                    @category.ServiceCount Services
+                                </span>
+                                <span class="category-arrow">
+                                    <i class="bi bi-arrow-right"></i>
+                                </span>
                             </div>
                         </div>
                     </a>
+                }
+            </div>
+
+            <!-- No Results Message -->
+            <div class="no-results" id="noResults" style="display: none;">
+                <i class="bi bi-search"></i>
+                <h3>No services found</h3>
+                <p>Try adjusting your search terms</p>
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info text-center">
-            <i class="bi bi-info-circle"></i> No service categories available at the moment.
-        </div>
-    }
+                <h3>No Service Categories Available</h3>
+                <p>Check back soon for new service categories!</p>
+            </div>
+        }
+    </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/servicesIndex.css"/>
+}
+
 @section Scripts {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <style>
-        .hover-shadow {
-            transition: all 0.3s ease;
-        }
-        .hover-shadow:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15)!important;
-        }
-    </style>
+    <script>
+        // Search Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('serviceSearch');
+            const categoriesGrid = document.getElementById('categoriesGrid');
+            const categoryCards = document.querySelectorAll('.category-card');
+            const noResults = document.getElementById('noResults');
+
+            if (searchInput && categoryCards.length > 0) {
+                searchInput.addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase().trim();
+                    let visibleCount = 0;
+
+                    categoryCards.forEach(card => {
+                        const categoryName = card.getAttribute('data-category-name');
+                        const categoryText = card.textContent.toLowerCase();
+
+                        if (categoryName.includes(searchTerm) || categoryText.includes(searchTerm)) {
+                            card.style.display = '';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    // Show/hide no results message
+                    if (noResults) {
+                        noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+                    }
+                });
+            }
+
+            // Add animation on scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 50);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            categoryCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
 }

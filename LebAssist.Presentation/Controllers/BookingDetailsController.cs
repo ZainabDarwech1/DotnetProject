@@ -26,6 +26,36 @@ namespace LebAssist.Presentation.Controllers
             return View(booking);
         }
 
+        // POST: Accept booking
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Accept(int bookingId)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var profile = await _clientService.GetProfileAsync(userId);
+            if (profile == null) return Unauthorized();
+
+            await _bookingService.AcceptBookingAsync(bookingId, profile.ClientId);
+            return RedirectToAction("Details", new { id = bookingId });
+        }
+
+        // POST: Reject booking
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reject(int bookingId, string? reason)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var profile = await _clientService.GetProfileAsync(userId);
+            if (profile == null) return Unauthorized();
+
+            await _bookingService.RejectBookingAsync(bookingId, profile.ClientId, reason);
+            return RedirectToAction("Details", new { id = bookingId });
+        }
+
         [Authorize(Roles = "Provider")]
         [HttpPost]
         public async Task<IActionResult> Start(int bookingId)

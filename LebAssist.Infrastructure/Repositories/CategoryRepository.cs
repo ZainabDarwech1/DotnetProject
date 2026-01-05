@@ -14,6 +14,7 @@ namespace LebAssist.Infrastructure.Repositories
         public async Task<IEnumerable<ServiceCategory>> GetActiveCategoriesAsync()
         {
             return await _dbSet
+                .Include(c => c.Services)
                 .Where(c => c.IsActive)
                 .OrderBy(c => c.DisplayOrder)
                 .ToListAsync();

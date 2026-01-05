@@ -1,0 +1,535 @@
+﻿/* ============================================
+                   Booking Page Styles
+                   ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.booking-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+}
+
+/* ============================================
+                   Page Header
+                   ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.page-title-section {
+    text-align: center;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+    }
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ============================================
+                   Booking Content
+                   ============================================ */
+
+.booking-content {
+    padding: 0 20px 60px;
+    margin-top: 30px;
+    position: relative;
+}
+
+.booking-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.booking-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ============================================
+                   Form Sections
+                   ============================================ */
+
+.form-section {
+    background: white;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+}
+
+    .form-section:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+.section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--bg-light);
+}
+
+    .section-header i {
+        font-size: 1.8rem;
+        color: var(--primary);
+    }
+
+    .section-header h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+/* ============================================
+                   Service Display
+                   ============================================ */
+
+.service-display {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background: var(--bg-light);
+    border-radius: 16px;
+}
+
+.service-icon {
+    flex-shrink: 0;
+}
+
+.service-img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.service-icon-default {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.service-details {
+    flex: 1;
+}
+
+.service-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+}
+
+.service-category {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+/* ============================================
+                   Schedule Table
+                   ============================================ */
+
+.schedule-display {
+    background: var(--bg-light);
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.schedule-table-wrapper {
+    overflow-x: auto;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .schedule-table thead th {
+        background: white;
+        color: var(--text-dark);
+        font-weight: 700;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 0.9rem;
+        border-bottom: 2px solid var(--bg-light);
+    }
+
+        .schedule-table thead th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        .schedule-table thead th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+    .schedule-table tbody tr {
+        transition: background 0.2s;
+    }
+
+        .schedule-table tbody tr:hover {
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+    .schedule-table tbody td {
+        padding: 12px 16px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        color: var(--text-muted);
+    }
+
+        .schedule-table tbody td.day-name {
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+.no-schedule {
+    text-align: center;
+    padding: 32px;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+    .no-schedule i {
+        font-size: 3rem;
+        opacity: 0.5;
+    }
+
+/* ============================================
+                   Date & Time Grid
+                   ============================================ */
+
+.datetime-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .form-label i {
+        color: var(--primary);
+    }
+
+.form-control,
+.form-select {
+    padding: 14px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+
+/* ============================================
+                   Location Section
+                   ============================================ */
+
+.location-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.location-instruction {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
+    padding: 16px 20px;
+    border-radius: 12px;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+    .location-instruction i {
+        font-size: 1.3rem;
+        color: var(--primary);
+    }
+
+.map-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.map-container {
+    height: 400px;
+    width: 100%;
+}
+
+.coordinates-display {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.coordinate-badge {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-light);
+    padding: 14px 18px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+    .coordinate-badge i {
+        font-size: 1.3rem;
+        color: var(--primary);
+    }
+
+    .coordinate-badge strong {
+        color: var(--text-dark);
+    }
+
+/* ============================================
+                   Form Actions
+                   ============================================ */
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn i {
+        font-size: 1.2rem;
+    }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.btn-secondary {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid #dee2e6;
+}
+
+    .btn-secondary:hover {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+/* ============================================
+                   Alert Styling
+                   ============================================ */
+
+.custom-alert {
+    border-radius: 12px;
+    border: none;
+    padding: 16px 20px;
+}
+
+/* ============================================
+                   Responsive Design
+                   ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .form-section {
+        padding: 24px;
+    }
+
+    .service-display {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .datetime-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .map-container {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .form-section {
+        padding: 20px;
+    }
+}

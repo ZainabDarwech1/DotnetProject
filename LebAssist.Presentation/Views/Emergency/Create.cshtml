@@ -9,82 +9,222 @@
     var initialLng = Model.Longitude != 0 ? Model.Longitude : 35.5018;
 }
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card border-danger">
-                <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Create Emergency Request</h4>
+<div class="emergency-page">
+    <!-- Header Section -->
+    <div class="page-header emergency-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Emergency")">
+                            Emergency
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Create Request
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <div class="emergency-icon-large">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
                 </div>
-                <div class="card-body">
-                    <div class="alert alert-warning">
-                        <i class="bi bi-info-circle"></i> <strong>Emergency requests</strong> are sent to ALL available providers immediately. Use this for urgent situations only.
+                <h1 class="page-title">Emergency Request</h1>
+                <p class="page-subtitle">Get immediate help from available service providers</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Form Section -->
+    <div class="container emergency-content">
+        <div class="emergency-wrapper">
+            <!-- Warning Alert -->
+            <div class="emergency-alert">
+                <div class="alert-icon">
+                    <i class="bi bi-info-circle-fill"></i>
+                </div>
+                <div class="alert-content">
+                    <h4>Important Information</h4>
+                    <p>Emergency requests are broadcast to <strong>ALL available providers</strong> in real-time. Please use this feature only for urgent situations that require immediate assistance.</p>
+                </div>
+            </div>
+
+            <!-- Emergency Form -->
+            <div class="emergency-form-card">
+                <form asp-action="Create" method="post" enctype="multipart/form-data" id="emergencyForm">
+                    <div asp-validation-summary="ModelOnly" class="validation-alert"></div>
+
+                    <!-- Service Selection -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="bi bi-tools"></i>
+                            <h3>What service do you need?</h3>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ServiceId" class="form-label">
+                                Select Service Type
+                                <span class="required">*</span>
+                            </label>
+                            <div class="select-wrapper">
+                                <select asp-for="ServiceId" class="form-select" required>
+                                    <option value="">-- Choose a service --</option>
+                                    @foreach (var group in Model.Services.GroupBy(s => s.CategoryName))
+                                    {
+                                        <optgroup label="@group.Key">
+                                            @foreach (var service in group)
+                                            {
+                                                <option value="@service.ServiceId">@service.ServiceName</option>
+                                            }
+                                        </optgroup>
+                                    }
+                                </select>
+                                <i class="bi bi-chevron-down select-icon"></i>
+                            </div>
+                            <span asp-validation-for="ServiceId" class="validation-message"></span>
+                        </div>
                     </div>
 
-                    <form asp-action="Create" method="post" enctype="multipart/form-data">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
-
-                        <div class="mb-3">
-                            <label asp-for="ServiceId" class="form-label">Service Needed</label>
-                            <select asp-for="ServiceId" class="form-select">
-                                <option value="">-- Select Service --</option>
-                                @foreach (var group in Model.Services.GroupBy(s => s.CategoryName))
-                                {
-                                    <optgroup label="@group.Key">
-                                        @foreach (var service in group)
-                                        {
-                                            <option value="@service.ServiceId">@service.ServiceName</option>
-                                        }
-                                    </optgroup>
-                                }
-                            </select>
-                            <span asp-validation-for="ServiceId" class="text-danger"></span>
+                    <!-- Description -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="bi bi-chat-left-text"></i>
+                            <h3>Describe your emergency</h3>
                         </div>
-
-                        <div class="mb-3">
-                            <label asp-for="Description" class="form-label">Describe Your Emergency</label>
-                            <textarea asp-for="Description" class="form-control" rows="4"
-                                      placeholder="Describe your emergency situation in detail..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                        <div class="form-group">
+                            <label asp-for="Description" class="form-label">
+                                Emergency Details
+                                <span class="required">*</span>
+                            </label>
+                            <textarea asp-for="Description"
+                                      class="form-control"
+                                      rows="6"
+                                      placeholder="Please provide detailed information about your emergency situation. Include what happened, what help you need, and any other relevant details..."
+                                      maxlength="1000"
+                                      required></textarea>
+                            <div class="char-counter">
+                                <i class="bi bi-chat-text"></i>
+                                <span id="charCount">0</span>/1000 characters
+                            </div>
+                            <span asp-validation-for="Description" class="validation-message"></span>
                         </div>
+                    </div>
 
-                        <!-- Location Selection -->
-                        <div class="mb-3">
-                            <label class="form-label"><strong>Pick emergency location:</strong></label>
-                            <div class="text-muted mb-2">Click on the map to drop a pin.</div>
+                    <!-- Location Selection -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="bi bi-geo-alt"></i>
+                            <h3>Emergency Location</h3>
+                        </div>
+                        <div class="location-section">
+                            <p class="location-instruction">
+                                <i class="bi bi-cursor-fill"></i>
+                                Click on the map to mark your exact emergency location
+                            </p>
 
                             <!-- Hidden fields -->
                             <input type="hidden" asp-for="Latitude" id="Latitude" />
                             <input type="hidden" asp-for="Longitude" id="Longitude" />
                             <input type="hidden" asp-for="LocationAddress" />
 
-                            <!-- Map -->
-                            <div id="map" style="height: 350px; width: 100%; border-radius: 12px; border: 1px solid #ddd;"></div>
-
-                            <!-- Display coordinates -->
-                            <div class="mt-2">
-                                <span class="badge bg-secondary">Lat: <span id="latText">-</span></span>
-                                <span class="badge bg-secondary">Lng: <span id="lngText">-</span></span>
+                            <!-- Map Container -->
+                            <div class="map-wrapper">
+                                <div id="map" class="map-container"></div>
+                                <div class="map-overlay" id="mapOverlay">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>Click to set location</span>
+                                </div>
                             </div>
 
-                            <span asp-validation-for="Latitude" class="text-danger"></span>
-                        </div>
+                            <!-- Coordinates Display -->
+                            <div class="coordinates-display">
+                                <div class="coordinate-badge">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>Latitude: <strong id="latText">Not set</strong></span>
+                                </div>
+                                <div class="coordinate-badge">
+                                    <i class="bi bi-geo-fill"></i>
+                                    <span>Longitude: <strong id="lngText">Not set</strong></span>
+                                </div>
+                            </div>
 
-                        <div class="mb-3">
-                            <label asp-for="Photo" class="form-label">Photo (Optional)</label>
-                            <input asp-for="Photo" class="form-control" type="file" accept="image/*" />
-                            <span asp-validation-for="Photo" class="text-danger"></span>
-                            <small class="text-muted">Upload a photo of the situation if helpful</small>
+                            <span asp-validation-for="Latitude" class="validation-message"></span>
                         </div>
+                    </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-danger btn-lg">
-                                <i class="bi bi-send-fill"></i> Send Emergency Request
-                            </button>
-                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                    <!-- Photo Upload -->
+                    <div class="form-section">
+                        <div class="section-header">
+                            <i class="bi bi-camera"></i>
+                            <h3>Add a photo (optional)</h3>
                         </div>
-                    </form>
-                </div>
+                        <div class="form-group">
+                            <label asp-for="Photo" class="form-label">
+                                Upload Photo
+                                <span class="optional">(Optional)</span>
+                            </label>
+                            <div class="file-upload-wrapper">
+                                <input asp-for="Photo"
+                                       class="file-input"
+                                       type="file"
+                                       accept="image/*"
+                                       id="photoInput" />
+                                <label for="photoInput" class="file-label">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <span class="file-text">Click to upload or drag and drop</span>
+                                    <span class="file-hint">JPG, PNG, or GIF (Max 5MB)</span>
+                                </label>
+                                <div class="file-preview" id="filePreview" style="display: none;">
+                                    <img id="previewImage" src="" alt="Preview" />
+                                    <button type="button" class="remove-file" onclick="removeFile()">
+                                        <i class="bi bi-x-circle-fill"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <span asp-validation-for="Photo" class="validation-message"></span>
+                        </div>
+                    </div>
+
+                    <!-- Important Notes -->
+                    <div class="important-notes">
+                        <div class="notes-header">
+                            <i class="bi bi-shield-check"></i>
+                            <span>Before Submitting</span>
+                        </div>
+                        <ul class="notes-list">
+                            <li>Ensure your location is accurate on the map</li>
+                            <li>Provide clear and detailed information</li>
+                            <li>Available providers will be notified immediately</li>
+                            <li>You can track responses in your emergency dashboard</li>
+                        </ul>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-emergency">
+                            <i class="bi bi-send-fill"></i>
+                            Send Emergency Request
+                        </button>
+                        <a asp-action="Index" class="btn btn-cancel">
+                            <i class="bi bi-x-circle"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -99,6 +239,10 @@
     };
 </script>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/emergencyCreate.css"/>
+}
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
@@ -109,8 +253,25 @@
             var defaultCenter = { lat: mapConfig.lat, lng: mapConfig.lng };
 
             map = new google.maps.Map(document.getElementById("map"), {
-                zoom: 12,
+                zoom: 13,
                 center: defaultCenter,
+                styles: [
+                    {
+                        featureType: "all",
+                        elementType: "geometry",
+                        stylers: [{ color: "#f5f5f5" }]
+                    },
+                    {
+                        featureType: "water",
+                        elementType: "geometry",
+                        stylers: [{ color: "#c9e6f7" }]
+                    },
+                    {
+                        featureType: "road",
+                        elementType: "geometry",
+                        stylers: [{ color: "#ffffff" }]
+                    }
+                ]
             });
 
             map.addListener("click", function(e) {
@@ -121,6 +282,7 @@
                     marker = new google.maps.Marker({
                         position: { lat: lat, lng: lng },
                         map: map,
+                        animation: google.maps.Animation.DROP,
                     });
                 } else {
                     marker.setPosition({ lat: lat, lng: lng });
@@ -130,7 +292,51 @@
                 document.getElementById("Longitude").value = lng;
                 document.getElementById("latText").innerText = lat.toFixed(6);
                 document.getElementById("lngText").innerText = lng.toFixed(6);
+
+                // Hide overlay
+                document.getElementById("mapOverlay").classList.add('hidden');
             });
+        }
+
+        // Character counter
+        document.addEventListener('DOMContentLoaded', function() {
+            const descField = document.getElementById('Description');
+            const charCount = document.getElementById('charCount');
+
+            if (descField) {
+                descField.addEventListener('input', function() {
+                    charCount.textContent = this.value.length;
+
+                    if (this.value.length > 900) {
+                        charCount.style.color = 'var(--emergency)';
+                    } else {
+                        charCount.style.color = 'var(--text-muted)';
+                    }
+                });
+            }
+
+            // File upload preview
+            const photoInput = document.getElementById('photoInput');
+            if (photoInput) {
+                photoInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            document.getElementById('previewImage').src = e.target.result;
+                            document.getElementById('filePreview').style.display = 'block';
+                            document.querySelector('.file-label').style.display = 'none';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+
+        function removeFile() {
+            document.getElementById('photoInput').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+            document.querySelector('.file-label').style.display = 'flex';
         }
     </script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=@apiKey&callback=initMap"></script>

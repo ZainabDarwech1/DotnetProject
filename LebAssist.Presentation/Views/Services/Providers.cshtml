@@ -3,24 +3,196 @@
     ViewData["Title"] = Model.Service.ServiceName + " - Providers";
 }
 
-<div class="container mt-4">
-    <h2>@Model.Service.ServiceName - Providers</h2>
-    <div class="row mt-3">
-        @foreach (var p in Model.Providers)
+<div class="service-providers-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Services")">
+                            <i class="bi bi-house-door"></i>
+                            Services
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Category", "Services", new { id = Model.Service.CategoryId })">
+                            @Model.Service.CategoryName
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Details", "Services", new { id = Model.Service.ServiceId })">
+                            @Model.Service.ServiceName
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Providers
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">Available Providers</h1>
+                <p class="page-subtitle">Choose from our trusted professionals for @Model.Service.ServiceName</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Providers Section -->
+    <div class="container providers-section">
+        @if (Model.Providers != null && Model.Providers.Any())
         {
-            <div class="col-md-6 mb-3">
-                <div class="card">
-                    <div class="card-body d-flex align-items-center">
-                        <img src="@p.ProviderPhotoPath" alt="@p.ProviderName" style="width:64px;height:64px;object-fit:cover;border-radius:6px;margin-right:12px;" />
-                        <div>
-                            <h5>@p.ProviderName</h5>
-                            <p class="mb-1">Price: @p.PricePerHour.ToString("C")</p>
-                            <a class="btn btn-sm btn-primary" href="@Url.Action("Create", "Booking", new { providerId = p.ProviderId, serviceId = Model.Service.ServiceId })">Book</a>
-                            <a class="btn btn-sm btn-secondary" href="@Url.Action("Profile", "Provider", new { id = p.ProviderId })">View Profile</a>
-                        </div>
-                    </div>
+            <!-- Stats Bar -->
+            <div class="stats-info">
+                <div class="stat-badge">
+                    <i class="bi bi-people-fill"></i>
+                    <span>@Model.Providers.Count() Provider@(Model.Providers.Count() != 1 ? "s" : "") Available</span>
                 </div>
             </div>
+
+            <!-- Providers Grid -->
+            <div class="providers-grid">
+                @foreach (var provider in Model.Providers)
+                {
+                    <div class="provider-card">
+                        <!-- Provider Header -->
+                        <div class="provider-header">
+                            <div class="provider-avatar">
+                                @if (!string.IsNullOrEmpty(provider.ProviderPhotoPath))
+                                {
+                                    <img src="@provider.ProviderPhotoPath" alt="@provider.ProviderName" class="avatar-img">
+                                }
+                                else
+                                {
+                                    <div class="avatar-placeholder">
+                                        <i class="bi bi-person"></i>
+                                    </div>
+                                }
+                                <div class="verified-badge" title="Verified Provider">
+                                    <i class="bi bi-patch-check-fill"></i>
+                                </div>
+                            </div>
+                            <div class="provider-info">
+                                <h3 class="provider-name">@provider.ProviderName</h3>
+                                <div class="provider-meta">
+                                    <span class="rating">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-half"></i>
+                                        <span class="rating-text">4.5</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Provider Details -->
+                        <div class="provider-details">
+                            <div class="detail-item price-item">
+                                <div class="detail-icon">
+                                    <i class="bi bi-cash-coin"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <span class="detail-label">Hourly Rate</span>
+                                    <span class="detail-value">@provider.PricePerHour.ToString("C")</span>
+                                </div>
+                            </div>
+
+                            <div class="detail-item">
+                                <div class="detail-icon">
+                                    <i class="bi bi-briefcase"></i>
+                                </div>
+                                <div class="detail-content">
+                                    <span class="detail-label">Service</span>
+                                    <span class="detail-value">@Model.Service.ServiceName</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Provider Actions -->
+                        <div class="provider-actions">
+                            <a href="@Url.Action("Create", "Booking", new { providerId = provider.ProviderId, serviceId = Model.Service.ServiceId })"
+                               class="btn btn-book">
+                                <i class="bi bi-calendar-check"></i>
+                                Book Now
+                            </a>
+                            <a href="@Url.Action("Profile", "Provider", new { id = provider.ProviderId })"
+                               class="btn btn-profile">
+                                <i class="bi bi-person-circle"></i>
+                                View Profile
+                            </a>
+                        </div>
+
+                        <!-- Hover Overlay -->
+                        <div class="card-overlay"></div>
+                    </div>
+                }
+            </div>
         }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-person-x"></i>
+                </div>
+                <h3>No Providers Available</h3>
+                <p>There are currently no providers offering this service. Please check back later!</p>
+            </div>
+        }
+
+        <!-- Back Navigation -->
+        <div class="page-actions">
+            <a href="@Url.Action("Details", "Services", new { id = Model.Service.ServiceId })" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+                Back to Service Details
+            </a>
+            <a href="@Url.Action("Category", "Services", new { id = Model.Service.CategoryId })" class="btn-back">
+                <i class="bi bi-grid"></i>
+                Browse @Model.Service.CategoryName
+            </a>
+        </div>
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/serviceProviders.css"/>
+}
+
+@section Scripts {
+    <script>
+        // Add scroll animation observer
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 50);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            const providerCards = document.querySelectorAll('.provider-card');
+            providerCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+}

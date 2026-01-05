@@ -3,28 +3,201 @@
     ViewData["Title"] = "Pending Provider Applications";
 }
 
-<div class="container mt-3">
-    <h3>Pending Provider Applications</h3>
+<div class="admin-applications-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                            <i class="bi bi-speedometer2"></i>
+                            Admin Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Pending Applications
+                    </li>
+                </ol>
+            </nav>
 
-    <table class="table table-striped mt-3">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Date Applied</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var app in Model)
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-hourglass-split"></i>
+                    Pending Provider Applications
+                </h1>
+                <p class="page-subtitle">Review and manage provider applications</p>
+            </div>
+
+            <!-- Stats Badge -->
+            @if (Model.Any())
             {
-                <tr>
-                    <td>@app.FullName</td>
-                    <td>@app.DateApplied.ToString("yyyy-MM-dd")</td>
-                    <td>
-                        <a href="@Url.Action("Details", "ProviderApproval", new { area = "Admin", id = app.ClientId })" class="btn btn-sm btn-primary">View</a>
-                    </td>
-                </tr>
+                <div class="header-stats">
+                    <div class="stat-badge">
+                        <i class="bi bi-clock-history"></i>
+                        <span class="stat-value">@Model.Count()</span>
+                        <span class="stat-label">Pending @(Model.Count() == 1 ? "Application" : "Applications")</span>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="container applications-content">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
+                </div>
+                <h3 class="empty-title">No Pending Applications</h3>
+                <p class="empty-description">
+                    All provider applications have been reviewed. New applications will appear here.
+                </p>
+            </div>
+        }
+        else
+        {
+            <!-- Applications Table -->
+            <div class="applications-card">
+                <div class="card-header">
+                    <div class="header-content">
+                        <i class="bi bi-list-check"></i>
+                        <h3>Applications Queue</h3>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="applications-table" id="applicationsTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <i class="bi bi-person"></i>
+                                        Applicant Name
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-calendar"></i>
+                                        Date Applied
+                                    </th>
+                                    <th>
+                                        <i class="bi bi-clock"></i>
+                                        Waiting Time
+                                    </th>
+                                    <th class="text-center">
+                                        <i class="bi bi-gear"></i>
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var app in Model.OrderBy(a => a.DateApplied))
+                                {
+                                    var waitingDays = (DateTime.Now - app.DateApplied).Days;
+                                    var urgencyClass = waitingDays > 2 ? "urgent" : waitingDays > 1 ? "warning" : "normal";
+
+                                    <tr class="application-row">
+                                        <td>
+                                            <div class="applicant-info">
+                                                <div class="applicant-avatar">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                                <div class="applicant-details">
+                                                    <span class="applicant-name">@app.FullName</span>
+                                                    <span class="applicant-label">Pending Review</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <div class="date-info">
+                                                <i class="bi bi-calendar-event"></i>
+                                                <span>@app.DateApplied.ToString("MMM dd, yyyy")</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="waiting-badge @urgencyClass">
+                                                <i class="bi bi-clock"></i>
+                                                @if (waitingDays == 0)
+                                                {
+                                                    <span>Today</span>
+                                                }
+                                                else if (waitingDays == 1)
+                                                {
+                                                    <span>1 day</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@waitingDays days</span>
+                                                }
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <a href="@Url.Action("Details", "ProviderApproval", new { area = "Admin", id = app.ClientId })"
+                                               class="btn btn-view">
+                                                <i class="bi bi-eye"></i>
+                                                Review Application
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pendingapplications.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+}
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            @if (Model.Any())
+            {
+                    <text>
+                    $('#applicationsTable').DataTable({
+                        pageLength: 10,
+                        order: [[1, 'asc']], // Sort by date
+                        language: {
+                            search: "Search applications:",
+                            lengthMenu: "Show _MENU_ applications",
+                            info: "Showing _START_ to _END_ of _TOTAL_ applications",
+                            paginate: {
+                                first: "First",
+                                last: "Last",
+                                next: "Next",
+                                previous: "Previous"
+                            }
+                        }
+                    });
+                    </text>
+            }
+
+            // Animate rows on load
+            const rows = document.querySelectorAll('.application-row');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    row.style.transition = 'all 0.4s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+}

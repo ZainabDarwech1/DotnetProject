@@ -3,137 +3,212 @@
     ViewData["Title"] = "Leave a Review";
 }
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8 col-lg-6">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">
-                        <i class="bi bi-star-fill me-2"></i>Leave a Review
-                    </h4>
+<div class="review-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("MyBookings", "Booking")">
+                            My Bookings
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Leave Review
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-star-fill"></i>
+                    Leave a Review
+                </h1>
+                <p class="page-subtitle">Share your experience with this service</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Review Form Section -->
+    <div class="container review-content">
+        <div class="review-wrapper">
+            <!-- Booking Information Card -->
+            <div class="booking-info-card">
+                <div class="info-header">
+                    <i class="bi bi-info-circle"></i>
+                    <h3>Booking Information</h3>
                 </div>
-                <div class="card-body">
-                    <!-- Booking Info -->
-                    <div class="bg-light rounded p-3 mb-4">
-                        <div class="row">
-                            <div class="col-sm-6">
-                                <small class="text-muted">Service Provider</small>
-                                <p class="mb-1 fw-semibold">@Model.ProviderName</p>
-                            </div>
-                            <div class="col-sm-6">
-                                <small class="text-muted">Service</small>
-                                <p class="mb-1 fw-semibold">@Model.ServiceName</p>
+                <div class="info-content">
+                    <div class="info-row">
+                        <div class="info-col">
+                            <label>Service Provider</label>
+                            <div class="info-value">
+                                <i class="bi bi-person-badge"></i>
+                                @Model.ProviderName
                             </div>
                         </div>
-                        <div class="row mt-2">
-                            <div class="col-12">
-                                <small class="text-muted">Booking Date</small>
-                                <p class="mb-0">@Model.BookingDate.ToString("dddd, MMMM dd, yyyy 'at' hh:mm tt")</p>
+                        <div class="info-col">
+                            <label>Service</label>
+                            <div class="info-value">
+                                <i class="bi bi-tools"></i>
+                                @Model.ServiceName
+                            </div>
+                        </div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-col full-width">
+                            <label>Booking Date</label>
+                            <div class="info-value">
+                                <i class="bi bi-calendar-check"></i>
+                                @Model.BookingDate.ToString("dddd, MMMM dd, yyyy 'at' hh:mm tt")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Review Form Card -->
+            <div class="review-form-card">
+                <form asp-action="Create" method="post" id="reviewForm">
+                    <input type="hidden" asp-for="BookingId" />
+
+                    <!-- Star Rating Section -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <label class="form-label">
+                                Rate Your Experience
+                                <span class="required">*</span>
+                            </label>
+                        </div>
+                        <div class="star-rating-container">
+                            <div class="star-rating-input" id="starRatingInput">
+                                @for (int i = 5; i >= 1; i--)
+                                {
+                                    <input type="radio" id="star@(i)" name="Rating" value="@i" class="star-input" />
+                                    <label for="star@(i)" class="star-label" data-rating="@i">
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                }
+                            </div>
+                            <div class="rating-feedback">
+                                <div id="ratingText" class="rating-text">Click stars to rate</div>
+                                <div id="ratingEmoji" class="rating-emoji"></div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="Rating" class="validation-message"></span>
+                    </div>
+
+                    <!-- Comment Section -->
+                    <div class="form-section">
+                        <div class="section-label">
+                            <label asp-for="Comment" class="form-label">
+                                Share Your Experience
+                                <span class="optional">(Optional)</span>
+                            </label>
+                        </div>
+                        <div class="comment-wrapper">
+                            <textarea asp-for="Comment"
+                                      class="form-control"
+                                      rows="6"
+                                      placeholder="Tell us about your experience with this service provider. What did you like? What could be improved?"
+                                      maxlength="1000"></textarea>
+                            <div class="char-counter">
+                                <i class="bi bi-chat-text"></i>
+                                <span id="charCount">0</span>/1000 characters
+                            </div>
+                        </div>
+                        <span asp-validation-for="Comment" class="validation-message"></span>
+                    </div>
+
+                    <!-- Anonymous Option -->
+                    <div class="form-section">
+                        <div class="anonymous-option">
+                            <div class="custom-checkbox">
+                                <input asp-for="IsAnonymous"
+                                       class="checkbox-input"
+                                       type="checkbox"
+                                       id="anonymousCheck" />
+                                <label for="anonymousCheck" class="checkbox-label">
+                                    <span class="checkbox-box">
+                                        <i class="bi bi-check"></i>
+                                    </span>
+                                    <span class="checkbox-text">
+                                        <strong>Post Anonymously</strong>
+                                        <span class="checkbox-desc">Your name won't be shown with this review</span>
+                                    </span>
+                                </label>
                             </div>
                         </div>
                     </div>
 
-                    <form asp-action="Create" method="post">
-                        <input type="hidden" asp-for="BookingId" />
-
-                        <!-- Star Rating -->
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold">Your Rating <span class="text-danger">*</span></label>
-                            <div class="star-rating-input" id="starRatingInput">
-                                @for (int i = 5; i >= 1; i--)
-                                {
-                                    <input type="radio" id="star@(i)" name="Rating" value="@i" class="d-none" />
-                                    <label for="star@(i)" class="star-label" data-rating="@i">
-                                        <i class="bi bi-star-fill fs-2"></i>
-                                    </label>
-                                }
-                            </div>
-                            <div id="ratingText" class="text-muted mt-2">Click to rate</div>
-                            <span asp-validation-for="Rating" class="text-danger"></span>
+                    <!-- Review Guidelines -->
+                    <div class="guidelines-section">
+                        <div class="guidelines-header">
+                            <i class="bi bi-lightbulb"></i>
+                            <span>Review Guidelines</span>
                         </div>
+                        <ul class="guidelines-list">
+                            <li>Be honest and specific about your experience</li>
+                            <li>Focus on the service quality and professionalism</li>
+                            <li>Keep your review respectful and constructive</li>
+                            <li>You can edit your review for 7 days after posting</li>
+                        </ul>
+                    </div>
 
-                        <!-- Comment -->
-                        <div class="mb-4">
-                            <label asp-for="Comment" class="form-label fw-semibold">Your Review (Optional)</label>
-                            <textarea asp-for="Comment" class="form-control" rows="4"
-                                      placeholder="Share your experience with this service provider..."
-                                      maxlength="1000"></textarea>
-                            <div class="form-text">
-                                <span id="charCount">0</span>/1000 characters
-                            </div>
-                            <span asp-validation-for="Comment" class="text-danger"></span>
-                        </div>
-
-                        <!-- Anonymous Option -->
-                        <div class="mb-4">
-                            <div class="form-check">
-                                <input asp-for="IsAnonymous" class="form-check-input" type="checkbox" />
-                                <label asp-for="IsAnonymous" class="form-check-label">
-                                    Post anonymously
-                                </label>
-                            </div>
-                            <small class="text-muted">Your name won't be shown with this review</small>
-                        </div>
-
-                        <!-- Submit Buttons -->
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary flex-grow-1">
-                                <i class="bi bi-send me-2"></i>Submit Review
-                            </button>
-                            <a asp-controller="BookingDetails" asp-action="Details" asp-route-id="@Model.BookingId"
-                               class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Action Buttons -->
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-submit">
+                            <i class="bi bi-send"></i>
+                            Submit Review
+                        </button>
+                        <a asp-controller="BookingDetails"
+                           asp-action="Details"
+                           asp-route-id="@Model.BookingId"
+                           class="btn btn-cancel">
+                            <i class="bi bi-x-circle"></i>
+                            Cancel
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
 @section Styles {
-    <style>
-        .star-rating-input {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 0.25rem;
-        }
-
-        .star-label {
-            cursor: pointer;
-            color: #ddd;
-            transition: color 0.2s ease;
-        }
-
-        .star-label:hover,
-        .star-label:hover ~ .star-label,
-        .star-label.active,
-        .star-label.active ~ .star-label {
-            color: #ffc107;
-        }
-
-        .star-rating-input input:checked ~ .star-label {
-            color: #ffc107;
-        }
-    </style>
+    <link rel="stylesheet" href="~/css/reviewCreate.css"/>
 }
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const ratingTexts = {
-                1: 'Poor - Very disappointed',
-                2: 'Fair - Below expectations',
-                3: 'Good - Met expectations',
-                4: 'Very Good - Exceeded expectations',
-                5: 'Excellent - Outstanding service!'
+            const ratingConfig = {
+                1: { text: 'Poor - Very disappointed', emoji: '😞' },
+                2: { text: 'Fair - Below expectations', emoji: '😕' },
+                3: { text: 'Good - Met expectations', emoji: '😊' },
+                4: { text: 'Very Good - Exceeded expectations', emoji: '😄' },
+                5: { text: 'Excellent - Outstanding service!', emoji: '🤩' }
             };
 
             const stars = document.querySelectorAll('.star-label');
             const ratingText = document.getElementById('ratingText');
+            const ratingEmoji = document.getElementById('ratingEmoji');
 
             stars.forEach(star => {
                 star.addEventListener('click', function() {
@@ -150,27 +225,32 @@
                         sibling = sibling.nextElementSibling;
                     }
 
-                    ratingText.textContent = ratingTexts[rating];
-                    ratingText.classList.remove('text-muted');
-                    ratingText.classList.add('text-warning', 'fw-semibold');
+                    updateRatingDisplay(rating);
                 });
 
                 star.addEventListener('mouseenter', function() {
                     const rating = this.dataset.rating;
-                    ratingText.textContent = ratingTexts[rating];
+                    updateRatingDisplay(rating);
                 });
             });
 
             document.querySelector('.star-rating-input').addEventListener('mouseleave', function() {
                 const checked = document.querySelector('.star-rating-input input:checked');
                 if (checked) {
-                    ratingText.textContent = ratingTexts[checked.value];
+                    updateRatingDisplay(checked.value);
                 } else {
-                    ratingText.textContent = 'Click to rate';
-                    ratingText.classList.remove('text-warning', 'fw-semibold');
-                    ratingText.classList.add('text-muted');
+                    ratingText.textContent = 'Click stars to rate';
+                    ratingText.classList.remove('active');
+                    ratingEmoji.textContent = '';
                 }
             });
+
+            function updateRatingDisplay(rating) {
+                const config = ratingConfig[rating];
+                ratingText.textContent = config.text;
+                ratingText.classList.add('active');
+                ratingEmoji.textContent = config.emoji;
+            }
 
             // Character counter
             const commentField = document.getElementById('Comment');
@@ -179,6 +259,12 @@
             if (commentField) {
                 commentField.addEventListener('input', function() {
                     charCount.textContent = this.value.length;
+
+                    if (this.value.length > 900) {
+                        charCount.style.color = 'var(--danger)';
+                    } else {
+                        charCount.style.color = 'var(--text-muted)';
+                    }
                 });
             }
         });

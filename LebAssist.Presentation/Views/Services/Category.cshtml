@@ -3,63 +3,139 @@
     ViewData["Title"] = Model.CategoryName;
 }
 
-<div class="container mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Services")">Services</a></li>
-            <li class="breadcrumb-item active">@Model.CategoryName</li>
-        </ol>
-    </nav>
+<div class="category-services-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Services")">
+                            <i class="bi bi-house-door"></i>
+                            Services
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        @Model.CategoryName
+                    </li>
+                </ol>
+            </nav>
 
-    <div class="mb-4">
-        <h1 class="display-5">@Model.CategoryName</h1>
-        @if (!string.IsNullOrEmpty(Model.Description))
-        {
-            <p class="lead text-muted">@Model.Description</p>
-        }
+            <!-- Category Header -->
+            <div class="category-header">
+                <div class="category-header-content">
+                    <h1 class="category-title">@Model.CategoryName</h1>
+                    @if (!string.IsNullOrEmpty(Model.Description))
+                    {
+                        <p class="category-description">@Model.Description</p>
+                    }
+                    <div class="category-meta">
+                        <span class="meta-item">
+                            <i class="bi bi-tools"></i>
+                            @Model.Services?.Count(s => s.IsActive) Active Services
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    @if (Model.Services != null && Model.Services.Any())
-    {
-        <div class="row g-4">
-            @foreach (var service in Model.Services.Where(s => s.IsActive))
-            {
-                <div class="col-md-6 col-lg-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
+    <!-- Services Section -->
+    <div class="container services-section">
+        @if (Model.Services != null && Model.Services.Any(s => s.IsActive))
+        {
+            <!-- Services Grid -->
+            <div class="services-grid">
+                @foreach (var service in Model.Services.Where(s => s.IsActive))
+                {
+                    <div class="service-card">
+                        <div class="service-icon-wrapper">
                             @if (!string.IsNullOrEmpty(service.ServiceIconPath))
                             {
-                                <img src="@service.ServiceIconPath" alt="@service.ServiceName" class="mb-3" style="width: 60px; height: 60px; object-fit: contain;">
+                                <img src="@service.ServiceIconPath" alt="@service.ServiceName" class="service-icon-img">
                             }
                             else
                             {
-                                <i class="bi bi-wrench text-primary mb-3" style="font-size: 40px;"></i>
+                                <div class="service-icon-default">
+                                    <i class="bi bi-wrench-adjustable"></i>
+                                </div>
                             }
-                            <h5 class="card-title">@service.ServiceName</h5>
-                            <p class="card-text text-muted">@service.ServiceDescription</p>
-                            <a href="@Url.Action("Details", "Services", new { id = service.ServiceId })" class="btn btn-outline-primary btn-sm">
-                                View Details <i class="bi bi-arrow-right"></i>
+                        </div>
+
+                        <div class="service-content">
+                            <h3 class="service-title">@service.ServiceName</h3>
+                            <p class="service-description">@service.ServiceDescription</p>
+                        </div>
+
+                        <div class="service-footer">
+                            <a href="@Url.Action("Details", "Services", new { id = service.ServiceId })" class="service-link">
+                                View Details
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
+
+                        <div class="service-overlay">
+                            <a href="@Url.Action("Details", "Services", new { id = service.ServiceId })" class="overlay-btn">
+                                <i class="bi bi-eye"></i>
+                                View Details
                             </a>
                         </div>
                     </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-inbox"></i>
                 </div>
-            }
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No active services in this category yet.
-        </div>
-    }
+                <h3>No Active Services</h3>
+                <p>There are no active services in this category at the moment. Check back soon!</p>
+            </div>
+        }
 
-    <div class="mt-4">
-        <a href="@Url.Action("Index", "Services")" class="btn btn-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Categories
-        </a>
+        <!-- Back Button -->
+        <div class="page-actions">
+            <a href="@Url.Action("Index", "Services")" class="btn-back">
+                <i class="bi bi-arrow-left"></i>
+                Back to Categories
+            </a>
+        </div>
     </div>
 </div>
 
+@section Styles {
+   <link rel="stylesheet" href="~/css/serviceCategory.css"/>
+}
+
 @section Scripts {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script>
+        // Add scroll animation observer
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 50);
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            const serviceCards = document.querySelectorAll('.service-card');
+            serviceCards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
 }

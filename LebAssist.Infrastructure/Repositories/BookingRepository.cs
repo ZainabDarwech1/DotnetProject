@@ -18,7 +18,7 @@ namespace LebAssist.Infrastructure.Repositories
                 .Include(b => b.Provider)
                 .Include(b => b.Service)
                 .Where(b => b.ClientId == clientId)
-                .OrderByDescending(b => b.ScheduledDateTime)
+                .OrderByDescending(b => b.RequestDate)
                 .ToListAsync();
         }
 
@@ -28,7 +28,7 @@ namespace LebAssist.Infrastructure.Repositories
                 .Include(b => b.Client)
                 .Include(b => b.Service)
                 .Where(b => b.ProviderId == providerId)
-                .OrderByDescending(b => b.ScheduledDateTime)
+                .OrderByDescending(b => b.RequestDate)
                 .ToListAsync();
         }
 
@@ -38,7 +38,7 @@ namespace LebAssist.Infrastructure.Repositories
                 .Include(b => b.Client)
                 .Include(b => b.Service)
                 .Where(b => b.ProviderId == providerId && b.Status == BookingStatus.Pending)
-                .OrderByDescending(b => b.ScheduledDateTime)
+                .OrderByDescending(b => b.RequestDate)
                 .ToListAsync();
         }
 
@@ -49,7 +49,7 @@ namespace LebAssist.Infrastructure.Repositories
                 .Include(b => b.Provider)
                 .Include(b => b.Service)
                 .Where(b => b.Status == status)
-                .OrderByDescending(b => b.ScheduledDateTime)
+                .OrderByDescending(b => b.RequestDate)
                 .ToListAsync();
         }
 
@@ -58,8 +58,9 @@ namespace LebAssist.Infrastructure.Repositories
             return await _context.Bookings
                 .Include(b => b.Client)
                 .Include(b => b.Provider)
-                .Include(b => b.Service)
                 .Include(b => b.Review)
+                .Include(b => b.Service)
+                .ThenInclude(s => s.Category)
                 .FirstOrDefaultAsync(b => b.BookingId == bookingId);
         }
     }

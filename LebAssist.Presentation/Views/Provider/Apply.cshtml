@@ -3,170 +3,348 @@
     ViewData["Title"] = "Become a Provider";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-10">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0"><i class="bi bi-person-badge"></i> Become a Service Provider</h4>
+<div class="provider-application-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Become a Provider
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-person-badge"></i>
+                    Become a Provider
+                </h1>
+                <p class="page-subtitle">Join our network and start earning today</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="container form-content">
+        <div class="form-wrapper">
+            <form asp-action="Apply" method="post" enctype="multipart/form-data" id="providerApplicationForm">
+                <!-- Validation Summary -->
+                <div asp-validation-summary="ModelOnly" class="custom-alert alert-danger"></div>
+
+                <!-- Personal Information Card -->
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div class="card-icon">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <h3 class="card-title">Your Information</h3>
+                            <p class="card-subtitle">Your current account details</p>
+                        </div>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-person"></i>
+                                    Full Name
+                                </label>
+                                <div class="readonly-field">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>@Model.FirstName @Model.LastName</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="bi bi-telephone"></i>
+                                    Phone Number
+                                </label>
+                                <div class="readonly-field">
+                                    <i class="bi bi-lock-fill"></i>
+                                    <span>@Model.PhoneNumber</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted mb-4">
-                        Join our network of service providers and start earning! Fill out the form below to apply.
-                    </p>
 
-                    <form asp-action="Apply" method="post" enctype="multipart/form-data">
-                        <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                <!-- Profile Photo Card -->
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div class="card-icon">
+                            <i class="bi bi-camera-fill"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <h3 class="card-title">Profile Photo</h3>
+                            <p class="card-subtitle">Upload a professional photo (optional but recommended)</p>
+                        </div>
+                    </div>
+                    <div class="form-card-body">
+                        <!-- Image Preview -->
+                        <div id="profilePhotoPreview" class="image-preview-container" style="display: none;">
+                            <img id="profilePhotoImg" src="" alt="Preview" class="image-preview">
+                            <button type="button" class="btn-remove-preview" onclick="removeProfilePhoto()">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
 
-                        <!-- Personal Info (Read-only) -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Your Information</h5>
+                        <div class="form-group">
+                            <div class="file-upload-wrapper">
+                                <input type="file"
+                                       name="ProfilePhoto"
+                                       accept="image/jpeg,image/png,image/webp"
+                                       class="file-input"
+                                       id="profilePhotoInput"
+                                       onchange="previewProfilePhoto(this)" />
+                                <label for="profilePhotoInput" class="file-upload-label">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <span class="file-text">Choose a photo or drag it here</span>
+                                    <span class="file-hint">JPG, PNG, WEBP • Max 5MB</span>
+                                </label>
                             </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Name</label>
-                                        <input type="text" class="form-control" value="@Model.FirstName @Model.LastName" readonly />
-                                    </div>
-                                    <div class="col-md-6 mb-3">
-                                        <label class="form-label">Phone</label>
-                                        <input type="text" class="form-control" value="@Model.PhoneNumber" readonly />
-                                    </div>
-                                </div>
+                            <span asp-validation-for="ProfilePhoto" class="validation-message"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About You Card -->
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div class="card-icon">
+                            <i class="bi bi-file-text-fill"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <h3 class="card-title">About You</h3>
+                            <p class="card-subtitle">Tell us about your experience and expertise</p>
+                        </div>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group">
+                            <label asp-for="Bio" class="form-label">
+                                <i class="bi bi-chat-text"></i>
+                                <span>Your Bio</span>
+                                <span class="required">*</span>
+                            </label>
+                            <textarea asp-for="Bio"
+                                      class="form-control bio-textarea"
+                                      rows="6"
+                                      placeholder="Describe your experience, skills, and why clients should choose you..."
+                                      id="bioInput"></textarea>
+                            <span asp-validation-for="Bio" class="validation-message"></span>
+                            <div class="char-counter">
+                                <i class="bi bi-chat-text"></i>
+                                <span id="bioCharCount">0</span>/500 characters (min 50)
                             </div>
                         </div>
 
-                        <!-- Profile Photo -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Profile Photo</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small">Upload a professional profile photo (optional but recommended). Max 5MB. Formats: jpg, png, webp</p>
-                                <div class="mb-3">
-                                    <input type="file" name="ProfilePhoto" accept="image/jpeg,image/png,image/webp" class="form-control" id="profilePhotoInput" />
-                                    <span asp-validation-for="ProfilePhoto" class="text-danger"></span>
-                                    <div id="profilePhotoPreview" class="mt-2" style="display: none;">
-                                        <img id="profilePhotoImg" src="" alt="Preview" style="max-width: 150px; max-height: 150px; object-fit: cover; border-radius: 8px;" />
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="form-group">
+                            <label asp-for="YearsOfExperience" class="form-label">
+                                <i class="bi bi-award"></i>
+                                <span>Years of Experience</span>
+                                <span class="required">*</span>
+                            </label>
+                            <input asp-for="YearsOfExperience"
+                                   type="number"
+                                   class="form-control experience-input"
+                                   min="0"
+                                   max="50"
+                                   placeholder="Enter years of experience" />
+                            <span asp-validation-for="YearsOfExperience" class="validation-message"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Services Selection Card -->
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div class="card-icon">
+                            <i class="bi bi-tools"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <h3 class="card-title">Services You Offer</h3>
+                            <p class="card-subtitle">Select at least one service you can provide</p>
+                        </div>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="services-info">
+                            <i class="bi bi-info-circle"></i>
+                            <span>Choose the services you're qualified to provide. You can update these later.</span>
                         </div>
 
-                        <!-- Bio & Experience -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">About You</h5>
-                            </div>
-                            <div class="card-body">
-                                <div class="mb-3">
-                                    <label asp-for="Bio" class="form-label">Tell Us About Yourself *</label>
-                                    <textarea asp-for="Bio" class="form-control" rows="5"
-                                              placeholder="Describe your experience, skills, and why clients should choose you..."></textarea>
-                                    <span asp-validation-for="Bio" class="text-danger"></span>
-                                    <small class="text-muted">50-500 characters</small>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label asp-for="YearsOfExperience" class="form-label">Years of Experience *</label>
-                                    <input asp-for="YearsOfExperience" type="number" class="form-control" min="0" max="50" style="max-width: 150px;" />
-                                    <span asp-validation-for="YearsOfExperience" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Services Selection -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Services You Want to Offer *</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted">Select at least one service you can provide:</p>
-
-                                @foreach (var category in Model.ServiceCategories)
-                                {
-                                    <div class="mb-3">
-                                        <h6 class="fw-bold text-primary">@category.CategoryName</h6>
-                                        <div class="row">
-                                            @foreach (var service in category.Services)
-                                            {
-                                                <div class="col-md-6 col-lg-4">
-                                                    <div class="form-check">
-                                                        <input class="form-check-input service-checkbox" 
-                                                               type="checkbox"
-                                                               name="SelectedServiceIds"
-                                                               value="@service.ServiceId"
-                                                               id="service-@service.ServiceId"
-                                                               data-service-name="@service.ServiceName"
-                                                               @(Model.SelectedServiceIds.Contains(service.ServiceId) ? "checked" : "")>
-                                                        <label class="form-check-label" for="service-@service.ServiceId">
-                                                            @service.ServiceName
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            }
+                        @foreach (var category in Model.ServiceCategories)
+                        {
+                            <div class="service-category">
+                                <h4 class="category-title">
+                                    <i class="bi bi-bookmark-fill"></i>
+                                    @category.CategoryName
+                                </h4>
+                                <div class="services-grid">
+                                    @foreach (var service in category.Services)
+                                    {
+                                        <div class="service-checkbox-wrapper">
+                                            <input class="checkbox-input service-checkbox"
+                                                   type="checkbox"
+                                                   name="SelectedServiceIds"
+                                                   value="@service.ServiceId"
+                                                   id="service-@service.ServiceId"
+                                                   data-service-name="@service.ServiceName"
+                                                   @(Model.SelectedServiceIds.Contains(service.ServiceId) ? "checked" : "")>
+                                            <label for="service-@service.ServiceId" class="service-checkbox-label">
+                                                <span class="checkbox-box">
+                                                    <i class="bi bi-check"></i>
+                                                </span>
+                                                <span class="service-name">@service.ServiceName</span>
+                                            </label>
                                         </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
-
-                        <!-- Working Hours per Service -->
-                        <div class="card mb-4" id="workingHoursSection" style="display: none;">
-                            <div class="card-header">
-                                <h5 class="mb-0">Working Hours for Selected Services</h5>
-                            </div>
-                            <div class="card-body" id="workingHoursContainer">
-                                <!-- Dynamic content added by JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Portfolio Photos -->
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h5 class="mb-0">Portfolio Photos</h5>
-                            </div>
-                            <div class="card-body">
-                                <p class="text-muted small">Upload photos of your work (optional but recommended). You can add up to 5 photos. Max 5MB each.</p>
-                                <div class="mb-3">
-                                    <input type="file" name="PortfolioPhotos" accept="image/jpeg,image/png,image/webp" multiple class="form-control" id="portfolioPhotosInput" />
-                                    <span asp-validation-for="PortfolioPhotos" class="text-danger"></span>
+                                    }
                                 </div>
-                                <div id="portfolioPreviewContainer" class="row mt-3"></div>
                             </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- Working Hours Card (Dynamic) -->
+                <div class="form-card" id="workingHoursSection" style="display: none;">
+                    <div class="form-card-header">
+                        <div class="card-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <h3 class="card-title">Working Hours</h3>
+                            <p class="card-subtitle">Set your availability for each selected service</p>
+                        </div>
+                    </div>
+                    <div class="form-card-body">
+                        <div id="workingHoursContainer">
+                            <!-- Dynamic content added by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Photos Card -->
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div class="card-icon">
+                            <i class="bi bi-images"></i>
+                        </div>
+                        <div class="card-title-section">
+                            <h3 class="card-title">Portfolio Photos</h3>
+                            <p class="card-subtitle">Showcase your work (optional but recommended)</p>
+                        </div>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group">
+                            <div class="file-upload-wrapper">
+                                <input type="file"
+                                       name="PortfolioPhotos"
+                                       accept="image/jpeg,image/png,image/webp"
+                                       multiple
+                                       class="file-input"
+                                       id="portfolioPhotosInput"
+                                       onchange="previewPortfolioPhotos(this)" />
+                                <label for="portfolioPhotosInput" class="file-upload-label">
+                                    <i class="bi bi-cloud-upload"></i>
+                                    <span class="file-text">Choose photos or drag them here</span>
+                                    <span class="file-hint">Up to 5 photos • JPG, PNG, WEBP • Max 5MB each</span>
+                                </label>
+                            </div>
+                            <span asp-validation-for="PortfolioPhotos" class="validation-message"></span>
                         </div>
 
-                        <!-- Terms -->
-                        <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="agreeTerms" required>
-                            <label class="form-check-label" for="agreeTerms">
-                                I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of Service</a> for providers
+                        <div id="portfolioPreviewContainer" class="portfolio-preview-grid"></div>
+                    </div>
+                </div>
+
+                <!-- Terms Agreement -->
+                <div class="form-card terms-card">
+                    <div class="form-card-body">
+                        <div class="custom-checkbox">
+                            <input class="checkbox-input"
+                                   type="checkbox"
+                                   id="agreeTerms"
+                                   required>
+                            <label for="agreeTerms" class="checkbox-label">
+                                <span class="checkbox-box">
+                                    <input type="checkbox"/>
+                                </span>
+                                <span class="checkbox-text">
+                                    I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal" class="terms-link">Terms of Service</a> for providers
+                                </span>
                             </label>
                         </div>
-
-                        <!-- Submit -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="bi bi-send"></i> Submit Application
-                            </button>
-                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">
-                                Cancel
-                            </a>
-                        </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
 
-            <!-- What Happens Next -->
-            <div class="card mt-4">
-                <div class="card-body">
-                    <h5><i class="bi bi-info-circle text-info"></i> What Happens Next?</h5>
-                    <ol class="mb-0">
-                        <li>Your application will be reviewed by our team</li>
-                        <li>You'll receive a notification once approved (usually within 24-48 hours)</li>
-                        <li>After approval, you can start accepting bookings and emergency requests</li>
-                        <li>You'll be able to update your services, working hours, and pricing anytime</li>
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-submit">
+                        <i class="bi bi-send"></i>
+                        Submit Application
+                    </button>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-cancel">
+                        <i class="bi bi-x-circle"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+
+            <!-- What Happens Next Card -->
+            <div class="info-card-large">
+                <div class="info-card-header">
+                    <i class="bi bi-info-circle"></i>
+                    <h3>What Happens Next?</h3>
+                </div>
+                <div class="info-card-content">
+                    <ol class="steps-list">
+                        <li>
+                            <div class="step-icon">
+                                <i class="bi bi-search"></i>
+                            </div>
+                            <div class="step-content">
+                                <strong>Application Review</strong>
+                                <p>Your application will be reviewed by our team</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="step-icon">
+                                <i class="bi bi-bell"></i>
+                            </div>
+                            <div class="step-content">
+                                <strong>Notification</strong>
+                                <p>You'll receive a notification once approved (usually within 24-48 hours)</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="step-icon">
+                                <i class="bi bi-check-circle"></i>
+                            </div>
+                            <div class="step-content">
+                                <strong>Start Earning</strong>
+                                <p>After approval, you can start accepting bookings and emergency requests</p>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="step-icon">
+                                <i class="bi bi-gear"></i>
+                            </div>
+                            <div class="step-content">
+                                <strong>Manage Your Profile</strong>
+                                <p>Update your services, working hours, and pricing anytime</p>
+                            </div>
+                        </li>
                     </ol>
                 </div>
             </div>
@@ -176,15 +354,18 @@
 
 <!-- Terms Modal -->
 <div class="modal fade" id="termsModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Provider Terms of Service</h5>
+                <h5 class="modal-title">
+                    <i class="bi bi-file-text"></i>
+                    Provider Terms of Service
+                </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>By becoming a provider on LebAssist, you agree to:</p>
-                <ul>
+                <p><strong>By becoming a provider on LebAssist, you agree to:</strong></p>
+                <ul class="terms-list">
                     <li>Provide accurate information about your skills and experience</li>
                     <li>Respond to booking requests in a timely manner</li>
                     <li>Deliver quality service to all clients</li>
@@ -195,23 +376,90 @@
                 </ul>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">I Understand</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">
+                    <i class="bi bi-check"></i>
+                    I Understand
+                </button>
             </div>
         </div>
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/providerApply.css" />
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
         const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
+        // Bio character counter
+        const bioInput = document.getElementById('bioInput');
+        const bioCharCount = document.getElementById('bioCharCount');
+
+        if (bioInput && bioCharCount) {
+            bioCharCount.textContent = bioInput.value.length;
+            bioInput.addEventListener('input', function() {
+                bioCharCount.textContent = this.value.length;
+            });
+        }
+
+        // Profile photo preview
+        function previewProfilePhoto(input) {
+            const preview = document.getElementById('profilePhotoPreview');
+            const img = document.getElementById('profilePhotoImg');
+            const label = document.querySelector('label[for="profilePhotoInput"]');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                    label.style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function removeProfilePhoto() {
+            document.getElementById('profilePhotoInput').value = '';
+            document.getElementById('profilePhotoPreview').style.display = 'none';
+            document.querySelector('label[for="profilePhotoInput"]').style.display = 'flex';
+        }
+
+        // Portfolio photos preview
+        function previewPortfolioPhotos(input) {
+            const container = document.getElementById('portfolioPreviewContainer');
+            container.innerHTML = '';
+
+            if (input.files.length > 5) {
+                alert('You can upload a maximum of 5 photos.');
+                input.value = '';
+                return;
+            }
+
+            Array.from(input.files).forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const photoDiv = document.createElement('div');
+                    photoDiv.className = 'portfolio-preview-item';
+                    photoDiv.innerHTML = `
+                        <img src="${e.target.result}" alt="Portfolio ${index + 1}">
+                        <span class="photo-number">#${index + 1}</span>
+                    `;
+                    container.appendChild(photoDiv);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         // Handle service checkbox changes
         document.querySelectorAll('.service-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', updateWorkingHours);
         });
 
-        // Update working hours section when services are selected
+        // Update working hours section
         function updateWorkingHours() {
             const selectedServices = Array.from(document.querySelectorAll('.service-checkbox:checked'))
                 .map(cb => ({
@@ -232,121 +480,98 @@
 
             selectedServices.forEach(service => {
                 const serviceHtml = `
-                    <div class="card mb-3 border-info">
-                        <div class="card-header bg-light">
-                            <h6 class="mb-0">Working Hours - ${service.serviceName}</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive">
-                                <table class="table table-sm">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th>Day</th>
-                                            <th>Working</th>
-                                            <th>Start Time</th>
-                                            <th>End Time</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        ${days.map((day, index) => `
-                                            <tr>
-                                                <td>${day}</td>
-                                                <td>
-                                                    <input type="checkbox" 
-                                                           class="form-check-input day-checkbox" 
+                    <div class="working-hours-service">
+                        <h4 class="service-hours-title">
+                            <i class="bi bi-clock"></i>
+                            ${service.serviceName}
+                        </h4>
+                        <div class="hours-table-wrapper">
+                            <table class="hours-table">
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Available</th>
+                                        <th>Start Time</th>
+                                        <th>End Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${days.map((day, index) => `
+                                        <tr class="hours-row">
+                                            <td class="day-name">${day}</td>
+                                            <td class="checkbox-cell">
+                                                <label class="custom-checkbox-small">
+                                                    <input type="checkbox"
+                                                           class="checkbox-input day-checkbox"
                                                            name="isDay_${service.serviceId}_${index}"
-                                                           data-service-id="${service.serviceId}" 
+                                                           data-service-id="${service.serviceId}"
                                                            data-day="${index}"
                                                            value="on">
-                                                </td>
-                                                <td>
-                                                    <input type="time" 
-                                                           class="form-control form-control-sm" 
-                                                           name="startTime_${service.serviceId}_${index}"
-                                                           value="09:00"
-                                                           data-service-id="${service.serviceId}" 
-                                                           data-day="${index}"
-                                                           data-type="start"
-                                                           disabled>
-                                                </td>
-                                                <td>
-                                                    <input type="time" 
-                                                           class="form-control form-control-sm" 
-                                                           name="endTime_${service.serviceId}_${index}"
-                                                           value="17:00"
-                                                           data-service-id="${service.serviceId}" 
-                                                           data-day="${index}"
-                                                           data-type="end"
-                                                           disabled>
-                                                </td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
+                                                    <span class="checkbox-box-small">
+                                                        <i class="bi bi-check"></i>
+                                                    </span>
+                                                </label>
+                                            </td>
+                                            <td class="time-cell">
+                                                <input type="time"
+                                                       class="time-input"
+                                                       name="startTime_${service.serviceId}_${index}"
+                                                       value="09:00"
+                                                       data-service-id="${service.serviceId}"
+                                                       data-day="${index}"
+                                                       disabled>
+                                            </td>
+                                            <td class="time-cell">
+                                                <input type="time"
+                                                       class="time-input"
+                                                       name="endTime_${service.serviceId}_${index}"
+                                                       value="17:00"
+                                                       data-service-id="${service.serviceId}"
+                                                       data-day="${index}"
+                                                       disabled>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 `;
                 container.insertAdjacentHTML('beforeend', serviceHtml);
             });
 
-            // Enable/disable time inputs based on checkbox
+            // Enable/disable time inputs
             document.querySelectorAll('.day-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
+                checkbox.addEventListener('change', function() {
                     const serviceId = this.dataset.serviceId;
                     const day = this.dataset.day;
-                    const startInput = document.querySelector(`input[name="startTime_${serviceId}_${day}"]`);
-                    const endInput = document.querySelector(`input[name="endTime_${serviceId}_${day}"]`);
+                    const row = this.closest('.hours-row');
+                    const startInput = row.querySelector(`input[name="startTime_${serviceId}_${day}"]`);
+                    const endInput = row.querySelector(`input[name="endTime_${serviceId}_${day}"]`);
+
                     startInput.disabled = !this.checked;
                     endInput.disabled = !this.checked;
+
+                    if (this.checked) {
+                        row.classList.add('active');
+                    } else {
+                        row.classList.remove('active');
+                    }
                 });
             });
         }
 
-        // Profile photo preview
-        document.getElementById('profilePhotoInput').addEventListener('change', function (e) {
-            const preview = document.getElementById('profilePhotoPreview');
-            const img = document.getElementById('profilePhotoImg');
-            const file = e.target.files[0];
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    img.src = event.target.result;
-                    preview.style.display = 'block';
-                };
-                reader.readAsDataURL(file);
-            } else {
-                preview.style.display = 'none';
-            }
-        });
-
-        // Portfolio photos preview
-        document.getElementById('portfolioPhotosInput').addEventListener('change', function (e) {
-            const container = document.getElementById('portfolioPreviewContainer');
-            container.innerHTML = '';
-            const files = e.target.files;
-
-            if (files.length > 5) {
-                alert('You can upload a maximum of 5 photos.');
-                this.value = '';
-                return;
-            }
-
-            Array.from(files).forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = function (event) {
-                    const col = document.createElement('div');
-                    col.className = 'col-md-6 col-lg-4 mb-3';
-                    col.innerHTML = `
-                        <div class="position-relative" style="border-radius: 8px; overflow: hidden;">
-                            <img src="${event.target.result}" class="img-fluid" style="max-height: 150px; width: 100%; object-fit: cover;" />
-                            <small class="badge bg-secondary position-absolute bottom-0 start-0 m-2">#${index + 1}</small>
-                        </div>
-                    `;
-                    container.appendChild(col);
-                };
-                reader.readAsDataURL(file);
+        // Animate cards on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const formCards = document.querySelectorAll('.form-card, .info-card-large');
+            formCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
             });
         });
     </script>

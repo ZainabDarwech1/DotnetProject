@@ -18,7 +18,7 @@ namespace LebAssist.Presentation.Controllers
             ILogger<ServicesController> logger)
         {
             _categoryService = categoryService;
-            _serviceService = serviceService; // will fix
+            _serviceService = serviceService;
             _providerService = providerService;
             _logger = logger;
         }

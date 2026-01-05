@@ -1,0 +1,135 @@
+﻿/* ============================================
+   Auth Success Pages Additional Styles
+   ============================================ */
+
+/* Success Icon */
+.success-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 32px;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn 0.6s ease-out;
+}
+
+    .success-icon i {
+        font-size: 4rem;
+        color: var(--success);
+    }
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Success Content */
+.success-title {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.success-description {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+}
+
+/* Info Box */
+.info-box {
+    display: flex;
+    gap: 16px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.05) 0%, rgba(114, 9, 183, 0.05) 100%);
+    border-radius: 16px;
+    text-align: left;
+    margin-bottom: 32px;
+    border-left: 4px solid var(--primary);
+}
+
+    .info-box > i {
+        font-size: 2rem;
+        color: var(--primary);
+        flex-shrink: 0;
+        margin-top: 4px;
+    }
+
+    .info-box strong {
+        display: block;
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 4px;
+    }
+
+    .info-box p {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        margin: 0;
+        line-height: 1.6;
+    }
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .success-icon {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 24px;
+    }
+
+        .success-icon i {
+            font-size: 3rem;
+        }
+
+    .success-title {
+        font-size: 1.75rem;
+    }
+
+    .success-description {
+        font-size: 1rem;
+    }
+
+    .info-box {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+        .info-box > i {
+            margin-top: 0;
+        }
+}
+
+@media (max-width: 480px) {
+    .success-icon {
+        width: 90px;
+        height: 90px;
+    }
+
+        .success-icon i {
+            font-size: 2.5rem;
+        }
+
+    .success-title {
+        font-size: 1.5rem;
+    }
+}

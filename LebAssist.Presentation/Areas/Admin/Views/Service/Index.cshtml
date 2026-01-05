@@ -5,108 +5,239 @@
     var categories = ViewBag.Categories as IEnumerable<LebAssist.Application.DTOs.CategoryDto>;
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1><i class="bi bi-wrench"></i> Services Management</h1>
-        <a href="@Url.Action("Create")" class="btn btn-primary">
-            <i class="bi bi-plus-circle"></i> Create Service
-        </a>
+<div class="admin-services-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                            <i class="bi bi-speedometer2"></i>
+                            Admin Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Services Management
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-tools"></i>
+                    Services Management
+                </h1>
+                <p class="page-subtitle">Manage all available services in the system</p>
+            </div>
+
+            <!-- Action Button -->
+            <div class="header-actions">
+                <a href="@Url.Action("Create")" class="btn btn-create">
+                    <i class="bi bi-plus-circle"></i>
+                    Create New Service
+                </a>
+            </div>
+        </div>
     </div>
 
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["SuccessMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+    <!-- Content Section -->
+    <div class="container services-content">
+        <!-- Alerts -->
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="alert alert-success">
+                <i class="bi bi-check-circle"></i>
+                <span>@TempData["SuccessMessage"]</span>
+                <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        }
 
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            @TempData["ErrorMessage"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-circle"></i>
+                <span>@TempData["ErrorMessage"]</span>
+                <button type="button" class="alert-close" onclick="this.parentElement.remove()">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+        }
 
-    @if (categories != null && categories.Any())
-    {
-        <div class="mb-3">
-            <label class="form-label">Filter by Category:</label>
-            <select class="form-select" id="categoryFilter" onchange="filterByCategory(this.value)">
-                <option value="">All Categories</option>
-                @foreach (var cat in categories)
+        <!-- Services Table Card -->
+        <div class="services-card">
+            <div class="card-header">
+                <div class="header-content">
+                    <i class="bi bi-list-check"></i>
+                    <h3>All Services</h3>
+                </div>
+
+                <!-- Category Filter -->
+                @if (categories != null && categories.Any())
                 {
-                    <option value="@cat.CategoryId" selected="@(ViewBag.CategoryId == cat.CategoryId)">@cat.CategoryName</option>
+                    <div class="filter-section">
+                        <label class="filter-label">
+                            <i class="bi bi-funnel"></i>
+                            Filter by Category:
+                        </label>
+                        <select class="filter-select" id="categoryFilter" onchange="filterByCategory(this.value)">
+                            <option value="">All Categories</option>
+                            @foreach (var cat in categories)
+                            {
+                                <option value="@cat.CategoryId" selected="@(ViewBag.CategoryId == cat.CategoryId)">@cat.CategoryName</option>
+                            }
+                        </select>
+                    </div>
                 }
-            </select>
-        </div>
-    }
+            </div>
 
-    <div class="table-responsive">
-        <table class="table table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Icon</th>
-                    <th>Service Name</th>
-                    <th>Category</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var service in Model)
-                {
-                    <tr>
-                        <td>
-                            @if (!string.IsNullOrEmpty(service.ServiceIconPath))
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="services-table" id="servicesTable">
+                        <thead>
+                            <tr>
+                                <th class="icon-col">Icon</th>
+                                <th>Service Name</th>
+                                <th>Category</th>
+                                <th>Description</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center actions-col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var service in Model)
                             {
-                                <img src="@service.ServiceIconPath" alt="Icon" style="width: 40px; height: 40px; object-fit: contain;">
+                                <tr class="service-row">
+                                    <td class="icon-cell">
+                                        @if (!string.IsNullOrEmpty(service.ServiceIconPath))
+                                        {
+                                            <div class="service-icon">
+                                                <img src="@service.ServiceIconPath" alt="@service.ServiceName">
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <div class="service-icon-placeholder">
+                                                <i class="bi bi-tools"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <span class="service-name">@service.ServiceName</span>
+                                    </td>
+                                    <td>
+                                        <span class="category-badge">
+                                            <i class="bi bi-bookmark-fill"></i>
+                                            @service.CategoryName
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="service-description">@service.ServiceDescription</span>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (service.IsActive)
+                                        {
+                                            <span class="status-badge active">
+                                                <i class="bi bi-check-circle"></i>
+                                                Active
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="status-badge inactive">
+                                                <i class="bi bi-x-circle"></i>
+                                                Inactive
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="action-buttons">
+                                            <a href="@Url.Action("Edit", new { id = service.ServiceId })"
+                                               class="btn-action btn-edit"
+                                               title="Edit">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <button class="btn-action btn-toggle toggle-status"
+                                                    data-id="@service.ServiceId"
+                                                    title="Toggle Status">
+                                                <i class="bi bi-toggle-@(service.IsActive ? "on" : "off")"></i>
+                                            </button>
+                                            <form asp-action="Delete"
+                                                  asp-route-id="@service.ServiceId"
+                                                  method="post"
+                                                  class="d-inline delete-form">
+                                                <button type="submit"
+                                                        class="btn-action btn-delete"
+                                                        title="Delete"
+                                                        onclick="return confirm('Are you sure you want to delete this service? This action cannot be undone.')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
-                            else
-                            {
-                                <i class="bi bi-wrench text-muted" style="font-size: 30px;"></i>
-                            }
-                        </td>
-                        <td><strong>@service.ServiceName</strong></td>
-                        <td><span class="badge bg-info">@service.CategoryName</span></td>
-                        <td>@service.ServiceDescription</td>
-                        <td>
-                            @if (service.IsActive)
-                            {
-                                <span class="badge bg-success">Active</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">Inactive</span>
-                            }
-                        </td>
-                        <td>
-                            <div class="btn-group btn-group-sm">
-                                <a href="@Url.Action("Edit", new { id = service.ServiceId })" class="btn btn-outline-primary">
-                                    <i class="bi bi-pencil"></i>
-                                </a>
-                                <button class="btn btn-outline-warning toggle-status" data-id="@service.ServiceId">
-                                    <i class="bi bi-toggle-on"></i>
-                                </button>
-                                <form asp-action="Delete" asp-route-id="@service.ServiceId" method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-outline-danger" onclick="return confirm('Delete this service?')">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+@section Styles {
+    <link rel="stylesheet" href="~/css/servicesmanagement.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+}
+
 @section Scripts {
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
+    @Html.AntiForgeryToken()
     <script>
+        $(document).ready(function() {
+            // Initialize DataTables
+            $('#servicesTable').DataTable({
+                pageLength: 10,
+                order: [[1, 'asc']], // Sort by service name
+                columnDefs: [
+                    { orderable: false, targets: [0, 5] } // Disable sorting for icon and actions
+                ],
+                language: {
+                    search: "Search services:",
+                    lengthMenu: "Show _MENU_ services",
+                    info: "Showing _START_ to _END_ of _TOTAL_ services",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                }
+            });
+
+            // Animate rows on load
+            const rows = document.querySelectorAll('.service-row');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(10px)';
+                setTimeout(() => {
+                    row.style.transition = 'all 0.4s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 30);
+            });
+        });
+
+        // Category filter
         function filterByCategory(categoryId) {
             if (categoryId) {
                 window.location.href = '@Url.Action("Index")?categoryId=' + categoryId;
@@ -115,23 +246,30 @@
             }
         }
 
+        // Toggle status
         document.querySelectorAll('.toggle-status').forEach(btn => {
             btn.addEventListener('click', async function() {
                 const id = this.dataset.id;
                 const formData = new FormData();
                 formData.append('id', id);
-                formData.append('__RequestVerificationToken', document.querySelector('input[name="__RequestVerificationToken"]').value);
-                
-                const response = await fetch('@Url.Action("ToggleStatus")', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    location.reload();
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                formData.append('__RequestVerificationToken', token);
+
+                try {
+                    const response = await fetch('@Url.Action("ToggleStatus")', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Failed to toggle status');
+                    }
+                } catch (error) {
+                    alert('An error occurred');
                 }
             });
         });
     </script>
-    @Html.AntiForgeryToken()
 }

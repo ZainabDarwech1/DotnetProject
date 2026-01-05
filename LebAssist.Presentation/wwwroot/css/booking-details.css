@@ -1,0 +1,720 @@
+﻿/* ============================================
+   Booking Details Page Styles
+   ============================================ */
+
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.booking-details-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ============================================
+   Page Header
+   ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+.page-title-section {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+    }
+
+.status-badge-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+    /* Status colors in header */
+    .status-badge-header.status-pending {
+        background: rgba(245, 158, 11, 0.3);
+    }
+
+    .status-badge-header.status-accepted {
+        background: rgba(67, 97, 238, 0.3);
+    }
+
+    .status-badge-header.status-inprogress {
+        background: rgba(16, 185, 129, 0.3);
+    }
+
+    .status-badge-header.status-completed {
+        background: rgba(16, 185, 129, 0.4);
+    }
+
+    .status-badge-header.status-cancelled,
+    .status-badge-header.status-rejected {
+        background: rgba(239, 68, 68, 0.3);
+    }
+
+/* ============================================
+   Content Section
+   ============================================ */
+
+.details-content {
+    padding: 0 20px 60px;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
+}
+
+.info-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: box-shadow 0.3s;
+}
+
+    .info-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+.card-header {
+    padding: 20px 28px;
+    border-bottom: 2px solid var(--bg-light);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .card-header i {
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+
+    .card-header h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+.card-content {
+    padding: 28px;
+}
+
+/* ============================================
+   Info Grid
+   ============================================ */
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.info-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .info-item label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+.info-value {
+    font-size: 1.05rem;
+    color: var(--text-dark);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+    .info-value i {
+        color: var(--primary);
+    }
+
+/* ============================================
+   Notes Section
+   ============================================ */
+
+.notes-section {
+    border-top: 2px solid var(--bg-light);
+    padding-top: 24px;
+}
+
+    .notes-section label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+        display: block;
+    }
+
+.notes-content {
+    background: var(--bg-light);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    gap: 12px;
+}
+
+    .notes-content i {
+        font-size: 1.3rem;
+        color: var(--primary);
+        flex-shrink: 0;
+    }
+
+    .notes-content p {
+        margin: 0;
+        color: var(--text-dark);
+        line-height: 1.6;
+    }
+
+/* ============================================
+   Cancellation Alert
+   ============================================ */
+
+.cancellation-alert {
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid var(--danger);
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+    display: flex;
+    gap: 16px;
+}
+
+    .cancellation-alert i {
+        font-size: 1.5rem;
+        color: var(--danger);
+        flex-shrink: 0;
+    }
+
+    .cancellation-alert label {
+        font-size: 0.9rem;
+        color: var(--danger);
+        font-weight: 700;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .cancellation-alert p {
+        margin: 0;
+        color: var(--text-dark);
+    }
+
+/* ============================================
+   Timeline
+   ============================================ */
+
+.timeline {
+    position: relative;
+    padding-left: 40px;
+}
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        background: #e9ecef;
+    }
+
+.timeline-item {
+    position: relative;
+    padding-bottom: 32px;
+}
+
+    .timeline-item:last-child {
+        padding-bottom: 0;
+    }
+
+.timeline-marker {
+    position: absolute;
+    left: -32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+    border: 4px solid white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-item.completed .timeline-marker {
+    background: var(--success);
+}
+
+.timeline-item.rejected .timeline-marker {
+    background: var(--danger);
+}
+
+.timeline-content h4 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.timeline-date {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+    .timeline-date.rejected {
+        color: var(--danger);
+    }
+
+/* ============================================
+   Review Card
+   ============================================ */
+
+.review-card .card-header i {
+    color: var(--warning);
+}
+
+.review-display {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.5rem;
+    color: var(--warning);
+}
+
+.rating-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-left: 8px;
+}
+
+.anonymous-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: var(--bg-light);
+    color: var(--text-muted);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.review-comment {
+    background: var(--bg-light);
+    padding: 24px;
+    border-radius: 12px;
+    position: relative;
+}
+
+    .review-comment i {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        font-size: 2rem;
+        color: var(--primary);
+        opacity: 0.2;
+    }
+
+    .review-comment p {
+        margin: 0;
+        padding-left: 32px;
+        color: var(--text-dark);
+        line-height: 1.6;
+    }
+
+.review-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.review-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn-edit {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: var(--warning);
+    color: white;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    align-self: flex-start;
+}
+
+    .btn-edit:hover {
+        background: #f59e0b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        color: white;
+    }
+
+.edit-notice {
+    background: rgba(67, 97, 238, 0.1);
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Review Prompt */
+.review-prompt {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.prompt-icon {
+    font-size: 4rem;
+    color: var(--warning);
+    margin-bottom: 20px;
+}
+
+.review-prompt h4 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.review-prompt p {
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+/* ============================================
+   Sidebar Cards
+   ============================================ */
+
+.sidebar-card {
+}
+
+.provider-card-content {
+    text-align: center;
+}
+
+.provider-avatar-large {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+    .provider-avatar-large img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid var(--bg-light);
+        box-shadow: var(--shadow-sm);
+    }
+
+.avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 3rem;
+}
+
+.provider-name {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.provider-rating {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+    font-size: 1.2rem;
+    color: var(--warning);
+}
+
+.review-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-left: 4px;
+}
+
+/* ============================================
+   Actions
+   ============================================ */
+
+.action-form {
+    margin-bottom: 12px;
+}
+
+    .action-form:last-child {
+        margin-bottom: 0;
+    }
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 24px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+    .btn i {
+        font-size: 1.1rem;
+    }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+    .btn-success:hover {
+        background: #059669;
+        transform: translateY(-2px);
+    }
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+    .btn-danger:hover {
+        background: #dc2626;
+        transform: translateY(-2px);
+    }
+
+.btn-outline {
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+    .btn-outline:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+.completion-status {
+    text-align: center;
+    padding: 24px;
+    color: var(--success);
+}
+
+    .completion-status i {
+        font-size: 3rem;
+        margin-bottom: 12px;
+    }
+
+    .completion-status p {
+        margin: 0;
+        font-weight: 600;
+    }
+
+/* ============================================
+   Location
+   ============================================ */
+
+.location-map {
+    height: 250px;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+
+.coordinates {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: var(--bg-light);
+    border-radius: 10px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+    .coordinates i {
+        color: var(--primary);
+    }
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-content {
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+}

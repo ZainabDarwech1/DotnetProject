@@ -1,0 +1,228 @@
+﻿/* ============================================
+           Access Denied Page Styles
+           ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.access-denied-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+/* ============================================
+               Error Container
+               ============================================ */
+
+.error-container {
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.error-card {
+    background: white;
+    border-radius: 24px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    border: 3px solid rgba(239, 68, 68, 0.2);
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+               Error Icon
+               ============================================ */
+
+.error-icon {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 32px;
+    background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+    .error-icon i {
+        font-size: 5rem;
+        color: var(--danger);
+    }
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+/* ============================================
+               Error Content
+               ============================================ */
+
+.error-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-dark);
+    margin-bottom: 16px;
+}
+
+.error-description {
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+}
+
+/* ============================================
+               Error Actions
+               ============================================ */
+
+.error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn i {
+        font-size: 1.2rem;
+    }
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.btn-secondary {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid #dee2e6;
+}
+
+    .btn-secondary:hover {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 768px) {
+    .error-card {
+        padding: 50px 30px;
+    }
+
+    .error-icon {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 28px;
+    }
+
+        .error-icon i {
+            font-size: 4rem;
+        }
+
+    .error-title {
+        font-size: 2rem;
+    }
+
+    .error-description {
+        font-size: 1rem;
+        margin-bottom: 32px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .access-denied-page {
+        padding: 20px;
+    }
+
+    .error-card {
+        padding: 40px 24px;
+        border-radius: 20px;
+    }
+
+    .error-icon {
+        width: 100px;
+        height: 100px;
+        margin-bottom: 24px;
+    }
+
+        .error-icon i {
+            font-size: 3.5rem;
+        }
+
+    .error-title {
+        font-size: 1.75rem;
+    }
+
+    .error-description {
+        font-size: 0.95rem;
+    }
+}

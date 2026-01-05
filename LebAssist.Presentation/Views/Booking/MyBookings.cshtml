@@ -1,38 +1,266 @@
 ﻿@using LebAssist.Application.DTOs
 @model IEnumerable<BookingDetailsDto>
+@{
+    ViewData["Title"] = "My Bookings";
+}
 
-@foreach (var booking in Model)
-{
-    <div class="booking-card">
-        <img src="@booking.ProviderPhotoPath" />
+<div class="my-bookings-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        My Bookings
+                    </li>
+                </ol>
+            </nav>
 
-        <h5>@booking.ProviderName</h5>
-        <p>@booking.ServiceName</p>
-        <p>@booking.ScheduledDateTime.ToString("f")</p>
-        <span>@booking.Status</span>
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-calendar-check"></i>
+                    My Bookings
+                </h1>
+                <p class="page-subtitle">View and manage all your service bookings</p>
+            </div>
+        </div>
+    </div>
 
-        <a asp-controller="BookingDetails" asp-action="Details" asp-route-id="@booking.BookingId">
-            View Details
-        </a>
-
-        @if (booking.Status == Domain.Enums.BookingStatus.Pending ||
-            booking.Status == Domain.Enums.BookingStatus.Accepted)
+    <!-- Bookings Content -->
+    <div class="container bookings-content">
+        @if (Model != null && Model.Any())
         {
-            <form asp-action="Cancel" method="post">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="bookingId" value="@booking.BookingId" />
-                <input name="reason" required />
-                <button class="btn btn-sm btn-danger">Cancel</button>
-            </form>
+            <!-- Stats Bar -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <i class="bi bi-calendar-event"></i>
+                    <div>
+                        <div class="stat-value">@Model.Count()</div>
+                        <div class="stat-label">Total Bookings</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-clock-history"></i>
+                    <div>
+                        <div class="stat-value">@Model.Count(b => b.Status == Domain.Enums.BookingStatus.Pending)</div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-check-circle"></i>
+                    <div>
+                        <div class="stat-value">@Model.Count(b => b.Status == Domain.Enums.BookingStatus.Completed)</div>
+                        <div class="stat-label">Completed</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bookings Grid -->
+            <div class="bookings-grid">
+                @foreach (var booking in Model)
+                {
+                    var statusClass = booking.Status.ToString().ToLower();
+
+                    <div class="booking-card" data-status="@statusClass">
+                        <!-- Status Indicator -->
+                        <div class="status-indicator status-@statusClass"></div>
+
+                        <!-- Booking Header -->
+                        <div class="booking-header">
+                            <div class="provider-info">
+                                <div class="provider-avatar">
+                                    @if (!string.IsNullOrEmpty(booking.ProviderPhotoPath))
+                                    {
+                                        <img src="@booking.ProviderPhotoPath" alt="@booking.ProviderName" class="avatar-img">
+                                    }
+                                    else
+                                    {
+                                        <div class="avatar-placeholder">
+                                            <i class="bi bi-person"></i>
+                                        </div>
+                                    }
+                                </div>
+                                <div class="provider-details">
+                                    <h3 class="provider-name">@booking.ProviderName</h3>
+                                    <span class="service-badge">
+                                        <i class="bi bi-tools"></i>
+                                        @booking.ServiceName
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="status-badge status-@statusClass">
+                                @switch (booking.Status)
+                                {
+                                    case Domain.Enums.BookingStatus.Pending:
+                                        <i class="bi bi-clock-history"></i>
+                                        break;
+                                    case Domain.Enums.BookingStatus.Accepted:
+                                        <i class="bi bi-check-circle"></i>
+                                        break;
+                                    case Domain.Enums.BookingStatus.Completed:
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        break;
+                                    case Domain.Enums.BookingStatus.Cancelled:
+                                        <i class="bi bi-x-circle"></i>
+                                        break;
+                                    case Domain.Enums.BookingStatus.Rejected:
+                                        <i class="bi bi-x-circle-fill"></i>
+                                        break;
+                                }
+                                @booking.Status
+                            </span>
+                        </div>
+
+                        <!-- Booking Details -->
+                        <div class="booking-details">
+                            <div class="detail-item">
+                                <i class="bi bi-calendar3"></i>
+                                <div>
+                                    <span class="detail-label">Scheduled Date</span>
+                                    <span class="detail-value">@booking.ScheduledDateTime.ToString("MMMM dd, yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="detail-item">
+                                <i class="bi bi-clock"></i>
+                                <div>
+                                    <span class="detail-label">Time</span>
+                                    <span class="detail-value">@booking.ScheduledDateTime.ToString("hh:mm tt")</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Booking Actions -->
+                        <div class="booking-actions">
+                            <a asp-controller="BookingDetails" asp-action="Details" asp-route-id="@booking.BookingId"
+                               class="btn btn-primary">
+                                <i class="bi bi-eye"></i>
+                                View Details
+                            </a>
+
+                            @if (booking.Status == Domain.Enums.BookingStatus.Pending ||
+                                                booking.Status == Domain.Enums.BookingStatus.Accepted)
+                            {
+                                <button type="button" class="btn btn-danger" onclick="showCancelModal(@booking.BookingId)">
+                                    <i class="bi bi-x-circle"></i>
+                                    Cancel Booking
+                                </button>
+                            }
+
+                            @if (booking.Status == Domain.Enums.BookingStatus.Completed && !booking.HasReview)
+                            {
+                                <a asp-controller="Review"
+                                   asp-action="Create"
+                                   asp-route-bookingId="@booking.BookingId"
+                                   class="btn btn-review">
+                                    <i class="bi bi-star"></i>
+                                    Leave Review
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
         }
-
-        @if (booking.Status == Domain.Enums.BookingStatus.Completed && !booking.HasReview)
+        else
         {
-            <a asp-controller="Review"
-               asp-action="Create"
-               asp-route-bookingId="@booking.BookingId">
-                Leave Review
-            </a>
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h3>No Bookings Yet</h3>
+                <p>You haven't made any bookings yet. Browse our services to get started!</p>
+                <a asp-controller="Services" asp-action="Index" class="btn btn-primary">
+                    <i class="bi bi-grid"></i>
+                    Browse Services
+                </a>
+            </div>
         }
     </div>
+</div>
+
+<!-- Cancel Booking Modal -->
+<div class="modal fade" id="cancelModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Cancel Booking
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="cancelForm" asp-action="Cancel" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="bookingId" id="cancelBookingId" />
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-info-circle"></i>
+                        Are you sure you want to cancel this booking? This action cannot be undone.
+                    </div>
+                    <div class="form-group">
+                        <label for="cancelReason" class="form-label">
+                            <i class="bi bi-pencil"></i>
+                            Cancellation Reason
+                        </label>
+                        <textarea name="reason"
+                                  id="cancelReason"
+                                  class="form-control"
+                                  rows="4"
+                                  required
+                                  placeholder="Please provide a reason for cancellation..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i>
+                        Keep Booking
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check"></i>
+                        Confirm Cancellation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+   <link rel="stylesheet" href="~/css/mybookings.css"/>
+}
+
+@section Scripts {
+    <script>
+        function showCancelModal(bookingId) {
+            document.getElementById('cancelBookingId').value = bookingId;
+            const modal = new bootstrap.Modal(document.getElementById('cancelModal'));
+            modal.show();
+        }
+
+        // Animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const bookingCards = document.querySelectorAll('.booking-card');
+            bookingCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
 }

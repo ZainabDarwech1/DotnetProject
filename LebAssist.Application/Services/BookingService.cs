@@ -212,6 +212,7 @@ namespace LebAssist.Application.Services
                 ProviderPhotoPath = b.Provider.ProfilePhotoPath,
                 ServiceName = b.Service.ServiceName,
                 ScheduledDateTime = b.ScheduledDateTime,
+                RequestDate = b.RequestDate,
                 Status = b.Status
             });
         }

@@ -1,0 +1,780 @@
+﻿/* ============================================
+               Edit Service Page Styles
+               ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.edit-service-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+}
+
+/* ============================================
+               Page Header
+               ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+/* Page Title */
+.page-title-section {
+    text-align: center;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+    }
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* ============================================
+               Form Content
+               ============================================ */
+
+.form-content {
+    padding: 0 20px 60px;
+    margin-top: -30px;
+    position: relative;
+}
+
+.form-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ============================================
+               Form Cards
+               ============================================ */
+
+.form-card {
+    background: white;
+    border-radius: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+    .form-card:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 24px 28px;
+    border-bottom: 2px solid var(--bg-light);
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.03) 0%, rgba(114, 9, 183, 0.03) 100%);
+}
+
+.card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+    .card-icon i {
+        font-size: 1.8rem;
+        color: white;
+    }
+
+.card-title-section {
+    flex: 1;
+}
+
+.card-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0 0 4px 0;
+}
+
+.card-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.form-card-body {
+    padding: 28px;
+}
+
+/* ============================================
+               Service Display (Readonly)
+               ============================================ */
+
+.service-display {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--bg-light);
+    border-radius: 12px;
+    border: 2px solid #e9ecef;
+}
+
+.service-badge {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.2);
+}
+
+    .service-badge i {
+        font-size: 1.5rem;
+        color: white;
+    }
+
+.service-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* ============================================
+               Form Elements
+               ============================================ */
+
+.form-group {
+    margin-bottom: 0;
+}
+
+.form-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+    .form-label i {
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+
+.required {
+    color: var(--danger);
+    font-weight: 700;
+}
+
+.form-select {
+    padding: 14px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    width: 100%;
+    background: white;
+    cursor: pointer;
+}
+
+    .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+
+/* Price Input Group */
+.price-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currency-prefix {
+    position: absolute;
+    left: 16px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.form-control {
+    padding: 14px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s;
+    width: 100%;
+}
+
+    .form-control:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.1);
+        outline: none;
+    }
+
+.price-input {
+    padding-left: 40px;
+    font-weight: 600;
+}
+
+.form-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 12px 16px;
+    background: rgba(67, 97, 238, 0.05);
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+    .form-hint i {
+        color: var(--primary);
+        font-size: 1rem;
+    }
+
+/* Validation */
+.validation-message {
+    display: block;
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-top: 8px;
+    font-weight: 500;
+}
+
+.custom-alert {
+    padding: 16px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    border: none;
+}
+
+.alert-danger {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    border-left: 4px solid var(--danger);
+}
+
+/* ============================================
+               Schedule Section
+               ============================================ */
+
+.schedule-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.05) 0%, rgba(114, 9, 183, 0.05) 100%);
+    border-radius: 12px;
+    margin-bottom: 24px;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+    .schedule-info i {
+        font-size: 1.3rem;
+        color: var(--primary);
+    }
+
+.schedule-table-wrapper {
+    overflow-x: auto;
+    margin-bottom: 24px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
+    .schedule-table thead th {
+        background: var(--bg-light);
+        color: var(--text-dark);
+        font-weight: 700;
+        padding: 14px 16px;
+        text-align: left;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border: none;
+    }
+
+        .schedule-table thead th:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .schedule-table thead th:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+.schedule-row {
+    background: var(--bg-light);
+    transition: all 0.3s ease;
+}
+
+    .schedule-row td {
+        padding: 14px 16px;
+        border: none;
+    }
+
+        .schedule-row td:first-child {
+            border-radius: 12px 0 0 12px;
+        }
+
+        .schedule-row td:last-child {
+            border-radius: 0 12px 12px 0;
+        }
+
+    .schedule-row.active {
+        background: rgba(67, 97, 238, 0.08);
+    }
+
+        .schedule-row.active .day-name {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+.day-name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+}
+
+    .day-name i {
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+
+/* Custom Checkbox */
+.checkbox-cell {
+    text-align: center;
+}
+
+.custom-checkbox {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+}
+
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.checkbox-mark {
+    width: 28px;
+    height: 28px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+    .checkbox-mark i {
+        font-size: 1rem;
+        color: white;
+        opacity: 0;
+        transition: all 0.2s ease;
+    }
+
+.checkbox-input:checked ~ .checkbox-mark {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+    .checkbox-input:checked ~ .checkbox-mark i {
+        opacity: 1;
+    }
+
+.custom-checkbox:hover .checkbox-mark {
+    border-color: var(--primary);
+    transform: scale(1.05);
+}
+
+/* Time Input */
+.time-cell {
+    width: 30%;
+}
+
+.time-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+    .time-input-wrapper i {
+        position: absolute;
+        left: 12px;
+        color: var(--text-muted);
+        font-size: 1rem;
+        pointer-events: none;
+    }
+
+.time-input {
+    width: 100%;
+    padding: 10px 12px 10px 36px;
+    border: 2px solid #e9ecef;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    transition: all 0.2s;
+}
+
+    .time-input:disabled {
+        background: #f8f9fa;
+        color: #adb5bd;
+        cursor: not-allowed;
+    }
+
+    .time-input:not(:disabled):focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+/* ============================================
+               Quick Actions
+               ============================================ */
+
+.quick-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 20px;
+    background: var(--bg-light);
+    border-radius: 12px;
+}
+
+.quick-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid transparent;
+    background: white;
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .quick-action-btn i {
+        font-size: 1rem;
+        color: var(--primary);
+    }
+
+    .quick-action-btn:hover {
+        background: rgba(67, 97, 238, 0.1);
+        color: var(--primary);
+        border-color: rgba(67, 97, 238, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .quick-action-btn:active {
+        transform: translateY(0);
+    }
+
+/* ============================================
+               Form Actions
+               ============================================ */
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 32px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 32px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+    .btn i {
+        font-size: 1.2rem;
+    }
+
+    .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+    }
+
+.btn-submit {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    box-shadow: var(--shadow-md);
+    min-width: 200px;
+}
+
+    .btn-submit:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+.btn-cancel {
+    background: white;
+    color: var(--text-dark);
+    border: 2px solid #dee2e6;
+}
+
+    .btn-cancel:hover {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .form-card-header {
+        padding: 20px;
+    }
+
+    .card-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+        .card-icon i {
+            font-size: 1.5rem;
+        }
+
+    .card-title {
+        font-size: 1.2rem;
+    }
+
+    .form-card-body {
+        padding: 20px;
+    }
+
+    .schedule-table {
+        font-size: 0.85rem;
+    }
+
+        .schedule-table thead th,
+        .schedule-table tbody td {
+            padding: 10px 12px;
+        }
+
+    .time-cell {
+        width: auto;
+    }
+
+    .quick-actions {
+        flex-direction: column;
+    }
+
+    .quick-action-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .form-card-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .schedule-table {
+        font-size: 0.8rem;
+    }
+
+    .day-name {
+        font-size: 0.85rem;
+    }
+
+    .checkbox-mark {
+        width: 24px;
+        height: 24px;
+    }
+
+    .time-input {
+        padding: 8px 10px 8px 32px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ============================================
+               Animations
+               ============================================ */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}

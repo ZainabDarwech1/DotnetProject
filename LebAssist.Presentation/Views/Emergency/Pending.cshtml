@@ -3,84 +3,203 @@
     ViewData["Title"] = "Pending Emergencies";
 }
 
-<div class="container">
-    <h2 class="mb-4"><i class="bi bi-exclamation-triangle text-danger"></i> Pending Emergency Requests</h2>
+<div class="pending-emergencies-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Dashboard", "Provider")">
+                            <i class="bi bi-speedometer2"></i>
+                            Provider Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Pending Emergencies
+                    </li>
+                </ol>
+            </nav>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success alert-dismissible fade show">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show">
-            @TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
-    @if (TempData["Info"] != null)
-    {
-        <div class="alert alert-info alert-dismissible fade show">
-            @TempData["Info"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    }
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    Emergency Requests
+                </h1>
+                <p class="page-subtitle">Urgent requests requiring immediate attention</p>
+            </div>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No pending emergency requests at this time.
-        </div>
-    }
-    else
-    {
-        <div class="alert alert-warning">
-            <i class="bi bi-lightning"></i> <strong>@Model.Count</strong> emergency request(s) waiting for a provider!
-        </div>
-
-        <div class="row">
-            @foreach (var emergency in Model)
+            <!-- Alert Badge -->
+            @if (Model.Any())
             {
-                <div class="col-md-6 mb-3">
-                    <div class="card border-danger">
-                        <div class="card-header bg-danger text-white d-flex justify-content-between">
-                            <span><strong>@emergency.ServiceName</strong></span>
-                            @if (emergency.Distance.HasValue)
-                            {
-                                <span class="badge bg-light text-dark">
-                                    <i class="bi bi-geo-alt"></i> @emergency.Distance.Value.ToString("F1") km
-                                </span>
-                            }
-                        </div>
-                        <div class="card-body">
-                            <p class="card-text">@emergency.Details.Substring(0, Math.Min(emergency.Details.Length, 150))...</p>
-                            <p class="text-muted small">
-                                <i class="bi bi-clock"></i> @emergency.RequestDateTime.ToString("MMM dd, yyyy HH:mm")
-                            </p>
-                        </div>
-                        <div class="card-footer d-flex gap-2">
-                            <form asp-action="Accept" method="post" class="d-inline">
-                                <input type="hidden" name="emergencyId" value="@emergency.EmergencyRequestId" />
-                                <button type="submit" class="btn btn-success btn-sm">
-                                    <i class="bi bi-check-circle"></i> Accept
-                                </button>
-                            </form>
-                            <form asp-action="Decline" method="post" class="d-inline">
-                                <input type="hidden" name="emergencyId" value="@emergency.EmergencyRequestId" />
-                                <button type="submit" class="btn btn-outline-secondary btn-sm">
-                                    <i class="bi bi-x-circle"></i> Decline
-                                </button>
-                            </form>
-                            <a href="https://www.google.com/maps/dir/?api=1&destination=@emergency.Latitude,@emergency.Longitude"
-                               target="_blank" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-signpost-2"></i> Directions
-                            </a>
+                <div class="header-alert">
+                    <div class="alert-badge urgent">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        <div class="alert-content">
+                            <span class="alert-count">@Model.Count</span>
+                            <span class="alert-label">Urgent @(Model.Count == 1 ? "Request" : "Requests") Waiting</span>
                         </div>
                     </div>
                 </div>
             }
         </div>
-    }
+    </div>
+
+    <!-- Content Section -->
+    <div class="container emergencies-content">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-shield-check"></i>
+                </div>
+                <h3 class="empty-title">No Pending Emergencies</h3>
+                <p class="empty-description">
+                    There are no emergency requests at this time. You'll be notified when new urgent requests come in.
+                </p>
+                <div class="empty-info">
+                    <div class="info-item">
+                        <i class="bi bi-bell"></i>
+                        <span>You'll receive notifications for new emergencies</span>
+                    </div>
+                    <div class="info-item">
+                        <i class="bi bi-geo-alt"></i>
+                        <span>Requests are matched based on your location</span>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- Emergency Requests Grid -->
+            <div class="emergency-grid">
+                @foreach (var emergency in Model)
+                {
+                    <div class="emergency-card">
+                        <!-- Card Header -->
+                        <div class="card-header-section">
+                            <div class="service-badge">
+                                <i class="bi bi-tools"></i>
+                                <span>@emergency.ServiceName</span>
+                            </div>
+                            @if (emergency.Distance.HasValue)
+                            {
+                                <div class="distance-badge">
+                                    <i class="bi bi-geo-alt-fill"></i>
+                                    <span>@emergency.Distance.Value.ToString("F1") km</span>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="card-body-section">
+                            <div class="emergency-details">
+                                <i class="bi bi-chat-left-text-fill"></i>
+                                <p class="details-text">
+                                    @if (emergency.Details.Length > 150)
+                                    {
+                                        @emergency.Details.Substring(0, 150)
+                            
+                                        <text>...</text>
+                                    }
+                                    else
+                                    {
+                                        @emergency.Details
+                                    }
+                                </p>
+                            </div>
+
+                            <div class="request-time">
+                                <i class="bi bi-clock-fill"></i>
+                                <span>Requested @emergency.RequestDateTime.ToString("MMM dd, yyyy 'at' hh:mm tt")</span>
+                            </div>
+                        </div>
+
+                        <!-- Card Actions -->
+                        <div class="card-actions-section">
+                            <form asp-action="Accept" method="post" class="action-form">
+                                <input type="hidden" name="emergencyId" value="@emergency.EmergencyRequestId" />
+                                <button type="submit" class="btn btn-accept">
+                                    <i class="bi bi-check-circle-fill"></i>
+                                    Accept Request
+                                </button>
+                            </form>
+
+                            <div class="secondary-actions">
+                                <a href="https://www.google.com/maps/dir/?api=1&destination=@emergency.Latitude,@emergency.Longitude"
+                                   target="_blank"
+                                   class="btn btn-directions">
+                                    <i class="bi bi-pin-map-fill"></i>
+                                    Get Directions
+                                </a>
+
+                                <form asp-action="Decline" method="post" class="action-form-inline">
+                                    <input type="hidden" name="emergencyId" value="@emergency.EmergencyRequestId" />
+                                    <button type="submit" class="btn btn-decline">
+                                        <i class="bi bi-x-circle"></i>
+                                        Decline
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/pendingEmergencies.css" />
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate emergency cards on load
+            const emergencyCards = document.querySelectorAll('.emergency-card');
+            emergencyCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+
+            // Confirm accept action
+            document.querySelectorAll('.btn-accept').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (!confirm('Are you sure you want to accept this emergency request? You will be responsible for providing the service.')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+
+            // Confirm decline action
+            document.querySelectorAll('.btn-decline').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    if (!confirm('Are you sure you want to decline this emergency request?')) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        });
+    </script>
+}

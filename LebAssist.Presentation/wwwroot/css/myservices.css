@@ -1,0 +1,896 @@
+﻿/* ============================================
+           My Services Management Styles
+           ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #1a1d29;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.services-management-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+}
+
+/* ============================================
+               Page Header
+               ============================================ */
+
+.page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+/* Page Title */
+.page-title-section {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+    }
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Header Actions */
+.header-actions {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 28px;
+}
+
+.stats-badge {
+    display: flex;
+    gap: 12px;
+}
+
+.stat-item {
+    background: white;
+    padding: 14px 24px;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.6s ease-out;
+}
+
+    .stat-item i {
+        font-size: 1.3rem;
+        color: var(--primary);
+    }
+
+.stat-value {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: var(--text-dark);
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.btn-add-service {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    background: white;
+    color: var(--primary);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.6s ease-out 0.2s backwards;
+}
+
+    .btn-add-service i {
+        font-size: 1.2rem;
+    }
+
+    .btn-add-service:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(67, 97, 238, 0.3);
+        color: var(--primary-dark);
+    }
+
+/* ============================================
+               Content Section
+               ============================================ */
+
+.services-content {
+    padding: 0;
+    margin-top: 0px;
+    min-width: 100% !important;
+}
+
+/* ============================================
+               Table Card
+               ============================================ */
+
+.table-card {
+    background: white;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.table-card-header {
+    padding: 24px 28px;
+    border-bottom: 2px solid var(--bg-light);
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.03) 0%, rgba(114, 9, 183, 0.03) 100%);
+}
+
+.table-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+    .table-info i {
+        font-size: 1.5rem;
+        color: var(--primary);
+    }
+
+    .table-info h3 {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+.table-card-body {
+    padding: 28px;
+}
+
+/* ============================================
+               DataTables Customization
+               ============================================ */
+
+/* Table Controls */
+.table-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.table-controls-left,
+.table-controls-right {
+    display: flex;
+    align-items: center;
+}
+
+/* Length Menu */
+.dataTables_length {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+    .dataTables_length select {
+        padding: 8px 32px 8px 12px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        background: white;
+        cursor: pointer;
+        transition: all 0.2s;
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%234361ee' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+    }
+
+        .dataTables_length select:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+/* Search Box */
+.dataTables_filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .dataTables_filter label {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+
+    .dataTables_filter input {
+        padding: 10px 16px;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        font-size: 0.9rem;
+        width: 250px;
+        transition: all 0.2s;
+    }
+
+        .dataTables_filter input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+/* ============================================
+               Services Table
+               ============================================ */
+
+.services-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .services-table thead th {
+        background: var(--bg-light);
+        color: var(--text-dark);
+        font-weight: 700;
+        padding: 16px 20px;
+        text-align: left;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        border-bottom: 2px solid #e9ecef;
+        white-space: nowrap;
+    }
+
+        .services-table thead th:first-child {
+            border-radius: 12px 0 0 0;
+        }
+
+        .services-table thead th:last-child {
+            border-radius: 0 12px 0 0;
+        }
+
+    .services-table tbody tr {
+        transition: all 0.2s;
+    }
+
+        .services-table tbody tr:hover {
+            background: rgba(67, 97, 238, 0.03);
+        }
+
+    .services-table tbody td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f0f0f0;
+        color: var(--text-dark);
+        vertical-align: middle;
+    }
+
+    .services-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+/* Service Name Cell */
+.service-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+    .service-name-cell i {
+        color: var(--primary);
+        font-size: 1.1rem;
+    }
+
+/* Category Badge */
+.category-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+    white-space: nowrap;
+}
+
+    .category-badge i {
+        font-size: 0.85rem;
+    }
+
+/* Price Input */
+.price-input-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    max-width: 140px;
+}
+
+.currency-symbol {
+    position: absolute;
+    left: 12px;
+    font-weight: 700;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.price-input {
+    width: 100%;
+    padding: 8px 12px 8px 28px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    transition: all 0.2s;
+}
+
+    .price-input:focus {
+        border-color: var(--primary);
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    }
+
+    .price-input.updating {
+        border-color: var(--warning);
+        background: rgba(245, 158, 11, 0.05);
+    }
+
+    .price-input.success {
+        border-color: var(--success);
+        background: rgba(16, 185, 129, 0.05);
+    }
+
+    .price-input.error {
+        border-color: var(--danger);
+        background: rgba(239, 68, 68, 0.05);
+    }
+
+/* Status Badge */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+    .status-badge i {
+        font-size: 0.9rem;
+    }
+
+    .status-badge.status-active {
+        background: rgba(16, 185, 129, 0.15);
+        color: #059669;
+    }
+
+    .status-badge.status-inactive {
+        background: rgba(108, 117, 125, 0.15);
+        color: var(--text-muted);
+    }
+
+/* Date Cell */
+.date-cell {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+    .date-cell i {
+        font-size: 1rem;
+    }
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+    .btn-action i {
+        font-size: 1rem;
+    }
+
+.btn-edit {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+}
+
+    .btn-edit:hover {
+        background: var(--info);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+.btn-delete {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+    .btn-delete:hover {
+        background: var(--danger);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-delete:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+/* ============================================
+               DataTables Pagination
+               ============================================ */
+
+.dataTables_info {
+    padding-top: 20px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.dataTables_paginate {
+    padding-top: 20px;
+    display: flex;
+    gap: 8px;
+}
+
+    .dataTables_paginate .paginate_button {
+        padding: 8px 14px;
+        border-radius: 8px;
+        background: white;
+        color: var(--text-dark);
+        border: 2px solid #e9ecef;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .dataTables_paginate .paginate_button:hover {
+            background: rgba(67, 97, 238, 0.1);
+            color: var(--primary);
+            border-color: rgba(67, 97, 238, 0.2);
+        }
+
+        .dataTables_paginate .paginate_button.current {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border-color: var(--primary);
+            box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+        }
+
+            .dataTables_paginate .paginate_button.current:hover {
+                background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            }
+
+        .dataTables_paginate .paginate_button.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+            .dataTables_paginate .paginate_button.disabled:hover {
+                background: white;
+                color: var(--text-dark);
+                border-color: #e9ecef;
+            }
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.previous,
+.dataTables_wrapper .dataTables_paginate .paginate_button.next {
+    font-weight: 700;
+}
+
+/* DataTables Processing Indicator */
+.dataTables_processing {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px 40px;
+    border-radius: 16px;
+    box-shadow: var(--shadow-lg);
+    z-index: 9999;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+/* ============================================
+               Empty State
+               ============================================ */
+
+.empty-state {
+    background: white;
+    border-radius: 24px;
+    padding: 80px 40px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .empty-icon i {
+        font-size: 4rem;
+        color: var(--primary);
+        opacity: 0.6;
+    }
+
+.empty-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+/* ============================================
+               Notification System
+               ============================================ */
+
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.3s ease;
+}
+
+    .notification.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .notification i {
+        font-size: 1.5rem;
+    }
+
+.notification-success {
+    border-left: 4px solid var(--success);
+}
+
+    .notification-success i {
+        color: var(--success);
+    }
+
+.notification-error {
+    border-left: 4px solid var(--danger);
+}
+
+    .notification-error i {
+        color: var(--danger);
+    }
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 992px) {
+    .dataTables_filter input {
+        width: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .stats-badge {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .stat-item {
+        padding: 12px 20px;
+    }
+
+    .table-card-body {
+        padding: 16px;
+    }
+
+    .table-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .table-controls-left,
+    .table-controls-right {
+        width: 100%;
+    }
+
+    .dataTables_filter {
+        width: 100%;
+    }
+
+        .dataTables_filter label {
+            width: 100%;
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .dataTables_filter input {
+            width: 100%;
+        }
+
+    .services-table {
+        font-size: 0.85rem;
+    }
+
+        .services-table thead th,
+        .services-table tbody td {
+            padding: 12px 10px;
+        }
+
+    .empty-state {
+        padding: 60px 30px;
+    }
+
+    .empty-icon {
+        width: 100px;
+        height: 100px;
+    }
+
+        .empty-icon i {
+            font-size: 3rem;
+        }
+
+    .notification {
+        left: 10px;
+        right: 10px;
+        transform: translateY(-100px);
+    }
+
+        .notification.show {
+            transform: translateY(0);
+        }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .table-card-header {
+        padding: 20px;
+    }
+
+    .services-table {
+        font-size: 0.8rem;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .btn-action {
+        width: 32px;
+        height: 32px;
+    }
+
+    .empty-state {
+        padding: 40px 20px;
+    }
+}
