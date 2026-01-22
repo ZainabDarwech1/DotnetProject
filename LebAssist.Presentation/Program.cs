@@ -107,9 +107,6 @@ app.MapControllerRoute(
 app.MapRazorPages();
 
 // SignalR Hubs (R9)
-app.MapHub<EmergencyHub>("/hubs/emergency");
-app.MapHub<AvailabilityHub>("/hubs/availability");
-app.MapHub<BookingHub>("/hubs/booking");
 app.MapHub<NotificationHub>("/hubs/notification");
 
 app.Run();

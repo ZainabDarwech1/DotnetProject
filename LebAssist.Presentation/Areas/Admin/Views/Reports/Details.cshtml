@@ -1,7 +1,7 @@
 @model LebAssist.Application.DTOs.ReportDto
 @{
     ViewData["Title"] = $"Report #{Model.ReportId}";
-    
+
     var statusColor = Model.Status switch
     {
         Domain.Enums.ReportStatus.Pending => "warning",
@@ -12,130 +12,239 @@
     };
 }
 
-<div class="container-fluid mt-4">
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h3>Report #@Model.ReportId</h3>
-                    <span class="badge bg-@statusColor">@Model.Status</span>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container-fluid">
+        <nav class="custom-breadcrumb" aria-label="breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        Admin Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Reports" asp-action="Index">
+                        <i class="bi bi-flag-fill"></i>
+                        Reports
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item active">
+                    Report #@Model.ReportId
+                </li>
+            </ol>
+        </nav>
+
+        <div class="page-title-section">
+            <h1 class="page-title">
+                <i class="bi bi-file-earmark-text-fill"></i>
+                Report #@Model.ReportId
+            </h1>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="container-fluid">
+    <div class="report-details-container">
+        <!-- Main Content -->
+        <div class="main-details">
+            @if (TempData["Success"] != null)
+            {
+                <div class="success-alert">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>@TempData["Success"]</span>
+                    <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
+                        <i class="bi bi-x"></i>
+                    </button>
                 </div>
-                <div class="card-body">
-                    @if (TempData["Success"] != null)
-                    {
-                        <div class="alert alert-success alert-dismissible">
-                            @TempData["Success"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    }
+            }
 
-                    @if (TempData["Error"] != null)
-                    {
-                        <div class="alert alert-danger alert-dismissible">
-                            @TempData["Error"]
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    }
+            @if (TempData["Error"] != null)
+            {
+                <div class="error-alert">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span>@TempData["Error"]</span>
+                    <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
+                        <i class="bi bi-x"></i>
+                    </button>
+                </div>
+            }
 
-                    <h5>Report Information</h5>
-                    <table class="table table-borderless">
-                        <tr>
-                            <th width="30%">Report ID:</th>
-                            <td><strong>#@Model.ReportId</strong></td>
-                        </tr>
-                        <tr>
-                            <th>Reporter:</th>
-                            <td>
+            <!-- Report Details Card -->
+            <div class="details-card">
+                <div class="card-header-custom">
+                    <div class="header-content">
+                        <h3 class="card-title">
+                            <i class="bi bi-info-circle-fill"></i>
+                            Report Information
+                        </h3>
+                        <span class="status-badge status-@statusColor">@Model.Status</span>
+                    </div>
+                </div>
+
+                <div class="card-body-custom">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-hash"></i>
+                                Report ID
+                            </div>
+                            <div class="info-value">#@Model.ReportId</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-person-fill"></i>
+                                Reporter
+                            </div>
+                            <div class="info-value">
                                 @Model.ReporterName
                                 @if (!string.IsNullOrEmpty(Model.ReporterPhone))
                                 {
-                                    <br><small>Phone: @Model.ReporterPhone</small>
+                                    <span class="info-sub">@Model.ReporterPhone</span>
                                 }
-                            </td>
-                        </tr>
-                        <tr>
-                            <th>Reported Provider:</th>
-                            <td>@Model.ProviderName</td>
-                        </tr>
-                        <tr>
-                            <th>Reason:</th>
-                            <td><span class="badge bg-secondary">@Model.Reason</span></td>
-                        </tr>
+                            </div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-person-badge-fill"></i>
+                                Reported Provider
+                            </div>
+                            <div class="info-value">@Model.ProviderName</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-exclamation-circle-fill"></i>
+                                Reason
+                            </div>
+                            <div class="info-value">
+                                <span class="reason-badge">@Model.Reason</span>
+                            </div>
+                        </div>
+
                         @if (Model.BookingId.HasValue)
                         {
-                            <tr>
-                                <th>Booking ID:</th>
-                                <td>
-                                    <a asp-area="" asp-controller="BookingDetails" asp-action="Details" asp-route-id="@Model.BookingId" target="_blank">
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="bi bi-calendar-check"></i>
+                                    Booking ID
+                                </div>
+                                <div class="info-value">
+                                    <a href="@Url.Action("Details", "BookingDetails", new { area = "", id = Model.BookingId })" target="_blank" class="booking-link">
                                         #@Model.BookingId
                                     </a>
-                                </td>
-                            </tr>
+                                </div>
+                            </div>
                         }
+
                         @if (!string.IsNullOrEmpty(Model.ServiceName))
                         {
-                            <tr>
-                                <th>Service:</th>
-                                <td>@Model.ServiceName</td>
-                            </tr>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="bi bi-tools"></i>
+                                    Service
+                                </div>
+                                <div class="info-value">@Model.ServiceName</div>
+                            </div>
                         }
-                        <tr>
-                            <th>Report Date:</th>
-                            <td>@Model.ReportDate.ToString("MMMM dd, yyyy 'at' h:mm tt")</td>
-                        </tr>
-                        <tr>
-                            <th>Current Status:</th>
-                            <td><span class="badge bg-@statusColor">@Model.Status</span></td>
-                        </tr>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-calendar-event"></i>
+                                Report Date
+                            </div>
+                            <div class="info-value">@Model.ReportDate.ToString("MMMM dd, yyyy 'at' h:mm tt")</div>
+                        </div>
+
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="bi bi-flag-fill"></i>
+                                Current Status
+                            </div>
+                            <div class="info-value">
+                                <span class="status-badge status-@statusColor">@Model.Status</span>
+                            </div>
+                        </div>
+
                         @if (!string.IsNullOrEmpty(Model.ResolvedBy))
                         {
-                            <tr>
-                                <th>Resolved By:</th>
-                                <td>@Model.ResolvedBy</td>
-                            </tr>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="bi bi-person-check-fill"></i>
+                                    Resolved By
+                                </div>
+                                <div class="info-value">@Model.ResolvedBy</div>
+                            </div>
                         }
+
                         @if (Model.ResolvedDate.HasValue)
                         {
-                            <tr>
-                                <th>Resolved Date:</th>
-                                <td>@Model.ResolvedDate.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</td>
-                            </tr>
+                            <div class="info-item">
+                                <div class="info-label">
+                                    <i class="bi bi-calendar-check-fill"></i>
+                                    Resolved Date
+                                </div>
+                                <div class="info-value">@Model.ResolvedDate.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</div>
+                            </div>
                         }
-                    </table>
+                    </div>
 
-                    <hr>
-
-                    <h5>Description</h5>
-                    <div class="p-3 bg-light rounded">
-                        <p>@Model.Description</p>
+                    <div class="description-section">
+                        <h4 class="section-title">
+                            <i class="bi bi-chat-left-text-fill"></i>
+                            Description
+                        </h4>
+                        <div class="description-box">
+                            @Model.Description
+                        </div>
                     </div>
 
                     @if (!string.IsNullOrEmpty(Model.AdminNotes))
                     {
-                        <hr>
-                        <div class="alert alert-info">
-                            <h5><i class="bi bi-chat-dots"></i> Current Admin Notes</h5>
-                            <p class="mb-0">@Model.AdminNotes</p>
+                        <div class="admin-notes-section">
+                            <h4 class="section-title">
+                                <i class="bi bi-chat-dots-fill"></i>
+                                Admin Notes
+                            </h4>
+                            <div class="admin-notes-box">
+                                @Model.AdminNotes
+                            </div>
                         </div>
                     }
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <!-- Update Status Form -->
-            <div class="card">
-                <div class="card-header bg-dark text-white">
-                    <h5><i class="bi bi-gear"></i> Update Report Status</h5>
+        <!-- Sidebar -->
+        <div class="sidebar-content">
+            <!-- Update Status Card -->
+            <div class="sidebar-card">
+                <div class="sidebar-card-header">
+                    <h3 class="sidebar-card-title">
+                        <i class="bi bi-gear-fill"></i>
+                        Update Status
+                    </h3>
                 </div>
-                <div class="card-body">
-                    <form asp-action="UpdateStatus" method="post">
+                <div class="sidebar-card-body">
+                    <form action="@Url.Action("UpdateStatus", "Reports", new { area = "Admin" })" method="post">
                         @Html.AntiForgeryToken()
                         <input type="hidden" name="reportId" value="@Model.ReportId" />
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Status *</label>
-                            <select name="status" class="form-select" required>
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-flag"></i>
+                                Status
+                            </label>
+                            <select name="status" class="form-select-custom" required>
                                 <option value="Pending" @(Model.Status == Domain.Enums.ReportStatus.Pending ? "selected" : "")>
                                     Pending
                                 </option>
@@ -151,43 +260,51 @@
                             </select>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Admin Notes</label>
-                            <textarea name="adminNotes" class="form-control" rows="5" 
+                        <div class="form-group">
+                            <label class="form-label">
+                                <i class="bi bi-chat-left-text"></i>
+                                Admin Notes
+                            </label>
+                            <textarea name="adminNotes" class="form-textarea-custom" rows="5"
                                       placeholder="Add notes about your decision...">@Model.AdminNotes</textarea>
-                            <small class="form-text text-muted">
-                                These notes will be visible to the reporter
-                            </small>
+                            <span class="form-hint">These notes will be visible to the reporter</span>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-check-circle"></i> Update Status
+                        <div class="form-actions">
+                            <button type="submit" class="btn-submit">
+                                <i class="bi bi-check-circle-fill"></i>
+                                Update Status
                             </button>
-                            <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left"></i> Back to List
+                            <a href="@Url.Action("Index")" class="btn-cancel">
+                                <i class="bi bi-arrow-left"></i>
+                                Back to List
                             </a>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <!-- Quick Actions -->
-            <div class="card mt-3">
-                <div class="card-header">
-                    <h5><i class="bi bi-lightning"></i> Quick Actions</h5>
+            <!-- Quick Actions Card -->
+            <div class="sidebar-card">
+                <div class="sidebar-card-header">
+                    <h3 class="sidebar-card-title">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        Quick Actions
+                    </h3>
                 </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a asp-area="" asp-controller="Provider" asp-action="Profile" asp-route-id="@Model.ReportedProviderId" 
-                           target="_blank" class="btn btn-outline-primary">
-                            <i class="bi bi-person"></i> View Provider Profile
+                <div class="sidebar-card-body">
+                    <div class="quick-actions">
+                        <a href="@Url.Action("Profile", "Provider", new { area = "", id = Model.ReportedProviderId })"
+                           target="_blank" class="quick-action-btn">
+                            <i class="bi bi-person-fill"></i>
+                            View Provider Profile
                         </a>
                         @if (Model.BookingId.HasValue)
                         {
-                            <a asp-area="" asp-controller="BookingDetails" asp-action="Details" asp-route-id="@Model.BookingId" 
-                               target="_blank" class="btn btn-outline-primary">
-                                <i class="bi bi-calendar"></i> View Booking Details
+                            <a href="@Url.Action("Details", "BookingDetails", new { area = "", id = Model.BookingId })"
+                               target="_blank" class="quick-action-btn">
+                                <i class="bi bi-calendar-check-fill"></i>
+                                View Booking Details
                             </a>
                         }
                     </div>
@@ -196,3 +313,25 @@
         </div>
     </div>
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminReportsDetails.css" />
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.details-card, .sidebar-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+}

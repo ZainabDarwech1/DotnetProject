@@ -1,11 +1,8 @@
-﻿using Domain.Enums;
-using LebAssist.Application.DTOs;
+﻿using LebAssist.Application.DTOs;
 using LebAssist.Application.Interfaces;
-using LebAssist.Presentation.Hubs;
 using LebAssist.Presentation.ViewModels.Emergency;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.SignalR;
 using System.Security.Claims;
 
 namespace LebAssist.Presentation.Controllers
@@ -16,18 +13,15 @@ namespace LebAssist.Presentation.Controllers
         private readonly IEmergencyService _emergencyService;
         private readonly IClientService _clientService;
         private readonly IServiceService _serviceService;
-        private readonly IHubContext<EmergencyHub> _emergencyHub;
 
         public EmergencyController(
             IEmergencyService emergencyService,
             IClientService clientService,
-            IServiceService serviceService,
-            IHubContext<EmergencyHub> emergencyHub)
+            IServiceService serviceService)
         {
             _emergencyService = emergencyService ?? throw new ArgumentNullException(nameof(emergencyService));
             _clientService = clientService ?? throw new ArgumentNullException(nameof(clientService));
             _serviceService = serviceService ?? throw new ArgumentNullException(nameof(serviceService));
-            _emergencyHub = emergencyHub ?? throw new ArgumentNullException(nameof(emergencyHub));
         }
 
         // GET: /Emergency
@@ -109,17 +103,6 @@ namespace LebAssist.Presentation.Controllers
             // Get service name for notification
             var allServices = await _serviceService.GetAllServicesAsync();
             var serviceName = allServices.FirstOrDefault(s => s.ServiceId == model.ServiceId)?.ServiceName ?? "Service";
-
-            // Broadcast to all providers via SignalR
-            await _emergencyHub.Clients.Group("Providers").SendAsync("OnEmergencyReceived", new
-            {
-                emergencyRequestId = emergencyId,
-                description = model.Description ?? string.Empty,
-                latitude = model.Latitude,
-                longitude = model.Longitude,
-                serviceName = serviceName,
-                requesterId = profile.ClientId
-            });
 
             TempData["Success"] = "Emergency request sent to all available providers!";
             return RedirectToAction("Details", new { id = emergencyId });
@@ -251,8 +234,6 @@ namespace LebAssist.Presentation.Controllers
 
             if (result)
             {
-                await _emergencyHub.Clients.Group("Providers").SendAsync("OnEmergencyRemoved", emergencyId);
-
                 TempData["Success"] = "Emergency accepted! Contact the client.";
                 return RedirectToAction("Details", new { id = emergencyId });
             }

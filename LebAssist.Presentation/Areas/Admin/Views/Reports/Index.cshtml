@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Reports Management";
     var activeStatus = ViewBag.ActiveStatus as string ?? "All";
-    
+
     var allReports = Model.ToList();
     var pendingCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.Pending);
     var underReviewCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.UnderReview);
@@ -10,148 +10,258 @@
     var dismissedCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.Dismissed);
 }
 
-<div class="container-fluid mt-4">
-    <h2><i class="bi bi-flag-fill"></i> Reports Management</h2>
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container-fluid">
+        <nav class="custom-breadcrumb" aria-label="breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        Admin Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item active">
+                    Reports Management
+                </li>
+            </ol>
+        </nav>
 
+        <div class="page-title-section">
+            <h1 class="page-title">
+                <i class="bi bi-flag-fill"></i>
+                Reports Management
+            </h1>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="container-fluid">
     <!-- Stats Cards -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body">
-                    <h5>Total Reports</h5>
-                    <h2>@allReports.Count</h2>
-                </div>
+    <div class="stats-section">
+        <div class="stat-card stat-primary">
+            <div class="stat-icon">
+                <i class="bi bi-file-earmark-text-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@allReports.Count</div>
+                <div class="stat-label">Total Reports</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <h5>Pending</h5>
-                    <h2>@pendingCount</h2>
-                </div>
+
+        <div class="stat-card stat-warning">
+            <div class="stat-icon">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@pendingCount</div>
+                <div class="stat-label">Pending</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body">
-                    <h5>Under Review</h5>
-                    <h2>@underReviewCount</h2>
-                </div>
+
+        <div class="stat-card stat-info">
+            <div class="stat-icon">
+                <i class="bi bi-search"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@underReviewCount</div>
+                <div class="stat-label">Under Review</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body">
-                    <h5>Resolved</h5>
-                    <h2>@resolvedCount</h2>
-                </div>
+
+        <div class="stat-card stat-success">
+            <div class="stat-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <div class="stat-content">
+                <div class="stat-value">@resolvedCount</div>
+                <div class="stat-label">Resolved</div>
             </div>
         </div>
     </div>
 
     <!-- Filter Tabs -->
-    <ul class="nav nav-pills mb-3">
-        <li class="nav-item">
-            <a class="nav-link @(activeStatus == "All" ? "active" : "")" asp-action="Index">
-                All (@allReports.Count)
+    <div class="filter-section">
+        <div class="filter-tabs-wrapper">
+            <a href="@Url.Action("Index")" class="filter-tab @(activeStatus == "All" ? "active" : "")">
+                <span class="tab-label">All</span>
+                <span class="tab-count">@allReports.Count</span>
             </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(activeStatus == "Pending" ? "active" : "")" asp-action="Index" asp-route-status="Pending">
-                Pending (@pendingCount)
+            <a href="@Url.Action("Index", new { status = "Pending" })" class="filter-tab @(activeStatus == "Pending" ? "active" : "")">
+                <span class="tab-label">Pending</span>
+                <span class="tab-count">@pendingCount</span>
             </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(activeStatus == "UnderReview" ? "active" : "")" asp-action="Index" asp-route-status="UnderReview">
-                Under Review (@underReviewCount)
+            <a href="@Url.Action("Index", new { status = "UnderReview" })" class="filter-tab @(activeStatus == "UnderReview" ? "active" : "")">
+                <span class="tab-label">Under Review</span>
+                <span class="tab-count">@underReviewCount</span>
             </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(activeStatus == "Resolved" ? "active" : "")" asp-action="Index" asp-route-status="Resolved">
-                Resolved (@resolvedCount)
+            <a href="@Url.Action("Index", new { status = "Resolved" })" class="filter-tab @(activeStatus == "Resolved" ? "active" : "")">
+                <span class="tab-label">Resolved</span>
+                <span class="tab-count">@resolvedCount</span>
             </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link @(activeStatus == "Dismissed" ? "active" : "")" asp-action="Index" asp-route-status="Dismissed">
-                Dismissed (@dismissedCount)
+            <a href="@Url.Action("Index", new { status = "Dismissed" })" class="filter-tab @(activeStatus == "Dismissed" ? "active" : "")">
+                <span class="tab-label">Dismissed</span>
+                <span class="tab-count">@dismissedCount</span>
             </a>
-        </li>
-    </ul>
+        </div>
+    </div>
 
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success alert-dismissible">
-            @TempData["Success"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        <div class="success-alert">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>@TempData["Success"]</span>
+            <button type="button" class="alert-close" onclick="this.parentElement.style.display='none'">
+                <i class="bi bi-x"></i>
+            </button>
         </div>
     }
 
     <!-- Reports Table -->
     @if (!Model.Any())
     {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> No reports found for the selected filter.
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-inbox"></i>
+            </div>
+            <h3 class="empty-title">No Reports Found</h3>
+            <p class="empty-description">No reports match the selected filter.</p>
         </div>
     }
     else
     {
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Reporter</th>
-                                <th>Provider</th>
-                                <th>Service</th>
-                                <th>Reason</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var report in Model)
+        <div class="reports-table-card">
+            <div class="table-container">
+                <table class="reports-table" id="reportsTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="bi bi-hash"></i>
+                                ID
+                            </th>
+                            <th>
+                                <i class="bi bi-person"></i>
+                                Reporter
+                            </th>
+                            <th>
+                                <i class="bi bi-person-badge"></i>
+                                Provider
+                            </th>
+                            <th>
+                                <i class="bi bi-tools"></i>
+                                Service
+                            </th>
+                            <th>
+                                <i class="bi bi-exclamation-circle"></i>
+                                Reason
+                            </th>
+                            <th>
+                                <i class="bi bi-flag"></i>
+                                Status
+                            </th>
+                            <th>
+                                <i class="bi bi-calendar"></i>
+                                Date
+                            </th>
+                            <th>
+                                <i class="bi bi-gear"></i>
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model)
+                        {
+                            var statusColor = report.Status switch
                             {
-                                var statusColor = report.Status switch
-                                {
-                                    Domain.Enums.ReportStatus.Pending => "warning",
-                                    Domain.Enums.ReportStatus.UnderReview => "info",
-                                    Domain.Enums.ReportStatus.Resolved => "success",
-                                    Domain.Enums.ReportStatus.Dismissed => "secondary",
-                                    _ => "secondary"
-                                };
+                                Domain.Enums.ReportStatus.Pending => "warning",
+                                Domain.Enums.ReportStatus.UnderReview => "info",
+                                Domain.Enums.ReportStatus.Resolved => "success",
+                                Domain.Enums.ReportStatus.Dismissed => "secondary",
+                                _ => "secondary"
+                            };
 
-                                <tr>
-                                    <td><strong>#@report.ReportId</strong></td>
-                                    <td>
-                                        @report.ReporterName
+                            <tr>
+                                <td>
+                                    <span class="report-id">#@report.ReportId</span>
+                                </td>
+                                <td>
+                                    <div class="reporter-info">
+                                        <span class="reporter-name">@report.ReporterName</span>
                                         @if (!string.IsNullOrEmpty(report.ReporterPhone))
                                         {
-                                            <br><small class="text-muted">@report.ReporterPhone</small>
+                                            <span class="reporter-phone">@report.ReporterPhone</span>
                                         }
-                                    </td>
-                                    <td>@report.ProviderName</td>
-                                    <td>@(report.ServiceName ?? "-")</td>
-                                    <td>
-                                        <span class="badge bg-secondary">@report.Reason</span>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-@statusColor">@report.Status</span>
-                                    </td>
-                                    <td>@report.ReportDate.ToString("MMM dd, yyyy")</td>
-                                    <td>
-                                        <a asp-action="Details" asp-route-id="@report.ReportId" class="btn btn-sm btn-primary">
-                                            <i class="bi bi-eye"></i> View
-                                        </a>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="provider-name">@report.ProviderName</span>
+                                </td>
+                                <td>
+                                    <span class="service-name">@(report.ServiceName ?? "—")</span>
+                                </td>
+                                <td>
+                                    <span class="reason-badge">@report.Reason</span>
+                                </td>
+                                <td>
+                                    <span class="status-badge status-@statusColor">@report.Status</span>
+                                </td>
+                                <td>
+                                    <span class="report-date">@report.ReportDate.ToString("MMM dd, yyyy")</span>
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Details", new { id = report.ReportId })" class="action-btn btn-view">
+                                        <i class="bi bi-eye"></i>
+                                        <span>View</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     }
 </div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminReports.css" />
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#reportsTable').DataTable({
+                order: [[0, 'desc']],
+                pageLength: 10,
+                language: {
+                    search: "Search reports:",
+                    lengthMenu: "Show _MENU_ reports per page",
+                    info: "Showing _START_ to _END_ of _TOTAL_ reports",
+                    paginate: {
+                        first: "First",
+                        last: "Last",
+                        next: "Next",
+                        previous: "Previous"
+                    }
+                }
+            });
+
+            // Animate rows on load
+            const rows = document.querySelectorAll('.reports-table tbody tr');
+            rows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+}
