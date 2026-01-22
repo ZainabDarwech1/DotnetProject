@@ -1,0 +1,445 @@
+@model List<LebAssist.Presentation.ViewModels.Emergency.AssignedEmergencyViewModel>
+@{
+    ViewData["Title"] = "My Assigned Emergencies";
+    var acceptedEmergencies = Model.Where(e => e.Status == "Accepted").ToList();
+    var inProgressEmergencies = Model.Where(e => e.Status == "InProgress").ToList();
+    var completedEmergencies = Model.Where(e => e.Status == "Completed").ToList();
+}
+
+<div class="assigned-emergencies-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Dashboard", "Provider")">
+                            <i class="bi bi-speedometer2"></i>
+                            Provider Dashboard
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        My Assigned Emergencies
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-clipboard-check"></i>
+                    My Assigned Emergencies
+                </h1>
+                <p class="page-subtitle">Track and manage your emergency assignments</p>
+            </div>
+
+            <!-- Stats Badge -->
+            @if (Model.Any())
+            {
+                <div class="stats-badge">
+                    <div class="stat-item stat-accepted">
+                        <i class="bi bi-check-circle"></i>
+                        <span class="stat-value">@acceptedEmergencies.Count</span>
+                        <span class="stat-label">Accepted</span>
+                    </div>
+                    <div class="stat-item stat-in-progress">
+                        <i class="bi bi-hourglass-split"></i>
+                        <span class="stat-value">@inProgressEmergencies.Count</span>
+                        <span class="stat-label">In Progress</span>
+                    </div>
+                    <div class="stat-item stat-completed">
+                        <i class="bi bi-check2-circle"></i>
+                        <span class="stat-value">@completedEmergencies.Count</span>
+                        <span class="stat-label">Completed</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="container emergencies-content">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-clipboard2-x"></i>
+                </div>
+                <h3 class="empty-title">No Assigned Emergencies</h3>
+                <p class="empty-description">
+                    You haven't accepted any emergency requests yet. Check pending emergencies to help clients in need.
+                </p>
+                <a asp-action="Pending" class="btn btn-primary">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    View Pending Emergencies
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Tabs Navigation -->
+            <div class="emergency-tabs">
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="accepted-tab" data-bs-toggle="tab" data-bs-target="#accepted" type="button" role="tab">
+                            <i class="bi bi-check-circle"></i>
+                            Accepted <span class="badge bg-warning">@acceptedEmergencies.Count</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="in-progress-tab" data-bs-toggle="tab" data-bs-target="#in-progress" type="button" role="tab">
+                            <i class="bi bi-hourglass-split"></i>
+                            In Progress <span class="badge bg-info">@inProgressEmergencies.Count</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab">
+                            <i class="bi bi-check2-circle"></i>
+                            Completed <span class="badge bg-success">@completedEmergencies.Count</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Accepted Tab -->
+                <div class="tab-pane fade show active" id="accepted" role="tabpanel">
+                    @if (!acceptedEmergencies.Any())
+                    {
+                        <div class="tab-empty-state">
+                            <i class="bi bi-check-circle text-muted"></i>
+                            <p>No accepted emergencies</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="emergencies-grid">
+                            @foreach (var emergency in acceptedEmergencies.OrderBy(e => e.RequestDateTime))
+                            {
+                                <div class="emergency-card status-accepted">
+                                    <div class="card-header">
+                                        <div class="emergency-info">
+                                            <h3 class="emergency-title">
+                                                <i class="bi bi-tools"></i>
+                                                @emergency.ServiceName
+                                            </h3>
+                                            <span class="badge badge-status status-accepted">
+                                                <i class="bi bi-check-circle"></i>
+                                                Accepted
+                                            </span>
+                                        </div>
+                                        <div class="emergency-meta">
+                                            <span class="time-elapsed">
+                                                <i class="bi bi-clock"></i>
+                                                @GetTimeAgo(emergency.AcceptedDateTime ?? emergency.RequestDateTime)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="client-info">
+                                            <div class="client-avatar">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                            <div class="client-details">
+                                                <h4>@emergency.ClientName</h4>
+                                                <a href="tel:@emergency.ClientPhone" class="client-phone">
+                                                    <i class="bi bi-telephone-fill"></i>
+                                                    @emergency.ClientPhone
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="emergency-details">
+                                            <p class="details-text">@emergency.Details</p>
+                                        </div>
+
+                                        <div class="location-info">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                            <span>@emergency.Distance?.ToString("F1") km away</span>
+                                        </div>
+
+                                        <div class="timeline-info">
+                                            <div class="timeline-item">
+                                                <i class="bi bi-clock-history"></i>
+                                                <span>Requested: @emergency.RequestDateTime.ToString("MMM dd, yyyy h:mm tt")</span>
+                                            </div>
+                                            @if (emergency.AcceptedDateTime.HasValue)
+                                            {
+                                                <div class="timeline-item">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    <span>Accepted: @emergency.AcceptedDateTime.Value.ToString("MMM dd, yyyy h:mm tt")</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <a href="https://www.google.com/maps?q=@emergency.Latitude,@emergency.Longitude" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-map"></i>
+                                            Get Directions
+                                        </a>
+                                        <form asp-action="Start" asp-route-emergencyId="@emergency.EmergencyRequestId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-success">
+                                                <i class="bi bi-play-circle"></i>
+                                                Start Service
+                                            </button>
+                                        </form>
+                                        <a asp-action="Details" asp-route-id="@emergency.EmergencyRequestId" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-eye"></i>
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- In Progress Tab -->
+                <div class="tab-pane fade" id="in-progress" role="tabpanel">
+                    @if (!inProgressEmergencies.Any())
+                    {
+                        <div class="tab-empty-state">
+                            <i class="bi bi-hourglass-split text-muted"></i>
+                            <p>No emergencies in progress</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="emergencies-grid">
+                            @foreach (var emergency in inProgressEmergencies.OrderBy(e => e.RequestDateTime))
+                            {
+                                <div class="emergency-card status-in-progress">
+                                    <div class="card-header">
+                                        <div class="emergency-info">
+                                            <h3 class="emergency-title">
+                                                <i class="bi bi-tools"></i>
+                                                @emergency.ServiceName
+                                            </h3>
+                                            <span class="badge badge-status status-in-progress">
+                                                <i class="bi bi-hourglass-split"></i>
+                                                In Progress
+                                            </span>
+                                        </div>
+                                        <div class="emergency-meta">
+                                            <span class="time-elapsed urgent">
+                                                <i class="bi bi-clock"></i>
+                                                @GetTimeAgo(emergency.AcceptedDateTime ?? emergency.RequestDateTime)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="client-info">
+                                            <div class="client-avatar">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                            <div class="client-details">
+                                                <h4>@emergency.ClientName</h4>
+                                                <a href="tel:@emergency.ClientPhone" class="client-phone">
+                                                    <i class="bi bi-telephone-fill"></i>
+                                                    @emergency.ClientPhone
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="emergency-details">
+                                            <p class="details-text">@emergency.Details</p>
+                                        </div>
+
+                                        <div class="location-info">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                            <span>@emergency.Distance?.ToString("F1") km away</span>
+                                        </div>
+
+                                        <div class="timeline-info">
+                                            <div class="timeline-item">
+                                                <i class="bi bi-clock-history"></i>
+                                                <span>Requested: @emergency.RequestDateTime.ToString("MMM dd, yyyy h:mm tt")</span>
+                                            </div>
+                                            @if (emergency.AcceptedDateTime.HasValue)
+                                            {
+                                                <div class="timeline-item">
+                                                    <i class="bi bi-check-circle"></i>
+                                                    <span>Accepted: @emergency.AcceptedDateTime.Value.ToString("MMM dd, yyyy h:mm tt")</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <a href="https://www.google.com/maps?q=@emergency.Latitude,@emergency.Longitude" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-map"></i>
+                                            Get Directions
+                                        </a>
+                                        <form asp-action="Complete" asp-route-emergencyId="@emergency.EmergencyRequestId" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-primary">
+                                                <i class="bi bi-check-circle"></i>
+                                                Mark Complete
+                                            </button>
+                                        </form>
+                                        <a asp-action="Details" asp-route-id="@emergency.EmergencyRequestId" class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-eye"></i>
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <!-- Completed Tab -->
+                <div class="tab-pane fade" id="completed" role="tabpanel">
+                    @if (!completedEmergencies.Any())
+                    {
+                        <div class="tab-empty-state">
+                            <i class="bi bi-check2-circle text-muted"></i>
+                            <p>No completed emergencies</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="emergencies-grid">
+                            @foreach (var emergency in completedEmergencies.OrderByDescending(e => e.CompletedDate))
+                            {
+                                <div class="emergency-card status-completed">
+                                    <div class="card-header">
+                                        <div class="emergency-info">
+                                            <h3 class="emergency-title">
+                                                <i class="bi bi-tools"></i>
+                                                @emergency.ServiceName
+                                            </h3>
+                                            <span class="badge badge-status status-completed">
+                                                <i class="bi bi-check2-circle"></i>
+                                                Completed
+                                            </span>
+                                        </div>
+                                        <div class="emergency-meta">
+                                            <span class="time-elapsed">
+                                                <i class="bi bi-calendar-check"></i>
+                                                @GetTimeAgo(emergency.CompletedDate ?? emergency.RequestDateTime)
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div class="card-body">
+                                        <div class="client-info">
+                                            <div class="client-avatar completed">
+                                                <i class="bi bi-person-fill"></i>
+                                            </div>
+                                            <div class="client-details">
+                                                <h4>@emergency.ClientName</h4>
+                                                <a href="tel:@emergency.ClientPhone" class="client-phone">
+                                                    <i class="bi bi-telephone-fill"></i>
+                                                    @emergency.ClientPhone
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="emergency-details">
+                                            <p class="details-text">@emergency.Details</p>
+                                        </div>
+
+                                        <div class="location-info">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                            <span>@emergency.Distance?.ToString("F1") km away</span>
+                                        </div>
+
+                                        <div class="timeline-info">
+                                            <div class="timeline-item">
+                                                <i class="bi bi-clock-history"></i>
+                                                <span>Requested: @emergency.RequestDateTime.ToString("MMM dd, yyyy h:mm tt")</span>
+                                            </div>
+                                            @if (emergency.CompletedDate.HasValue)
+                                            {
+                                                <div class="timeline-item">
+                                                    <i class="bi bi-check2-circle"></i>
+                                                    <span>Completed: @emergency.CompletedDate.Value.ToString("MMM dd, yyyy h:mm tt")</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+
+                                    <div class="card-footer">
+                                        <a asp-action="Details" asp-route-id="@emergency.EmergencyRequestId" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                            View Details
+                                        </a>
+                                        <span class="completed-indicator">
+                                            <i class="bi bi-patch-check-fill text-success"></i>
+                                            Service Completed
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@functions {
+    string GetTimeAgo(DateTime dateTime)
+    {
+        var timeSpan = DateTime.UtcNow - dateTime.ToUniversalTime();
+
+        if (timeSpan.TotalMinutes < 1) return "Just now";
+        if (timeSpan.TotalMinutes < 60) return $"{(int)timeSpan.TotalMinutes} min ago";
+        if (timeSpan.TotalHours < 24) return $"{(int)timeSpan.TotalHours} hr ago";
+        if (timeSpan.TotalDays < 7) return $"{(int)timeSpan.TotalDays} day(s) ago";
+        if (timeSpan.TotalDays < 30) return $"{(int)(timeSpan.TotalDays / 7)} week(s) ago";
+
+        return dateTime.ToString("MMM dd, yyyy");
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/assignedEmergencies.css"/>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-refresh every 30 seconds for real-time updates
+            setInterval(function() {
+                // Only refresh if user is on first tab and hasn't made changes
+                if(document.querySelector('#accepted-tab').classList.contains('active')) {
+                    console.log('Auto-refresh check...');
+                }
+            }, 30000);
+
+            // Add animation to cards
+            const cards = document.querySelectorAll('.emergency-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+}

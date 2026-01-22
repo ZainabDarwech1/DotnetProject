@@ -4,84 +4,159 @@
     ViewData["Title"] = "Notifications";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="bi bi-bell"></i> Notifications</h2>
-        @if (Model.Any(n => !n.IsRead))
-        {
-            <button class="btn btn-outline-primary" onclick="markAllAsRead()">
-                <i class="bi bi-check-all"></i> Mark All as Read
-            </button>
-        }
-    </div>
+<div class="notifications-page">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="custom-breadcrumb" aria-label="breadcrumb">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="@Url.Action("Index", "Home")">
+                            <i class="bi bi-house-door"></i>
+                            Home
+                        </a>
+                    </li>
+                    <li class="breadcrumb-separator">
+                        <i class="bi bi-chevron-right"></i>
+                    </li>
+                    <li class="breadcrumb-item active">
+                        Notifications
+                    </li>
+                </ol>
+            </nav>
 
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            <i class="bi bi-info-circle"></i> You have no notifications.
-        </div>
-    }
-    else
-    {
-        <div class="list-group">
-            @foreach (var notification in Model)
+            <!-- Page Title -->
+            <div class="page-title-section">
+                <h1 class="page-title">
+                    <i class="bi bi-bell-fill"></i>
+                    Notifications
+                </h1>
+                <p class="page-subtitle">Stay updated with your latest activities</p>
+            </div>
+
+            <!-- Action Button -->
+            @if (Model.Any(n => !n.IsRead))
             {
-                <div class="list-group-item list-group-item-action @(!notification.IsRead ? "bg-light border-start border-primary border-4" : "")"
-                     data-notification-id="@notification.NotificationId">
-                    <div class="d-flex w-100 justify-content-between">
-                        <div class="d-flex align-items-start">
-                            <span class="me-3 fs-4">
-                                @switch (notification.Type)
-                                {
-                                    case NotificationType.Booking:
-                                        <i class="bi bi-calendar-check text-primary"></i>
-                                        break;
-                                    case NotificationType.Emergency:
-                                        <i class="bi bi-exclamation-triangle text-danger"></i>
-                                        break;
-                                    case NotificationType.Review:
-                                        <i class="bi bi-star text-warning"></i>
-                                        break;
-                                    case NotificationType.Admin:
-                                        <i class="bi bi-shield-check text-info"></i>
-                                        break;
-                                    default:
-                                        <i class="bi bi-bell text-secondary"></i>
-                                        break;
-                                }
-                            </span>
-                            <div>
-                                <h6 class="mb-1 @(!notification.IsRead ? "fw-bold" : "")">
-                                    @notification.Title
-                                    @if (!notification.IsRead)
-                                    {
-                                        <span class="badge bg-primary ms-2">New</span>
-                                    }
-                                </h6>
-                                <p class="mb-1 text-muted">@notification.Message</p>
-                                <small class="text-muted">@notification.TimeAgo</small>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column align-items-end">
-                            <small class="text-muted mb-2">@notification.CreatedDate.ToString("MMM dd, HH:mm")</small>
-                            <div class="btn-group btn-group-sm">
-                                @if (!notification.IsRead)
-                                {
-                                    <button class="btn btn-outline-primary btn-sm" onclick="markAsRead(@notification.NotificationId)" title="Mark as Read">
-                                        <i class="bi bi-check"></i>
-                                    </button>
-                                }
-                                <button class="btn btn-outline-danger btn-sm" onclick="deleteNotification(@notification.NotificationId)" title="Delete">
-                                    <i class="bi bi-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div class="header-actions">
+                    <button class="btn btn-mark-all" onclick="markAllAsRead()">
+                        <i class="bi bi-check-all"></i>
+                        Mark All as Read
+                    </button>
                 </div>
             }
         </div>
-    }
+    </div>
+
+    <!-- Content Section -->
+    <div class="container notifications-content">
+        @if (!Model.Any())
+        {
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="bi bi-bell-slash"></i>
+                </div>
+                <h3 class="empty-title">No Notifications</h3>
+                <p class="empty-description">
+                    You're all caught up! You'll see new notifications here when something happens.
+                </p>
+            </div>
+        }
+        else
+        {
+            <!-- Notifications List -->
+            <div class="notifications-list">
+                @foreach (var notification in Model)
+                {
+                    <div class="notification-card @(!notification.IsRead ? "unread" : "")"
+                         data-notification-id="@notification.NotificationId">
+
+                        <!-- Notification Icon -->
+                        <div class="notification-icon-wrapper">
+                            <div class="notification-icon @GetNotificationClass(notification.Type)">
+                                @switch (notification.Type)
+                                {
+                                    case NotificationType.Booking:
+                                        <i class="bi bi-calendar-check-fill"></i>
+                                        break;
+                                    case NotificationType.Emergency:
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        break;
+                                    case NotificationType.Review:
+                                        <i class="bi bi-star-fill"></i>
+                                        break;
+                                    case NotificationType.Admin:
+                                        <i class="bi bi-shield-check-fill"></i>
+                                        break;
+                                    default:
+                                        <i class="bi bi-bell-fill"></i>
+                                        break;
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Notification Content -->
+                        <div class="notification-content">
+                            <div class="notification-header">
+                                <h5 class="notification-title">
+                                    @notification.Title
+                                    @if (!notification.IsRead)
+                                    {
+                                        <span class="new-badge">New</span>
+                                    }
+                                </h5>
+                                <div class="notification-meta">
+                                    <span class="notification-date">
+                                        <i class="bi bi-clock"></i>
+                                        @notification.CreatedDate.ToString("MMM dd, HH:mm")
+                                    </span>
+                                    <span class="notification-ago">@notification.TimeAgo</span>
+                                </div>
+                            </div>
+                            <p class="notification-message">@notification.Message</p>
+                        </div>
+
+                        <!-- Notification Actions -->
+                        <div class="notification-actions">
+                            @if (!notification.IsRead)
+                            {
+                                <button class="btn-action btn-read"
+                                        onclick="markAsRead(@notification.NotificationId)"
+                                        title="Mark as Read">
+                                    <i class="bi bi-check2"></i>
+                                </button>
+                            }
+                            <button class="btn-action btn-delete"
+                                    onclick="deleteNotification(@notification.NotificationId)"
+                                    title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
 </div>
+
+@functions {
+    string GetNotificationClass(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Booking => "icon-booking",
+            NotificationType.Emergency => "icon-emergency",
+            NotificationType.Review => "icon-review",
+            NotificationType.Admin => "icon-admin",
+            _ => "icon-default"
+        };
+    }
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/notifications.css" />
+}
 
 @section Scripts {
     <script>
@@ -91,14 +166,26 @@
                 .then(data => {
                     if (data.success) {
                         var element = document.querySelector('[data-notification-id="' + id + '"]');
-                        element.classList.remove('bg-light', 'border-start', 'border-primary', 'border-4');
-                        var badge = element.querySelector('.badge');
-                        if (badge) badge.remove();
-                        var title = element.querySelector('h6');
-                        if (title) title.classList.remove('fw-bold');
-                        var readBtn = element.querySelector('.btn-outline-primary');
-                        if (readBtn) readBtn.remove();
+                        element.classList.remove('unread');
+
+                        var badge = element.querySelector('.new-badge');
+                        if (badge) {
+                            badge.style.transition = 'all 0.3s ease';
+                            badge.style.opacity = '0';
+                            badge.style.transform = 'scale(0.8)';
+                            setTimeout(() => badge.remove(), 300);
+                        }
+
+                        var readBtn = element.querySelector('.btn-read');
+                        if (readBtn) {
+                            readBtn.style.transition = 'all 0.3s ease';
+                            readBtn.style.opacity = '0';
+                            readBtn.style.transform = 'scale(0.8)';
+                            setTimeout(() => readBtn.remove(), 300);
+                        }
+
                         updateBadgeCount();
+                        checkMarkAllButton();
                     }
                 });
         }
@@ -114,14 +201,21 @@
         }
 
         function deleteNotification(id) {
-            if (confirm('Delete this notification?')) {
+            if (confirm('Are you sure you want to delete this notification?')) {
+                var element = document.querySelector('[data-notification-id="' + id + '"]');
+
                 fetch('/Notification/Delete?id=' + id, { method: 'POST' })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            var element = document.querySelector('[data-notification-id="' + id + '"]');
-                            element.remove();
-                            updateBadgeCount();
+                            element.style.transition = 'all 0.3s ease';
+                            element.style.opacity = '0';
+                            element.style.transform = 'translateX(20px)';
+                            setTimeout(() => {
+                                element.remove();
+                                updateBadgeCount();
+                                checkIfEmpty();
+                            }, 300);
                         }
                     });
             }
@@ -138,5 +232,36 @@
                     }
                 });
         }
+
+        function checkMarkAllButton() {
+            const unreadCount = document.querySelectorAll('.notification-card.unread').length;
+            const markAllBtn = document.querySelector('.btn-mark-all');
+            if (markAllBtn && unreadCount === 0) {
+                markAllBtn.style.transition = 'all 0.3s ease';
+                markAllBtn.style.opacity = '0';
+                setTimeout(() => markAllBtn.remove(), 300);
+            }
+        }
+
+        function checkIfEmpty() {
+            const notificationCount = document.querySelectorAll('.notification-card').length;
+            if (notificationCount === 0) {
+                location.reload();
+            }
+        }
+
+        // Animate notifications on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const notifications = document.querySelectorAll('.notification-card');
+            notifications.forEach((notification, index) => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    notification.style.transition = 'all 0.5s ease';
+                    notification.style.opacity = '1';
+                    notification.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
     </script>
 }

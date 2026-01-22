@@ -1,0 +1,151 @@
+@model LebAssist.Presentation.ViewModels.Report.CreateReportViewModel
+@{
+    ViewData["Title"] = "Submit Report";
+}
+
+<div class="create-report-page">
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card report-form-card">
+                    <div class="card-header text-white">
+                        <h3>
+                            <i class="bi bi-flag-fill"></i>
+                            Submit a Report
+                        </h3>
+                    </div>
+                    <div class="card-body">
+                        <form asp-action="Create" method="post">
+                            @Html.AntiForgeryToken()
+
+                            <!-- Report Type Selection -->
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">What would you like to report?</label>
+
+                                <!-- Option 1: Report from Booking -->
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="reportType" id="reportFromBooking" value="booking" checked>
+                                    <label class="form-check-label" for="reportFromBooking">
+                                        <strong>Report from my booking</strong>
+                                    </label>
+                                </div>
+
+                                <div id="bookingSection" class="ms-4 mb-3">
+                                    <select asp-for="BookingId" class="form-select">
+                                        <option value="">-- Select a booking --</option>
+                                        @foreach (var booking in Model.MyBookings)
+                                        {
+                                            <option value="@booking.BookingId">
+                                                @booking.ServiceName with @booking.ProviderName - @booking.BookingDate.ToString("MMM dd, yyyy")
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!-- Option 2: Report Provider Directly -->
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="radio" name="reportType" id="reportProvider" value="provider">
+                                    <label class="form-check-label" for="reportProvider">
+                                        <strong>Report a provider directly</strong>
+                                    </label>
+                                </div>
+
+                                <div id="providerSection" class="ms-4 mb-3" style="display:none;">
+                                    <select asp-for="ProviderId" class="form-select">
+                                        <option value="">-- Select a provider --</option>
+                                        @foreach (var provider in Model.AvailableProviders)
+                                        {
+                                            <option value="@provider.ProviderId">@provider.ProviderName</option>
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Reason -->
+                            <div class="mb-3">
+                                <label asp-for="Reason" class="form-label fw-bold">Reason *</label>
+                                <select asp-for="Reason" class="form-select" required>
+                                    <option value="">-- Select reason --</option>
+                                    <option value="0">Unprofessional Behavior</option>
+                                    <option value="1">Provider No-Show</option>
+                                    <option value="2">Poor Service Quality</option>
+                                    <option value="3">Fraud/Scam</option>
+                                    <option value="4">Other</option>
+                                </select>
+                                <span asp-validation-for="Reason" class="text-danger"></span>
+                            </div>
+
+                            <!-- Description -->
+                            <div class="mb-3">
+                                <label asp-for="Description" class="form-label fw-bold">Description *</label>
+                                <textarea asp-for="Description" class="form-control" rows="5"
+                                          placeholder="Describe the issue in detail (minimum 20 characters)..."
+                                          required minlength="20" maxlength="2000"></textarea>
+                                <span asp-validation-for="Description" class="text-danger"></span>
+                                <div class="form-text">Minimum 20 characters, maximum 2000</div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i> Submit Report
+                                </button>
+                                <a asp-action="MyReports" class="btn btn-secondary">
+                                    <i class="bi bi-x"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/createReport.css" />
+}
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const reportFromBooking = document.getElementById('reportFromBooking');
+            const reportProvider = document.getElementById('reportProvider');
+            const bookingSection = document.getElementById('bookingSection');
+            const providerSection = document.getElementById('providerSection');
+            const bookingSelect = document.querySelector('select[name="BookingId"]');
+            const providerSelect = document.querySelector('select[name="ProviderId"]');
+
+            reportFromBooking.addEventListener('change', function() {
+                if (this.checked) {
+                    bookingSection.style.display = 'block';
+                    providerSection.style.display = 'none';
+                    providerSelect.value = '';
+                }
+            });
+
+            reportProvider.addEventListener('change', function() {
+                if (this.checked) {
+                    bookingSection.style.display = 'none';
+                    providerSection.style.display = 'block';
+                    bookingSelect.value = '';
+                }
+            });
+
+            // Animate form on load
+            const card = document.querySelector('.report-form-card');
+            if (card) {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    </script>
+}

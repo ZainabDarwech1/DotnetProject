@@ -56,4 +56,23 @@ namespace LebAssist.Application.DTOs
         public int ProviderServiceId { get; set; }
         public decimal PricePerHour { get; set; }
     }
+
+    public class ProviderListDto
+    {
+        public int ClientId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName => $"{FirstName} {LastName}";
+        public string? Email { get; set; }
+        public string? PhoneNumber { get; set; }
+        public string? ProfilePhotoPath { get; set; }
+        public int? YearsOfExperience { get; set; }
+        public DateTime DateRegistered { get; set; }
+        public DateTime? ApprovedDate { get; set; }
+        public int TotalServices { get; set; }
+        public int CompletedBookings { get; set; }
+        public decimal? AverageRating { get; set; }
+        public int TotalReviews { get; set; }
+        public bool IsActive { get; set; }
+    }
 }

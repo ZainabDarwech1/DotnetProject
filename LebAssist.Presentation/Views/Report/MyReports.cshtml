@@ -1,0 +1,137 @@
+@model LebAssist.Presentation.ViewModels.Report.MyReportsViewModel
+@{
+    ViewData["Title"] = "My Reports";
+}
+
+<div class="my-reports-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="reports-header">
+            <h2>
+                <i class="bi bi-flag-fill"></i>
+                My Reports
+            </h2>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i>
+                Submit New Report
+            </a>
+        </div>
+
+        @if (!Model.Reports.Any())
+        {
+            <!-- Empty State -->
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle"></i>
+                <span>You haven't submitted any reports yet.</span>
+            </div>
+        }
+        else
+        {
+            <!-- Reports Grid -->
+            <div class="reports-grid">
+                @foreach (var report in Model.Reports)
+                {
+                    var statusColor = report.Status switch
+                    {
+                        Domain.Enums.ReportStatus.Pending => "warning",
+                        Domain.Enums.ReportStatus.UnderReview => "info",
+                        Domain.Enums.ReportStatus.Resolved => "success",
+                        Domain.Enums.ReportStatus.Dismissed => "secondary",
+                        _ => "secondary"
+                    };
+
+                    var statusClass = report.Status switch
+                    {
+                        Domain.Enums.ReportStatus.Pending => "status-pending",
+                        Domain.Enums.ReportStatus.UnderReview => "status-under-review",
+                        Domain.Enums.ReportStatus.Resolved => "status-resolved",
+                        Domain.Enums.ReportStatus.Dismissed => "status-dismissed",
+                        _ => "status-dismissed"
+                    };
+
+                    <div class="report-card @statusClass">
+                        <div class="card-header">
+                            <strong>
+                                <i class="bi bi-file-earmark-text"></i>
+                                Report #@report.ReportId
+                            </strong>
+                            <span class="badge bg-@statusColor">@report.Status</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-info-row">
+                                <i class="bi bi-person-badge"></i>
+                                <div>
+                                    <strong>Provider:</strong>
+                                    <span>@report.ProviderName</span>
+                                </div>
+                            </div>
+
+                            @if (!string.IsNullOrEmpty(report.ServiceName))
+                            {
+                                <div class="report-info-row">
+                                    <i class="bi bi-tools"></i>
+                                    <div>
+                                        <strong>Service:</strong>
+                                        <span>@report.ServiceName</span>
+                                    </div>
+                                </div>
+                            }
+
+                            <div class="report-info-row">
+                                <i class="bi bi-exclamation-circle"></i>
+                                <div>
+                                    <strong>Reason:</strong>
+                                    <span>@report.Reason</span>
+                                </div>
+                            </div>
+
+                            <div class="report-info-row">
+                                <i class="bi bi-calendar"></i>
+                                <div>
+                                    <strong>Date:</strong>
+                                    <span>@report.ReportDate.ToString("MMM dd, yyyy")</span>
+                                </div>
+                            </div>
+
+                            <div class="report-info-row">
+                                <i class="bi bi-chat-left-text"></i>
+                                <div>
+                                    <strong>Description:</strong>
+                                    <span class="text-truncate">@report.Description</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a asp-action="Details" asp-route-id="@report.ReportId" class="btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i>
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/myReports.css" />
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate cards on load
+            const cards = document.querySelectorAll('.report-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+}

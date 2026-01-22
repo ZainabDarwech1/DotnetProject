@@ -6,10 +6,8 @@
 }
 
 <div class="admin-services-page">
-    <!-- Header Section -->
     <div class="page-header">
         <div class="container">
-            <!-- Breadcrumb -->
             <nav class="custom-breadcrumb" aria-label="breadcrumb">
                 <ol class="breadcrumb-list">
                     <li class="breadcrumb-item">
@@ -194,13 +192,9 @@
 
 @section Styles {
     <link rel="stylesheet" href="~/css/servicesmanagement.css" />
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
 }
 
 @section Scripts {
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     @Html.AntiForgeryToken()
     <script>
         $(document).ready(function() {

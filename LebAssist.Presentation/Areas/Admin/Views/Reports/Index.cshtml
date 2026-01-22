@@ -1,0 +1,157 @@
+@model IEnumerable<LebAssist.Application.DTOs.ReportDto>
+@{
+    ViewData["Title"] = "Reports Management";
+    var activeStatus = ViewBag.ActiveStatus as string ?? "All";
+    
+    var allReports = Model.ToList();
+    var pendingCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.Pending);
+    var underReviewCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.UnderReview);
+    var resolvedCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.Resolved);
+    var dismissedCount = allReports.Count(r => r.Status == Domain.Enums.ReportStatus.Dismissed);
+}
+
+<div class="container-fluid mt-4">
+    <h2><i class="bi bi-flag-fill"></i> Reports Management</h2>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5>Total Reports</h5>
+                    <h2>@allReports.Count</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5>Pending</h5>
+                    <h2>@pendingCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5>Under Review</h5>
+                    <h2>@underReviewCount</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5>Resolved</h5>
+                    <h2>@resolvedCount</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-3">
+        <li class="nav-item">
+            <a class="nav-link @(activeStatus == "All" ? "active" : "")" asp-action="Index">
+                All (@allReports.Count)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(activeStatus == "Pending" ? "active" : "")" asp-action="Index" asp-route-status="Pending">
+                Pending (@pendingCount)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(activeStatus == "UnderReview" ? "active" : "")" asp-action="Index" asp-route-status="UnderReview">
+                Under Review (@underReviewCount)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(activeStatus == "Resolved" ? "active" : "")" asp-action="Index" asp-route-status="Resolved">
+                Resolved (@resolvedCount)
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(activeStatus == "Dismissed" ? "active" : "")" asp-action="Index" asp-route-status="Dismissed">
+                Dismissed (@dismissedCount)
+            </a>
+        </li>
+    </ul>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Reports Table -->
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No reports found for the selected filter.
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Reporter</th>
+                                <th>Provider</th>
+                                <th>Service</th>
+                                <th>Reason</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var report in Model)
+                            {
+                                var statusColor = report.Status switch
+                                {
+                                    Domain.Enums.ReportStatus.Pending => "warning",
+                                    Domain.Enums.ReportStatus.UnderReview => "info",
+                                    Domain.Enums.ReportStatus.Resolved => "success",
+                                    Domain.Enums.ReportStatus.Dismissed => "secondary",
+                                    _ => "secondary"
+                                };
+
+                                <tr>
+                                    <td><strong>#@report.ReportId</strong></td>
+                                    <td>
+                                        @report.ReporterName
+                                        @if (!string.IsNullOrEmpty(report.ReporterPhone))
+                                        {
+                                            <br><small class="text-muted">@report.ReporterPhone</small>
+                                        }
+                                    </td>
+                                    <td>@report.ProviderName</td>
+                                    <td>@(report.ServiceName ?? "-")</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@report.Reason</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-@statusColor">@report.Status</span>
+                                    </td>
+                                    <td>@report.ReportDate.ToString("MMM dd, yyyy")</td>
+                                    <td>
+                                        <a asp-action="Details" asp-route-id="@report.ReportId" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>

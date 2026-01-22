@@ -130,5 +130,10 @@ namespace LebAssist.Application.Services
         {
             return await _unitOfWork.EmergencyRequests.GetPendingAsync();
         }
+
+        public async Task<IEnumerable<EmergencyRequest>> GetProviderAssignedEmergenciesAsync(int providerId)
+        {
+            return await _unitOfWork.EmergencyRequests.GetByProviderIdAsync(providerId);
+        }
     }
 }

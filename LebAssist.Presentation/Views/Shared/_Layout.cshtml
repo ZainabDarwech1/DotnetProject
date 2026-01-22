@@ -6,12 +6,14 @@
     <title>@ViewData["Title"]</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/plugins/sweetalert2/sweetalert2.min.css">
     @RenderSection("Styles", required: false)
 </head>
-<body data-is-provider="@(User.IsInRole("Provider").ToString().ToLower())">
+<body data-authenticated="@(User?.Identity?.IsAuthenticated.ToString().ToLower() ?? "false")"
+      data-is-provider="@(User.IsInRole("Provider").ToString().ToLower())">
 
     <!-- Mobile Toggle Button -->
     <button class="mobile-toggle" onclick="toggleMobileSidebar()">
@@ -36,14 +38,14 @@
         <nav class="sidebar-nav">
             <ul class="nav-list">
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Home" asp-action="Index" title="Home">
+                    <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" title="Home">
                         <i class="bi bi-house-door-fill"></i>
                         <span class="nav-text">Home</span>
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" asp-controller="Services" asp-action="Index" title="Browse Services">
+                    <a class="nav-link" asp-area="" asp-controller="Services" asp-action="Index" title="Browse Services">
                         <i class="bi bi-grid-fill"></i>
                         <span class="nav-text">Browse Services</span>
                     </a>
@@ -56,7 +58,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Profile" asp-action="Index" title="My Profile">
+                        <a class="nav-link" asp-area="" asp-controller="Profile" asp-action="Index" title="My Profile">
                             <i class="bi bi-person-fill"></i>
                             <span class="nav-text">My Profile</span>
                         </a>
@@ -73,13 +75,13 @@
                         </a>
                         <ul class="nav-dropdown-menu">
                             <li>
-                                <a class="nav-link sub-link" asp-controller="Emergency" asp-action="Index" title="My Emergencies">
+                                <a class="nav-link sub-link" asp-area="" asp-controller="Emergency" asp-action="Index" title="My Emergencies">
                                     <i class="bi bi-list-ul"></i>
                                     <span class="nav-text">My Emergencies</span>
                                 </a>
                             </li>
                             <li>
-                                <a class="nav-link sub-link" asp-controller="Emergency" asp-action="Create" title="Create Emergency">
+                                <a class="nav-link sub-link" asp-area="" asp-controller="Emergency" asp-action="Create" title="Create Emergency">
                                     <i class="bi bi-plus-circle-fill"></i>
                                     <span class="nav-text">Create Emergency</span>
                                 </a>
@@ -87,9 +89,15 @@
                             @if (User.IsInRole("Provider"))
                             {
                                 <li>
-                                    <a class="nav-link sub-link" asp-controller="Emergency" asp-action="Pending" title="Pending Requests">
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Emergency" asp-action="Pending" title="Pending Requests">
                                         <i class="bi bi-bell-fill"></i>
                                         <span class="nav-text">Pending Requests</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Emergency" asp-action="MyAssignedEmergencies" title="My Assigned Emergencies">
+                                        <i class="bi bi-clipboard-check"></i>
+                                        <span class="nav-text">My Assigned</span>
                                     </a>
                                 </li>
                             }
@@ -102,13 +110,12 @@
                             <div class="nav-link-content">
                                 <i class="bi bi-calendar-check-fill"></i>
                                 <span class="nav-text">Bookings</span>
-                                <span id="notification-badge" class="notification-badge" style="display: none;">0</span>
                             </div>
                             <i class="bi bi-chevron-down dropdown-arrow"></i>
                         </a>
                         <ul class="nav-dropdown-menu">
                             <li>
-                                <a class="nav-link sub-link" asp-controller="Booking" asp-action="MyBookings" title="My Bookings">
+                                <a class="nav-link sub-link" asp-area="" asp-controller="Booking" asp-action="MyBookings" title="My Bookings">
                                     <i class="bi bi-list-ul"></i>
                                     <span class="nav-text">My Bookings</span>
                                 </a>
@@ -116,13 +123,21 @@
                             @if (User.IsInRole("Provider"))
                             {
                                 <li>
-                                    <a class="nav-link sub-link" asp-controller="ProviderBookings" asp-action="Index" title="Booking Requests">
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="ProviderBookings" asp-action="Index" title="Booking Requests">
                                         <i class="bi bi-inbox-fill"></i>
                                         <span class="nav-text">Booking Requests</span>
                                     </a>
                                 </li>
                             }
                         </ul>
+                    </li>
+
+                    <!-- Reports -->
+                    <li class="nav-item">
+                        <a class="nav-link" asp-area="" asp-controller="Report" asp-action="MyReports" title="My Reports">
+                            <i class="bi bi-flag-fill"></i>
+                            <span class="nav-text">My Reports</span>
+                        </a>
                     </li>
 
                     @if (User.IsInRole("Provider"))
@@ -141,21 +156,39 @@
                             </a>
                             <ul class="nav-dropdown-menu">
                                 <li>
-                                    <a class="nav-link sub-link" asp-controller="Provider" asp-action="MyServices" title="My Services">
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Provider" asp-action="Dashboard" title="Dashboard">
+                                        <i class="bi bi-speedometer2"></i>
+                                        <span class="nav-text">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Provider" asp-action="Calendar" title="My Calendar">
+                                        <i class="bi bi-calendar-event"></i>
+                                        <span class="nav-text">My Calendar</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Provider" asp-action="MyServices" title="My Services">
                                         <i class="bi bi-tools"></i>
                                         <span class="nav-text">My Services</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="nav-link sub-link" asp-controller="Provider" asp-action="Portfolio" title="Portfolio">
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Provider" asp-action="Portfolio" title="Portfolio">
                                         <i class="bi bi-images"></i>
                                         <span class="nav-text">Portfolio</span>
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="nav-link sub-link" asp-controller="Provider" asp-action="Dashboard" title="Dashboard">
-                                        <i class="bi bi-speedometer2"></i>
-                                        <span class="nav-text">Dashboard</span>
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Provider" asp-action="MyReviews" title="My Reviews">
+                                        <i class="bi bi-star-fill"></i>
+                                        <span class="nav-text">My Reviews</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link sub-link" asp-area="" asp-controller="Provider" asp-action="ServiceReport" title="Service Report">
+                                        <i class="bi bi-file-earmark-pdf"></i>
+                                        <span class="nav-text">Service Report</span>
                                     </a>
                                 </li>
                             </ul>
@@ -178,6 +211,24 @@
                             </a>
                             <ul class="nav-dropdown-menu">
                                 <li>
+                                    <a class="nav-link sub-link" asp-area="Admin" asp-controller="Dashboard" asp-action="Index" title="Admin Dashboard">
+                                        <i class="bi bi-speedometer2"></i>
+                                        <span class="nav-text">Dashboard</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link sub-link" asp-area="Admin" asp-controller="Providers" asp-action="Index" title="Manage Providers">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span class="nav-text">Manage Providers</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="nav-link sub-link" asp-area="Admin" asp-controller="Reports" asp-action="Index" title="Reports Management">
+                                        <i class="bi bi-flag-fill"></i>
+                                        <span class="nav-text">Reports</span>
+                                    </a>
+                                </li>
+                                <li>
                                     <a class="nav-link sub-link" asp-area="Admin" asp-controller="Category" asp-action="Index" title="Categories">
                                         <i class="bi bi-folder-fill"></i>
                                         <span class="nav-text">Categories</span>
@@ -190,15 +241,9 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="nav-link sub-link" asp-area="Admin" asp-controller="ProviderApproval" asp-action="Pending" title="Provider Applications">
+                                    <a class="nav-link sub-link" asp-area="Admin" asp-controller="ProviderApproval" asp-action="Index" title="Provider Applications">
                                         <i class="bi bi-person-check-fill"></i>
                                         <span class="nav-text">Applications</span>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="nav-link sub-link" asp-controller="Admin" asp-action="Dashboard" title="Dashboard">
-                                        <i class="bi bi-speedometer2"></i>
-                                        <span class="nav-text">Dashboard</span>
                                     </a>
                                 </li>
                             </ul>
@@ -208,9 +253,10 @@
                     <li class="nav-divider"></li>
 
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Notifications" asp-action="Index" title="Notifications">
+                        <a class="nav-link" asp-area="" asp-controller="Notification" asp-action="Index" title="Notifications">
                             <i class="bi bi-bell-fill"></i>
                             <span class="nav-text">Notifications</span>
+                            <span id="notification-badge" class="notification-badge">0</span>
                         </a>
                     </li>
                 }
@@ -235,6 +281,8 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/location-utils.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.7/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/signalr-client.js"></script>
     <script src="~/js/sidebar.js" asp-append-version="true"></script>
     <script src="~/plugins/sweetalert2/sweetalert2.all.js"></script>

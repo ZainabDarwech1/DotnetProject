@@ -1,0 +1,360 @@
+@model IEnumerable<LebAssist.Application.DTOs.ProviderListDto>
+@{
+    ViewData["Title"] = "Manage Providers";
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container">
+        <nav class="custom-breadcrumb" aria-label="breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })">
+                        <i class="bi bi-speedometer2"></i>
+                        Admin Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item active">
+                    Manage Providers
+                </li>
+            </ol>
+        </nav>
+
+        <div class="page-title-section">
+            <h1 class="page-title">
+                <i class="bi bi-people-fill"></i>
+                Manage Providers
+            </h1>
+            <p class="page-subtitle">View and manage all active service providers</p>
+        </div>
+
+        @if (Model.Any())
+        {
+            <div class="header-stats">
+                <div class="stat-badge">
+                    <i class="bi bi-person-check-fill"></i>
+                    <span class="stat-value">@Model.Count()</span>
+                    <span class="stat-label">Active Providers</span>
+                </div>
+                <div class="stat-badge">
+                    <i class="bi bi-star-fill"></i>
+                    <span class="stat-value">@Model.Where(p => p.AverageRating.HasValue).Average(p => p.AverageRating ?? 0).ToString("F1")</span>
+                    <span class="stat-label">Avg. Rating</span>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Content Section -->
+<div class="providers-content">
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="bi bi-person-x"></i>
+            </div>
+            <h3>No Active Providers</h3>
+            <p>There are currently no active providers in the system.</p>
+        </div>
+    }
+    else
+    {
+        <div class="providers-card">
+            <div class="card-header">
+                <div class="header-content">
+                    <i class="bi bi-table"></i>
+                    <h3>All Providers</h3>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="providers-table" id="providersTable">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="bi bi-person"></i>
+                                    Provider
+                                </th>
+                                <th>
+                                    <i class="bi bi-envelope"></i>
+                                    Contact
+                                </th>
+                                <th>
+                                    <i class="bi bi-tools"></i>
+                                    Services
+                                </th>
+                                <th>
+                                    <i class="bi bi-calendar-check"></i>
+                                    Completed
+                                </th>
+                                <th>
+                                    <i class="bi bi-star-fill"></i>
+                                    Rating
+                                </th>
+                                <th>
+                                    <i class="bi bi-award"></i>
+                                    Experience
+                                </th>
+                                <th>
+                                    <i class="bi bi-calendar-event"></i>
+                                    Joined
+                                </th>
+                                <th class="text-center">
+                                    <i class="bi bi-gear"></i>
+                                    Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var provider in Model)
+                            {
+                                <tr class="provider-row">
+                                    <td>
+                                        <div class="provider-info">
+                                            @if (!string.IsNullOrEmpty(provider.ProfilePhotoPath))
+                                            {
+                                                <img src="@provider.ProfilePhotoPath" alt="@provider.FullName" class="provider-avatar">
+                                            }
+                                            else
+                                            {
+                                                <div class="provider-avatar-placeholder">
+                                                    <i class="bi bi-person-fill"></i>
+                                                </div>
+                                            }
+                                            <div class="provider-details">
+                                                <span class="provider-name">@provider.FullName</span>
+                                                <span class="provider-id">ID: @provider.ClientId</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="contact-info">
+                                            <div>
+                                                <i class="bi bi-envelope"></i>
+                                                <span>@(provider.Email ?? "N/A")</span>
+                                            </div>
+                                            <div>
+                                                <i class="bi bi-telephone"></i>
+                                                <span>@(provider.PhoneNumber ?? "N/A")</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary">
+                                            @provider.TotalServices @(provider.TotalServices == 1 ? "Service" : "Services")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-success">
+                                            @provider.CompletedBookings Completed
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (provider.AverageRating.HasValue && provider.TotalReviews > 0)
+                                        {
+                                            <div class="rating-display">
+                                                <i class="bi bi-star-fill text-warning"></i>
+                                                <span class="rating-value">@provider.AverageRating.Value.ToString("F1")</span>
+                                                <span class="rating-count">(@provider.TotalReviews)</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">No reviews</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (provider.YearsOfExperience.HasValue)
+                                        {
+                                            <span class="experience-badge">
+                                                @provider.YearsOfExperience @(provider.YearsOfExperience == 1 ? "year" : "years")
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="date-info">
+                                            @provider.DateRegistered.ToString("MMM dd, yyyy")
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="action-buttons">
+                                            <a href="@Url.Action("Details", "Providers", new { id = provider.ClientId })"
+                                               class="btn btn-sm btn-info"
+                                               title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-danger"
+                                                    onclick="showDeactivateModal(@provider.ClientId, '@provider.FullName')"
+                                                    title="Deactivate Provider">
+                                                <i class="bi bi-x-circle"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Deactivate Modal -->
+<div class="modal fade" id="deactivateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                    Deactivate Provider
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="deactivateForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="deactivateProviderId" name="clientId" />
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Warning:</strong> This action will deactivate <strong id="providerNameDisplay"></strong>'s provider account.
+                        They will lose access to all provider features.
+                    </div>
+                    <div class="form-group">
+                        <label for="deactivateReason" class="form-label">
+                            <i class="bi bi-pencil"></i>
+                            Deactivation Reason <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="reason"
+                                  id="deactivateReason"
+                                  class="form-control"
+                                  rows="4"
+                                  required
+                                  placeholder="Explain why this provider is being deactivated..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i>
+                        Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check"></i>
+                        Confirm Deactivation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+   <link rel="stylesheet" href="~/css/manageproviders.css"/>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            @if (Model.Any())
+            {
+                <text>
+                // Initialize DataTables
+                const table = $('#providersTable').DataTable({
+                    pageLength: 10,
+                    order: [[3, 'desc']], // Sort by completed bookings
+                    language: {
+                        search: "",
+                        searchPlaceholder: "Search providers...",
+                        lengthMenu: "Show _MENU_ providers",
+                        info: "Showing _START_ to _END_ of _TOTAL_ providers",
+                        paginate: {
+                            first: "First",
+                            last: "Last",
+                            next: "Next",
+                            previous: "Previous"
+                        }
+                    }
+                });
+
+                // Custom search
+                $('#searchInput').on('keyup', function() {
+                    table.search(this.value).draw();
+                });
+                </text>
+            }
+        });
+
+        function showDeactivateModal(providerId, providerName) {
+            document.getElementById('deactivateProviderId').value = providerId;
+            document.getElementById('providerNameDisplay').textContent = providerName;
+            document.getElementById('deactivateReason').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('deactivateModal'));
+            modal.show();
+        }
+
+        document.getElementById('deactivateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const providerId = document.getElementById('deactivateProviderId').value;
+            const reason = document.getElementById('deactivateReason').value;
+
+            if (!reason.trim()) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Reason Required',
+                    text: 'Please provide a reason for deactivation.'
+                });
+                return;
+            }
+
+            try {
+                const response = await fetch('@Url.Action("Deactivate", "Providers", new { area = "Admin" })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Provider Deactivated',
+                        text: 'The provider has been successfully deactivated.',
+                        timer: 2000
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Deactivation Failed',
+                        text: result.message || 'Failed to deactivate provider.'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while deactivating the provider.'
+                });
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deactivateModal'));
+            modal.hide();
+        });
+    </script>
+}

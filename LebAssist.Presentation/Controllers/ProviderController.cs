@@ -15,26 +15,32 @@ namespace LebAssist.Presentation.Controllers
         private readonly IServiceService _serviceService;
         private readonly ICategoryService _categoryService;
         private readonly IClientService _clientService;
-        private readonly IReviewService _reviewService;  // NEW
+        private readonly IReviewService _reviewService;
+        private readonly IProviderDashboardService _providerDashboardService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<ProviderController> _logger;
+        private readonly IPdfService _pdfService;
 
         public ProviderController(
             IProviderService providerService,
             IServiceService serviceService,
             ICategoryService categoryService,
             IClientService clientService,
-            IReviewService reviewService,  // NEW
+            IReviewService reviewService,
+            IProviderDashboardService providerDashboardService,
             UserManager<IdentityUser> userManager,
-            ILogger<ProviderController> logger)
+            ILogger<ProviderController> logger,
+            IPdfService pdfService)
         {
             _providerService = providerService;
             _serviceService = serviceService;
             _categoryService = categoryService;
             _clientService = clientService;
-            _reviewService = reviewService;  // NEW
+            _reviewService = reviewService;
+            _providerDashboardService = providerDashboardService;
             _userManager = userManager;
             _logger = logger;
+            _pdfService = pdfService;
         }
 
         // ================================
@@ -338,20 +344,40 @@ namespace LebAssist.Presentation.Controllers
             if (clientId == null)
                 return RedirectToAction("AccessDenied", "Account");
 
-            var profile = await _clientService.GetProfileAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-            var services = await _providerService.GetProviderServicesAsync(clientId.Value);
-            var reviewsSummary = await _reviewService.GetProviderReviewsSummaryAsync(clientId.Value, 1, 5);
-
-            var model = new ProviderDashboardViewModel
+            try
             {
-                ProviderName = $"{profile?.FirstName} {profile?.LastName}",
-                TotalServices = services.Count(),
-                AverageRating = reviewsSummary.AverageRating,
-                TotalReviews = reviewsSummary.TotalReviews,
-                RecentReviews = reviewsSummary.Reviews.Take(3).ToList()
-            };
+                var profile = await _clientService.GetProfileAsync(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var stats = await _providerDashboardService.GetProviderDashboardStatsAsync(clientId.Value);
+                var bookingTrends = await _providerDashboardService.GetProviderBookingTrendsAsync(clientId.Value, 6);
+                var revenue = await _providerDashboardService.GetProviderRevenueByMonthAsync(clientId.Value, 12);
+                var serviceRevenue = await _providerDashboardService.GetProviderServiceRevenueAsync(clientId.Value);
+                var bookingStatus = await _providerDashboardService.GetProviderBookingStatusDistributionAsync(clientId.Value);
+                var recentBookings = await _providerDashboardService.GetProviderRecentBookingsAsync(clientId.Value, 5);
+                var reviewsSummary = await _reviewService.GetProviderReviewsSummaryAsync(clientId.Value, 1, 5);
 
-            return View(model);
+                var model = new ProviderDashboardViewModel
+                {
+                    ProviderName = $"{profile?.FirstName} {profile?.LastName}",
+                    ProfilePhotoPath = profile?.ProfilePhotoPath,
+                    Stats = stats,
+                    BookingTrends = bookingTrends,
+                    RevenueByMonth = revenue,
+                    ServiceRevenue = serviceRevenue,
+                    BookingStatusDistribution = bookingStatus,
+                    RecentBookings = recentBookings,
+                    RecentReviews = reviewsSummary.Reviews.Take(5).ToList(),
+                    AverageRating = reviewsSummary.AverageRating,
+                    TotalReviews = reviewsSummary.TotalReviews
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error loading provider dashboard for client {ClientId}", clientId);
+                TempData["ErrorMessage"] = "An error occurred while loading the dashboard.";
+                return View(new ProviderDashboardViewModel());
+            }
         }
 
         [Authorize(Roles = "Provider")]
@@ -726,6 +752,104 @@ namespace LebAssist.Presentation.Controllers
             var reviewsSummary = await _reviewService.GetProviderReviewsSummaryAsync(clientId.Value, page, 10);
 
             return View(reviewsSummary);
+        }
+
+        [Authorize(Roles = "Provider")]
+        [HttpGet]
+        public async Task<IActionResult> Calendar(int? year, int? month)
+        {
+            var clientId = await GetCurrentClientIdAsync();
+            if (clientId == null)
+                return RedirectToAction("AccessDenied", "Account");
+
+            var now = DateTime.Now;
+            var targetYear = year ?? now.Year;
+            var targetMonth = month ?? now.Month;
+
+            // Validate month and year
+            if (targetMonth < 1 || targetMonth > 12)
+            {
+                targetMonth = now.Month;
+                targetYear = now.Year;
+            }
+
+            var calendar = await _providerDashboardService.GetProviderCalendarAsync(clientId.Value, targetYear, targetMonth);
+            
+            return View(calendar);
+        }
+
+        [Authorize(Roles = "Provider")]
+        [HttpGet]
+        public async Task<IActionResult> GetDayAppointments(DateTime date)
+        {
+            var clientId = await GetCurrentClientIdAsync();
+            if (clientId == null)
+                return Json(new { success = false, message = "Unauthorized" });
+
+            var appointments = await _providerDashboardService.GetProviderAppointmentsForDayAsync(clientId.Value, date);
+            
+            return Json(new { success = true, appointments });
+        }
+
+        // ================================
+        // SERVICE REPORT (PDF)
+        // ================================
+
+        [Authorize(Roles = "Provider")]
+        [HttpGet]
+        public IActionResult ServiceReport()
+        {
+            return View();
+        }
+
+        [Authorize(Roles = "Provider")]
+        [HttpPost]
+        public async Task<IActionResult> GenerateServiceReport(DateTime startDate, DateTime endDate)
+        {
+            var clientId = await GetCurrentClientIdAsync();
+            if (clientId == null)
+                return RedirectToAction("AccessDenied", "Account");
+
+            // Validate dates
+            if (startDate > endDate)
+            {
+                TempData["Error"] = "Start date cannot be after end date.";
+                return RedirectToAction(nameof(ServiceReport));
+            }
+
+            if (endDate > DateTime.Now)
+            {
+                TempData["Error"] = "End date cannot be in the future.";
+                return RedirectToAction(nameof(ServiceReport));
+            }
+
+            try
+            {
+                // Get report data
+                var reportData = await _providerService.GetProviderServiceReportAsync(
+                    clientId.Value,
+                    startDate,
+                    endDate);
+
+                if (reportData.Services == null || !reportData.Services.Any())
+                {
+                    TempData["Warning"] = "No services found for the selected period.";
+                    return RedirectToAction(nameof(ServiceReport));
+                }
+
+                // Generate PDF
+                var pdfBytes = _pdfService.GenerateProviderServiceReport(reportData);
+
+                // Return PDF file
+                var fileName = $"ServiceReport_{reportData.ProviderName.Replace(" ", "_")}_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating service report for provider {ProviderId}", clientId.Value);
+                TempData["Error"] = "An error occurred while generating the report. Please try again.";
+                return RedirectToAction(nameof(ServiceReport));
+            }
         }
 
         private async Task<int?> GetCurrentClientIdAsync()

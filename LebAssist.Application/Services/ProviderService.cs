@@ -14,17 +14,20 @@ namespace LebAssist.Application.Services
         private readonly IFileStorageService _fileStorageService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly ILogger<ProviderService> _logger;
+        private readonly INotificationService _notificationService;
 
         public ProviderService(
             IUnitOfWork unitOfWork,
             IFileStorageService fileStorageService,
             UserManager<IdentityUser> userManager,
-            ILogger<ProviderService> logger)
+            ILogger<ProviderService> logger,
+            INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
             _fileStorageService = fileStorageService;
             _userManager = userManager;
             _logger = logger;
+            _notificationService = notificationService;
         }
 
         // ================================
@@ -118,32 +121,23 @@ namespace LebAssist.Application.Services
         {
             try
             {
-                // Get all admin users (you may need to adjust this based on your role management)
                 var adminUsers = await _userManager.GetUsersInRoleAsync("Admin");
 
                 foreach (var adminUser in adminUsers)
                 {
-                    var notification = new Notification
+                    if (!string.IsNullOrEmpty(adminUser.Id))
                     {
-                        UserId = adminUser.Id,
-                        Type = NotificationType.ProviderApplication,
-                        ReferenceId = client.ClientId,
-                        Title = "New Provider Application",
-                        Message = $"{client.FirstName} {client.LastName} has applied to become a service provider.",
-                        IsRead = false,
-                        CreatedDate = DateTime.UtcNow
-                    };
-
-                    await _unitOfWork.Notifications.AddAsync(notification);
+                        var title = "New Provider Application";
+                        var message = $"{client.FirstName} {client.LastName} has applied to become a service provider.";
+                        await _notificationService.CreateNotificationAsync(adminUser.Id, NotificationType.ProviderApplication, title, message, client.ClientId);
+                    }
                 }
 
-                await _unitOfWork.SaveChangesAsync();
                 _logger.LogInformation("Admin notifications created for provider application from client {ClientId}", client.ClientId);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error notifying admins of provider application for client {ClientId}", client.ClientId);
-                // Log but don't fail the entire application - notifications are secondary
             }
         }
 
@@ -666,7 +660,7 @@ namespace LebAssist.Application.Services
         public async Task<IEnumerable<ProviderWorkingHoursDto>> GetServiceWorkingHoursAsync(int clientId, int serviceId)
         {
             var hours = await _unitOfWork.ProviderWorkingHours.GetByProviderAndServiceAsync(clientId, serviceId);
-            
+
             if (!hours.Any())
                 return new List<ProviderWorkingHoursDto>();
 
@@ -698,6 +692,190 @@ namespace LebAssist.Application.Services
                 ProviderServiceId = ps.ProviderServiceId,
                 PricePerHour = ps.PricePerHour ?? 0
             });
+        }
+
+        public async Task<IEnumerable<ProviderListDto>> GetAllActiveProvidersAsync()
+        {
+            var providers = await _unitOfWork.Clients.GetActiveProvidersAsync();
+            var allBookings = await _unitOfWork.Bookings.GetAllAsync();
+            var allReviews = await _unitOfWork.Reviews.GetAllAsync();
+            var allProviderServices = await _unitOfWork.ProviderServices.GetAllAsync();
+
+            var result = new List<ProviderListDto>();
+
+            foreach (var provider in providers)
+            {
+                var user = await _userManager.FindByIdAsync(provider.AspNetUserId);
+                var providerBookings = allBookings.Where(b => b.ProviderId == provider.ClientId).ToList();
+                var completedBookings = providerBookings.Count(b => b.Status == BookingStatus.Completed);
+                var services = allProviderServices.Count(ps => ps.ClientId == provider.ClientId && ps.IsActive);
+
+                // Get reviews for this provider
+                var providerReviews = allReviews
+                    .Where(r => providerBookings.Any(b => b.BookingId == r.BookingId))
+                    .ToList();
+
+                result.Add(new ProviderListDto
+                {
+                    ClientId = provider.ClientId,
+                    FirstName = provider.FirstName,
+                    LastName = provider.LastName,
+                    Email = user?.Email,
+                    PhoneNumber = provider.PhoneNumber,
+                    ProfilePhotoPath = provider.ProfilePhotoPath,
+                    YearsOfExperience = provider.YearsOfExperience,
+                    DateRegistered = provider.DateRegistered,
+                    TotalServices = services,
+                    CompletedBookings = completedBookings,
+                    AverageRating = provider.ProviderAverageRating,
+                    TotalReviews = provider.TotalReviews,
+                    IsActive = provider.IsProvider && provider.ProviderStatus == ProviderStatus.Approved
+                });
+            }
+
+            return result.OrderByDescending(p => p.CompletedBookings);
+        }
+
+        public async Task<bool> DeactivateProviderAsync(int clientId, string adminUserId, string reason)
+        {
+            try
+            {
+                var client = await _unitOfWork.Clients.GetByIdAsync(clientId);
+                if (client == null || !client.IsProvider)
+                {
+                    _logger.LogWarning("Cannot deactivate - Client {ClientId} not found or not a provider", clientId);
+                    return false;
+                }
+
+                // Check for active bookings
+                var activeBookings = await _unitOfWork.Bookings.GetAllAsync();
+                var hasActiveBookings = activeBookings.Any(b =>
+                    b.ProviderId == clientId &&
+                    (b.Status == BookingStatus.Pending ||
+                     b.Status == BookingStatus.Accepted ||
+                     b.Status == BookingStatus.InProgress));
+
+                if (hasActiveBookings)
+                {
+                    _logger.LogWarning("Cannot deactivate provider {ClientId} - has active bookings", clientId);
+                    return false;
+                }
+
+                // Deactivate provider
+                client.IsProvider = false;
+                client.ProviderStatus = ProviderStatus.Deactivated;
+                await _unitOfWork.Clients.UpdateAsync(client);
+
+                // Deactivate all provider services
+                var services = await _unitOfWork.ProviderServices.GetAllAsync();
+                var providerServices = services.Where(ps => ps.ClientId == clientId).ToList();
+                foreach (var ps in providerServices)
+                {
+                    ps.IsActive = false;
+                    await _unitOfWork.ProviderServices.UpdateAsync(ps);
+                }
+
+                // Deactivate working hours
+                var hours = await _unitOfWork.ProviderWorkingHours.GetByProviderIdAsync(clientId);
+                foreach (var hour in hours)
+                {
+                    hour.IsActive = false;
+                    await _unitOfWork.ProviderWorkingHours.UpdateAsync(hour);
+                }
+
+                // Remove Provider role
+                var user = await _userManager.FindByIdAsync(client.AspNetUserId);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles.Contains("Provider"))
+                    {
+                        await _userManager.RemoveFromRoleAsync(user, "Provider");
+                    }
+                }
+
+                await _unitOfWork.SaveChangesAsync();
+
+                // Notify the provider
+                await _notificationService.CreateNotificationAsync(
+                    client.AspNetUserId,
+                    NotificationType.System,
+                    "Provider Account Deactivated",
+                    $"Your provider account has been deactivated. Reason: {reason}");
+
+                _logger.LogInformation("Provider {ClientId} deactivated by admin {AdminId}. Reason: {Reason}", clientId, adminUserId, reason);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deactivating provider {ClientId}", clientId);
+                return false;
+            }
+        }
+
+        public async Task<ProviderServiceReportDto> GetProviderServiceReportAsync(int providerId, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                var provider = await _unitOfWork.Clients.GetByIdAsync(providerId);
+                if (provider == null || !provider.IsProvider)
+                {
+                    _logger.LogWarning("Provider {ProviderId} not found or not a provider", providerId);
+                    return new ProviderServiceReportDto();
+                }
+
+                var user = await _userManager.FindByIdAsync(provider.AspNetUserId);
+
+                // Get all completed bookings for this provider within the date range
+                var allBookings = await _unitOfWork.Bookings.GetProviderBookingsByStatusAsync(providerId, BookingStatus.Completed);
+                var completedBookings = allBookings
+                    .Where(b => b.CompletedDate.HasValue &&
+                                b.CompletedDate.Value >= startDate &&
+                                b.CompletedDate.Value <= endDate)
+                    .ToList();
+
+                // Group by service and calculate revenue
+                var serviceRevenues = completedBookings
+                    .GroupBy(b => new { b.ServiceId, b.Service.ServiceName })
+                    .Select(g =>
+                    {
+                        var providerServices = _unitOfWork.ProviderServices.GetAllAsync().Result;
+                        var providerService = providerServices.FirstOrDefault(ps =>
+                            ps.ClientId == providerId && ps.ServiceId == g.Key.ServiceId);
+                        var pricePerService = providerService?.PricePerHour ?? 0;
+
+                        return new ServiceRevenueDto
+                        {
+                            ServiceName = g.Key.ServiceName,
+                            TimesProvided = g.Count(),
+                            PricePerService = pricePerService,
+                            TotalRevenue = g.Count() * pricePerService
+                        };
+                    })
+                    .OrderByDescending(s => s.TotalRevenue)
+                    .ToList();
+
+                var report = new ProviderServiceReportDto
+                {
+                    ProviderName = $"{provider.FirstName} {provider.LastName}",
+                    Email = user?.Email ?? "N/A",
+                    PhoneNumber = provider.PhoneNumber ?? "N/A",
+                    StartDate = startDate,
+                    EndDate = endDate,
+                    Services = serviceRevenues,
+                    TotalServicesProvided = completedBookings.Count,
+                    TotalRevenue = serviceRevenues.Sum(s => s.TotalRevenue),
+                    ReportGeneratedDate = DateTime.UtcNow
+                };
+
+                _logger.LogInformation("Service report generated for provider {ProviderId}", providerId);
+                return report;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error generating service report for provider {ProviderId}", providerId);
+                return new ProviderServiceReportDto();
+            }
         }
     }
 }

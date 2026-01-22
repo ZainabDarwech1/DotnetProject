@@ -1,0 +1,71 @@
+@model LebAssist.Application.DTOs.AppointmentDto
+@{
+    var statusColor = Model.Status switch
+    {
+        "Completed" => "success",
+        "Pending" => "warning",
+        "Accepted" => "info",
+        "InProgress" => "primary",
+        "Cancelled" => "danger",
+        "Rejected" => "secondary",
+        _ => "secondary"
+    };
+}
+
+<div class="appointment-card">
+    <div class="appointment-header">
+        <div class="appointment-time">
+            <i class="bi bi-clock"></i>
+            @Model.ScheduledTime.ToString(@"hh\:mm\ tt")
+        </div>
+        <span class="badge bg-@statusColor">@Model.Status</span>
+    </div>
+    <div class="appointment-body">
+        <div class="client-info">
+            @if (!string.IsNullOrEmpty(Model.ClientPhoto))
+            {
+                <img src="@Model.ClientPhoto" alt="@Model.ClientName" class="client-photo">
+            }
+            else
+            {
+                <div class="client-photo-placeholder">
+                    <i class="bi bi-person"></i>
+                </div>
+            }
+            <div>
+                <strong>@Model.ClientName</strong>
+                @if (!string.IsNullOrEmpty(Model.ClientPhone))
+                {
+                    <small>
+                        <i class="bi bi-telephone"></i>
+                        @Model.ClientPhone
+                    </small>
+                }
+            </div>
+        </div>
+        <div class="service-info">
+            <i class="bi bi-tools"></i>
+            @Model.ServiceName
+        </div>
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="appointment-notes">
+                <i class="bi bi-sticky"></i>
+                @Model.Notes
+            </div>
+        }
+    </div>
+    <div class="appointment-footer">
+        <a href="/BookingDetails/Details/@Model.BookingId" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-eye"></i>
+            View Details
+        </a>
+        @if (Model.Latitude != 0 && Model.Longitude != 0)
+        {
+            <a href="https://www.google.com/maps?q=@Model.Latitude,@Model.Longitude" target="_blank" class="btn btn-sm btn-outline-info">
+                <i class="bi bi-geo-alt"></i>
+                Location
+            </a>
+        }
+    </div>
+</div>

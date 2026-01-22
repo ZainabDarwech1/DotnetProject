@@ -9,6 +9,7 @@ namespace Domain.Interfaces
         Task<IEnumerable<Booking>> GetProviderBookingsAsync(int providerId);
         Task<IEnumerable<Booking>> GetPendingBookingsAsync(int providerId);
         Task<IEnumerable<Booking>> GetBookingsByStatusAsync(BookingStatus status);
+        Task<IEnumerable<Booking>> GetProviderBookingsByStatusAsync(int id, BookingStatus status);
         Task<Booking?> GetBookingWithDetailsAsync(int bookingId);
     }
 }

@@ -16,8 +16,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function initializeSignalR() {
     // Only connect if user is authenticated
-    var isAuthenticated = document.body.getAttribute('data-authenticated') === 'true' ||
-        document.querySelector('[data-is-provider]') !== null;
+    var isAuthenticated = document.body.getAttribute('data-authenticated') === 'true';
 
     if (!isAuthenticated) {
         console.log('User not authenticated, skipping SignalR');
@@ -30,31 +29,141 @@ function initializeSignalR() {
     initBookingHub();
 }
 
+// Helper to build options with transport fallback
+function hubUrlOptions() {
+    if (typeof signalR === 'undefined' || !signalR.HttpTransportType) return undefined;
+    return { transport: signalR.HttpTransportType.WebSockets | signalR.HttpTransportType.LongPolling };
+}
+
 // ============================================
 // Notification Hub
 // ============================================
 function initNotificationHub() {
+    var options = hubUrlOptions();
     notificationConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/notification")
+        .withUrl("/hubs/notification", options)
         .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
         .build();
+
+    // connection lifecycle
+    notificationConnection.onreconnecting(function (err) {
+        console.warn('Notification Hub reconnecting', err);
+    });
+    notificationConnection.onreconnected(function (id) {
+        console.log('Notification Hub reconnected. connectionId=', id);
+        // re-initialize badge after reconnect
+        fetch('/Notification/GetUnreadCount')
+            .then(function (response) { return response.json(); })
+            .then(function (data) { setNotificationBadge(data.count); })
+            .catch(function (err) { console.error('Failed to get unread count after reconnect:', err); });
+    });
+    notificationConnection.onclose(function (err) {
+        console.error('Notification Hub connection closed', err);
+    });
 
     // Receive notification
     notificationConnection.on("ReceiveNotification", function (notification) {
-        console.log("Notification received:", notification);
-        showToast(notification.message || "New notification", notification.type || "info");
-        updateNotificationBadge(1);
-        addNotificationToDropdown(notification);
+        console.log("ReceiveNotification payload:", notification);
+
+        try {
+            showToast(notification.message || "New notification", notification.type || "info");
+
+            if (notification.unreadCount !== undefined) {
+                setNotificationBadge(notification.unreadCount);
+            } else {
+                fetch('/Notification/GetUnreadCount')
+                    .then(r => r.json())
+                    .then(d => setNotificationBadge(d.count));
+            }
+
+            addNotificationToDropdown(notification);
+
+            injectNotificationIntoPage(notification);
+
+        } catch (e) {
+            console.error('Error handling ReceiveNotification payload', e);
+        }
     });
+
+    function injectNotificationIntoPage(notification) {
+        // Only run if notifications page is open
+        const list = document.querySelector('.notifications-list');
+        if (!list) return;
+
+        const emptyState = document.querySelector('.empty-state');
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        const card = document.createElement('div');
+        card.className = 'notification-card unread';
+        card.setAttribute('data-notification-id', notification.notificationId);
+
+        card.innerHTML = `
+        <div class="notification-icon-wrapper">
+            <div class="notification-icon icon-${(notification.type || 'default').toLowerCase()}">
+                <i class="bi bi-bell-fill"></i>
+            </div>
+        </div>
+
+        <div class="notification-content">
+            <div class="notification-header">
+                <h5 class="notification-title">
+                    ${notification.title || 'Notification'}
+                    <span class="new-badge">New</span>
+                </h5>
+                <div class="notification-meta">
+                    <span class="notification-date">
+                        <i class="bi bi-clock"></i> Just now
+                    </span>
+                </div>
+            </div>
+            <p class="notification-message">
+                ${notification.message || ''}
+            </p>
+        </div>
+
+        <div class="notification-actions">
+            <button class="btn-action btn-read"
+                onclick="markAsRead(${notification.notificationId})"
+                title="Mark as Read">
+                <i class="bi bi-check2"></i>
+            </button>
+            <button class="btn-action btn-delete"
+                onclick="deleteNotification(${notification.notificationId})"
+                title="Delete">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    `;
+
+        // Animate in
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-10px)';
+        list.prepend(card);
+
+        requestAnimationFrame(() => {
+            card.style.transition = 'all 0.3s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        });
+    }
+
 
     // Notification marked as read
     notificationConnection.on("NotificationMarkedAsRead", function (notificationId) {
-        console.log("Notification marked as read:", notificationId);
+        console.log("NotificationMarkedAsRead:", notificationId);
         removeNotificationFromDropdown(notificationId);
+        fetch('/Notification/GetUnreadCount')
+            .then(function (response) { return response.json(); })
+            .then(function (data) { setNotificationBadge(data.count); })
+            .catch(function (err) { console.error('Failed to get unread count:', err); });
     });
 
     // Unread count updated
     notificationConnection.on("UnreadCountUpdated", function (count) {
+        console.log('UnreadCountUpdated event:', count);
         setNotificationBadge(count);
     });
 
@@ -62,6 +171,11 @@ function initNotificationHub() {
     notificationConnection.start()
         .then(function () {
             console.log("Notification Hub connected");
+            // fetch current unread count to initialize badge
+            fetch('/Notification/GetUnreadCount')
+                .then(function (response) { return response.json(); })
+                .then(function (data) { setNotificationBadge(data.count); })
+                .catch(function (err) { console.error('Failed to get unread count:', err); });
         })
         .catch(function (err) {
             console.error("Notification Hub error:", err);
@@ -73,11 +187,17 @@ function initNotificationHub() {
 // ============================================
 function initEmergencyHub() {
     var isProvider = document.body.getAttribute('data-is-provider') === 'true';
+    var options = hubUrlOptions();
 
     emergencyConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/emergency")
+        .withUrl("/hubs/emergency", options)
         .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
         .build();
+
+    emergencyConnection.onreconnecting(function (err) { console.warn('Emergency Hub reconnecting', err); });
+    emergencyConnection.onreconnected(function (id) { console.log('Emergency Hub reconnected', id); });
+    emergencyConnection.onclose(function (err) { console.error('Emergency Hub closed', err); });
 
     // Emergency received (for providers)
     emergencyConnection.on("OnEmergencyReceived", function (emergency) {
@@ -111,7 +231,7 @@ function initEmergencyHub() {
         .then(function () {
             console.log("Emergency Hub connected");
             if (isProvider) {
-                emergencyConnection.invoke("JoinProviders");
+                emergencyConnection.invoke("JoinProviders").catch(function (e) { console.error(e); });
             }
         })
         .catch(function (err) {
@@ -123,9 +243,11 @@ function initEmergencyHub() {
 // Availability Hub
 // ============================================
 function initAvailabilityHub() {
+    var options = hubUrlOptions();
     availabilityConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/availability")
+        .withUrl("/hubs/availability", options)
         .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
         .build();
 
     // Provider availability changed
@@ -154,10 +276,16 @@ function initAvailabilityHub() {
 // Booking Hub
 // ============================================
 function initBookingHub() {
+    var options = hubUrlOptions();
     bookingConnection = new signalR.HubConnectionBuilder()
-        .withUrl("/hubs/booking")
+        .withUrl("/hubs/booking", options)
         .withAutomaticReconnect()
+        .configureLogging(signalR.LogLevel.Information)
         .build();
+
+    bookingConnection.onreconnecting(function (err) { console.warn('Booking Hub reconnecting', err); });
+    bookingConnection.onreconnected(function (id) { console.log('Booking Hub reconnected', id); });
+    bookingConnection.onclose(function (err) { console.error('Booking Hub closed', err); });
 
     // Booking status changed
     bookingConnection.on("OnBookingStatusChanged", function (data) {

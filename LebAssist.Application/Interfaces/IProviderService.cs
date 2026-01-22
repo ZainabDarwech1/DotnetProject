@@ -12,6 +12,10 @@ namespace LebAssist.Application.Interfaces
         Task<bool> ApproveProviderAsync(int clientId, string adminUserId);
         Task<bool> RejectProviderAsync(int clientId, string reason, string adminUserId);
 
+        // Provider management
+        Task<IEnumerable<ProviderListDto>> GetAllActiveProvidersAsync();
+        Task<bool> DeactivateProviderAsync(int clientId, string adminUserId, string reason);
+
         // Read helpers
         Task<IEnumerable<ProviderServiceDto>> GetProviderServicesAsync(int clientId);
         Task<IEnumerable<ProviderWorkingHoursDto>> GetProviderWorkingHoursAsync(int clientId);
@@ -34,5 +38,8 @@ namespace LebAssist.Application.Interfaces
 
         // NEW: Get providers offering a service
         Task<IEnumerable<ProviderOfferingDto>> GetProvidersByServiceIdAsync(int serviceId);
+
+        // NEW: Service Report
+        Task<ProviderServiceReportDto> GetProviderServiceReportAsync(int providerId, DateTime startDate, DateTime endDate);
     }
 }

@@ -1,0 +1,393 @@
+﻿/* ============================================
+             My Reports Page Styles
+             ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+body {
+    background: #f5f7fa;
+}
+
+/* ============================================
+               Page Header
+               ============================================ */
+
+.my-reports-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+    padding: 40px 0;
+}
+
+.reports-header {
+    background: white;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+    .reports-header h2 {
+        font-size: 2rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+        .reports-header h2 i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1rem;
+    background: var(--primary);
+    color: white;
+    border: none;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+}
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(67, 97, 238, 0.4);
+        color: white;
+    }
+
+    .btn-primary i {
+        font-size: 1.1rem;
+    }
+
+/* ============================================
+               Alert / Empty State
+               ============================================ */
+
+.alert {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+    border-left: 5px solid;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.alert-info {
+    border-left-color: var(--info);
+    color: var(--text-dark);
+}
+
+    .alert-info i {
+        font-size: 2.5rem;
+        color: var(--info);
+    }
+
+/* ============================================
+               Reports Grid
+               ============================================ */
+
+.reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+    gap: 24px;
+}
+
+/* ============================================
+               Report Card
+               ============================================ */
+
+.report-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 5px solid;
+}
+
+    .report-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
+
+    .report-card.status-pending {
+        border-left-color: var(--warning);
+    }
+
+    .report-card.status-under-review {
+        border-left-color: var(--info);
+    }
+
+    .report-card.status-resolved {
+        border-left-color: var(--success);
+    }
+
+    .report-card.status-dismissed {
+        border-left-color: var(--text-muted);
+    }
+
+    /* Card Header */
+    .report-card .card-header {
+        padding: 20px 24px;
+        background: var(--bg-light);
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+        .report-card .card-header strong {
+            font-size: 1.1rem;
+            color: var(--text-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .report-card .card-header strong i {
+                color: var(--primary);
+            }
+
+.badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bg-warning {
+    background: var(--warning);
+    color: white;
+}
+
+.bg-info {
+    background: var(--info);
+    color: white;
+}
+
+.bg-success {
+    background: var(--success);
+    color: white;
+}
+
+.bg-secondary {
+    background: var(--text-muted);
+    color: white;
+}
+
+/* Card Body */
+.report-card .card-body {
+    padding: 24px;
+}
+
+    .report-card .card-body p {
+        margin-bottom: 12px;
+        font-size: 0.95rem;
+        color: var(--text-dark);
+        line-height: 1.6;
+    }
+
+        .report-card .card-body p strong {
+            color: var(--text-dark);
+            font-weight: 700;
+            display: inline-block;
+            min-width: 100px;
+        }
+
+.report-info-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    padding: 12px;
+    background: var(--bg-light);
+    border-radius: 8px;
+}
+
+    .report-info-row i {
+        color: var(--primary);
+        font-size: 1.1rem;
+        margin-top: 2px;
+    }
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Card Footer */
+.report-card .card-footer {
+    padding: 16px 24px;
+    background: var(--bg-light);
+    border-top: 2px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-sm {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+}
+
+.btn-outline-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+    .btn-outline-primary:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+    }
+
+    .btn-outline-primary i {
+        font-size: 1rem;
+    }
+
+/* ============================================
+               Animations
+               ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.report-card {
+    animation: fadeIn 0.5s ease-out;
+}
+
+    .report-card:nth-child(1) {
+        animation-delay: 0s;
+    }
+
+    .report-card:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .report-card:nth-child(3) {
+        animation-delay: 0.2s;
+    }
+
+    .report-card:nth-child(4) {
+        animation-delay: 0.3s;
+    }
+
+    .report-card:nth-child(5) {
+        animation-delay: 0.4s;
+    }
+
+    .report-card:nth-child(6) {
+        animation-delay: 0.5s;
+    }
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 992px) {
+    .reports-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .my-reports-page {
+        padding: 20px 0;
+    }
+
+    .reports-header {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 24px;
+    }
+
+        .reports-header h2 {
+            font-size: 1.75rem;
+        }
+
+        .reports-header .btn-primary {
+            width: 100%;
+            justify-content: center;
+        }
+
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-card .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .report-card .card-body p strong {
+        display: block;
+        margin-bottom: 4px;
+    }
+}
+
+@media (max-width: 480px) {
+    .reports-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .report-card .card-header,
+    .report-card .card-body,
+    .report-card .card-footer {
+        padding: 16px;
+    }
+
+    .btn-outline-primary {
+        width: 100%;
+        justify-content: center;
+    }
+}

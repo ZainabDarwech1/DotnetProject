@@ -1,12 +1,19 @@
+using DinkToPdf;
+using DinkToPdf.Contracts;
 using LebAssist.Application;
 using LebAssist.Application.Common;
+using LebAssist.Application.Interfaces;
 using LebAssist.Infrastructure;
 using LebAssist.Infrastructure.Auth;
 using LebAssist.Infrastructure.Data;
 using LebAssist.Infrastructure.Seed;
+using LebAssist.Presentation.Auth;
 using LebAssist.Presentation.Hubs;
+using LebAssist.Presentation.Libraries;
+using LebAssist.Presentation.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +28,29 @@ builder.WebHost.ConfigureKestrel(options =>
     options.Limits.MaxRequestBodySize = 50 * 1024 * 1024; // 50 MB
 });
 
-// Register Services
 builder.Services.AddSignalR();
+builder.Services.AddSingleton<Microsoft.AspNetCore.SignalR.IUserIdProvider, NameUserIdProvider>();
+
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddIdentityServices(builder.Configuration);
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
+
+// Decorate INotificationService with SignalR support
+builder.Services.Decorate<INotificationService, SignalRNotificationServiceDecorator>();
+
+// PDF Service
+var architecture = RuntimeInformation.ProcessArchitecture.ToString().ToLower();
+var wkhtmltoxPath = Path.Combine(Directory.GetCurrentDirectory(), "Libraries", "libwkhtmltox.dll");
+
+if (File.Exists(wkhtmltoxPath))
+{
+    var context = new CustomAssemblyLoadContext();
+    context.LoadUnmanagedLibrary(wkhtmltoxPath);
+}
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+builder.Services.AddScoped<IPdfService, PdfService>();
 
 // Google Maps Settings (R10)
 builder.Services.Configure<GoogleMapsSettings>(builder.Configuration.GetSection("GoogleMaps"));

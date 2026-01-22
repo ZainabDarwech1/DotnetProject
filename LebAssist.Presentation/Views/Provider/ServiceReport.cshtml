@@ -1,0 +1,306 @@
+@{
+    ViewData["Title"] = "Generate Service Report";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg report-card">
+                <div class="card-header text-white">
+                    <h2 class="mb-0">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        Generate Service Report
+                    </h2>
+                    <p class="mb-0 mt-2">Generate a professional PDF report of your services and revenue</p>
+                </div>
+
+                <div class="card-body p-4">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-exclamation-triangle"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Warning"] != null)
+                    {
+                        <div class="alert alert-warning alert-dismissible fade show">
+                            <i class="bi bi-exclamation-circle"></i> @TempData["Warning"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="info-box mb-4">
+                        <h5><i class="bi bi-info-circle-fill"></i> Report Contents</h5>
+                        <ul class="features-list">
+                            <li><i class="bi bi-check-circle-fill"></i> Complete list of services provided</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Number of times each service was provided</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Price per service</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Revenue breakdown by service</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Total services count</li>
+                            <li><i class="bi bi-check-circle-fill"></i> Total revenue summary</li>
+                        </ul>
+                    </div>
+
+                    <form asp-action="GenerateServiceReport" method="post" class="report-form">
+                        @Html.AntiForgeryToken()
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="startDate" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-event"></i>
+                                    Start Date *
+                                </label>
+                                <input type="date" 
+                                       id="startDate" 
+                                       name="startDate" 
+                                       class="form-control form-control-lg" 
+                                       max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                       required>
+                                <small class="form-text text-muted">Select the beginning of the report period</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="endDate" class="form-label fw-bold">
+                                    <i class="bi bi-calendar-check"></i>
+                                    End Date *
+                                </label>
+                                <input type="date" 
+                                       id="endDate" 
+                                       name="endDate" 
+                                       class="form-control form-control-lg" 
+                                       max="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                       required>
+                                <small class="form-text text-muted">Select the end of the report period</small>
+                            </div>
+                        </div>
+
+                        <div class="quick-dates mt-4">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-lightning"></i>
+                                Quick Select:
+                            </label>
+                            <div class="btn-group-quick d-flex flex-wrap gap-2">
+                                <button type="button" class="btn btn-outline-secondary" onclick="setThisMonth()">
+                                    This Month
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="setLastMonth()">
+                                    Last Month
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="setLast3Months()">
+                                    Last 3 Months
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="setThisYear()">
+                                    This Year
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info mt-4">
+                            <i class="bi bi-lightbulb"></i>
+                            <strong>Tip:</strong> The report will include only completed services within the selected date range.
+                        </div>
+
+                        <div class="form-actions mt-4 d-flex gap-3">
+                            <button type="submit" class="btn btn-primary btn-lg flex-fill">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                                Generate PDF Report
+                            </button>
+                            <a asp-action="Dashboard" class="btn btn-outline-secondary btn-lg">
+                                <i class="bi bi-x-circle"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer text-muted">
+                    <small>
+                        <i class="bi bi-shield-check"></i>
+                        Your report will be generated in a high-end professional format suitable for business records.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .report-card {
+            border-radius: 15px;
+            overflow: hidden;
+            border: none;
+        }
+
+        .report-card .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+        }
+
+        .report-card .card-header h2 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #e0f7fa 0%, #e1f5fe 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 5px solid #00acc1;
+        }
+
+        .info-box h5 {
+            color: #00695c;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .features-list li {
+            padding: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #00695c;
+        }
+
+        .features-list i {
+            color: #00acc1;
+            font-size: 1.1rem;
+        }
+
+        .form-control-lg {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-lg:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.1);
+        }
+
+        .quick-dates {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 10px;
+        }
+
+        .btn-group-quick .btn {
+            border-radius: 8px;
+            font-weight: 600;
+            flex: 1;
+        }
+
+        .btn-group-quick .btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .form-actions .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-actions .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .form-label {
+            color: #2c3e50;
+        }
+
+        .card-footer {
+            background: #f8f9fa;
+            border-top: 2px solid #e9ecef;
+            padding: 1rem 2rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        // Set date to today initially
+        document.getElementById('endDate').valueAsDate = new Date();
+
+        // Quick date selection functions
+        function setThisMonth() {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = now;
+        }
+
+        function setLastMonth() {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+            const lastDay = new Date(now.getFullYear(), now.getMonth(), 0);
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = lastDay;
+        }
+
+        function setLast3Months() {
+            const now = new Date();
+            const threeMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 3, 1);
+            document.getElementById('startDate').valueAsDate = threeMonthsAgo;
+            document.getElementById('endDate').valueAsDate = now;
+        }
+
+        function setThisYear() {
+            const now = new Date();
+            const firstDay = new Date(now.getFullYear(), 0, 1);
+            document.getElementById('startDate').valueAsDate = firstDay;
+            document.getElementById('endDate').valueAsDate = now;
+        }
+
+        // Validate dates on form submit
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const startDate = document.getElementById('startDate').valueAsDate;
+            const endDate = document.getElementById('endDate').valueAsDate;
+
+            if (!startDate || !endDate) {
+                e.preventDefault();
+                alert('Please select both start and end dates.');
+                return false;
+            }
+
+            if (startDate > endDate) {
+                e.preventDefault();
+                alert('Start date cannot be after end date.');
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = this.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Generating Report...';
+        });
+
+        // Add animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const card = document.querySelector('.report-card');
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        });
+    </script>
+}

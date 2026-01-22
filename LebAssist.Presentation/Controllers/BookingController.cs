@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace LebAssist.Presentation.Controllers
 {
-    [Authorize(Roles = "Client")]
+    [Authorize]
     public class BookingController : Controller
     {
         private readonly IBookingService _bookingService;

@@ -21,14 +21,20 @@ namespace LebAssist.Presentation.ViewModels.Provider
         public ProviderReviewsSummaryDto ReviewsSummary { get; set; } = new();
     }
 
-    // Add this to update the Dashboard ViewModel
+    // Provider Dashboard ViewModel
     public class ProviderDashboardViewModel
     {
         public string ProviderName { get; set; } = string.Empty;
-        public int TotalServices { get; set; }
+        public string? ProfilePhotoPath { get; set; }
+        public ProviderDashboardStatsDto Stats { get; set; } = new();
+        public IEnumerable<ProviderBookingTrendDto> BookingTrends { get; set; } = new List<ProviderBookingTrendDto>();
+        public IEnumerable<ProviderRevenueByMonthDto> RevenueByMonth { get; set; } = new List<ProviderRevenueByMonthDto>();
+        public IEnumerable<ProviderServiceRevenueDto> ServiceRevenue { get; set; } = new List<ProviderServiceRevenueDto>();
+        public IEnumerable<ProviderBookingStatusDto> BookingStatusDistribution { get; set; } = new List<ProviderBookingStatusDto>();
+        public IEnumerable<ProviderRecentBookingDto> RecentBookings { get; set; } = new List<ProviderRecentBookingDto>();
+        public List<ReviewDto> RecentReviews { get; set; } = new();
         public double AverageRating { get; set; }
         public int TotalReviews { get; set; }
-        public List<ReviewDto> RecentReviews { get; set; } = new();
     }
 
     // Your existing ViewModels below...

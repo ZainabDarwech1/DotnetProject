@@ -53,6 +53,17 @@ namespace LebAssist.Infrastructure.Repositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Booking>> GetProviderBookingsByStatusAsync(int id, BookingStatus status)
+        {
+            return await _context.Bookings
+                .Include(b => b.Client)
+                .Include(b => b.Provider)
+                .Include(b => b.Service)
+                .Where(b => b.Status == status && b.ProviderId == id)
+                .OrderByDescending(b => b.RequestDate)
+                .ToListAsync();
+        }
+
         public async Task<Booking?> GetBookingWithDetailsAsync(int bookingId)
         {
             return await _context.Bookings

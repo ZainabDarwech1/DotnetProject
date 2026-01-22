@@ -262,6 +262,7 @@ namespace LebAssist.Application.Services
                 ClientId = client.ClientId,
                 FirstName = client.FirstName,
                 LastName = client.LastName,
+                Email = (await _userManager.FindByIdAsync(client.AspNetUserId))?.Email ?? string.Empty,
                 PhoneNumber = client.PhoneNumber,
                 Latitude = client.Latitude,
                 Longitude = client.Longitude,

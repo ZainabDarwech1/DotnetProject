@@ -1,8 +1,328 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "LebAssist - Your Trusted Home Service Platform";
+    var categories = ViewBag.Categories as IEnumerable<LebAssist.Application.DTOs.CategoryDto> ?? Enumerable.Empty<LebAssist.Application.DTOs.CategoryDto>();
+    var stats = ViewBag.Stats as LebAssist.Application.DTOs.DashboardStatsDto;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="hero-text">
+                        <h1 class="hero-title animate-fade-in">
+                            Find Trusted <span class="highlight">Home Services</span> Near You
+                        </h1>
+                        <p class="hero-subtitle animate-fade-in-delay">
+                            Connect with verified professionals for all your home service needs. From plumbing to cleaning, we've got you covered.
+                        </p>
+                        <div class="hero-buttons animate-fade-in-delay-2">
+                            @if (User?.Identity?.IsAuthenticated == true)
+                            {
+                                <a asp-area="" asp-controller="Services" asp-action="Index" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-grid-3x3-gap"></i>
+                                    Browse Services
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-person-plus"></i>
+                                    Get Started
+                                </a>
+                                <a asp-area="" asp-controller="Services" asp-action="Index" class="btn btn-outline-light btn-lg">
+                                    <i class="bi bi-search"></i>
+                                    Explore Services
+                                </a>
+                            }
+                        </div>
+                        @if (!User?.Identity?.IsAuthenticated == true)
+                        {
+                            <div class="hero-note animate-fade-in-delay-3">
+                                <p>
+                                    <i class="bi bi-shield-check"></i>
+                                    Already have an account? 
+                                    <a asp-area="" asp-controller="Account" asp-action="Login">Sign in here</a>
+                                </p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block">
+                    <div class="hero-image animate-float">
+                        <div class="hero-card">
+                            <i class="bi bi-tools"></i>
+                            <h3>Professional Services</h3>
+                            <p>Vetted & Trusted</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="hero-wave">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
+            <path fill="#ffffff" fill-opacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+</section>
+
+<!-- Stats Section -->
+@if (stats != null)
+{
+    <section class="stats-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 col-6">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h3 class="stat-number" data-target="@stats.TotalUsers">0</h3>
+                        <p class="stat-label">Happy Users</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <h3 class="stat-number" data-target="@stats.TotalProviders">0</h3>
+                        <p class="stat-label">Verified Providers</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="bi bi-check-circle-fill"></i>
+                        </div>
+                        <h3 class="stat-number" data-target="@stats.CompletedBookings">0</h3>
+                        <p class="stat-label">Services Completed</p>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="stat-box">
+                        <div class="stat-icon">
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <h3 class="stat-number" data-target="@((int)(stats.AverageRating * 10))">0</h3>
+                        <p class="stat-label">Average Rating (out of 50)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- How It Works Section -->
+<section class="how-it-works-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">How LebAssist Works</h2>
+            <p class="section-subtitle">Get started in three simple steps</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="bi bi-search"></i>
+                    </div>
+                    <h3>Choose a Service</h3>
+                    <p>Browse through our wide range of home services and select what you need</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                    <h3>Book a Provider</h3>
+                    <p>Select a verified service provider based on ratings, reviews, and availability</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="bi bi-emoji-smile"></i>
+                    </div>
+                    <h3>Get It Done</h3>
+                    <p>Sit back and relax while our professional gets the job done right</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Services Section -->
+<section class="services-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Popular Services</h2>
+            <p class="section-subtitle">Explore our most requested home services</p>
+        </div>
+        @if (categories.Any())
+        {
+            <div class="row g-4">
+                @foreach (var category in categories.Take(8))
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <a asp-area="" asp-controller="Services" asp-action="Category" asp-route-id="@category.CategoryId" class="service-card">
+                            <div class="service-icon">
+                                @if (!string.IsNullOrEmpty(category.IconPath))
+                                {
+                                    <img src="@category.IconPath" alt="@category.CategoryName">
+                                }
+                                else
+                                {
+                                    <i class="bi bi-tools"></i>
+                                }
+                            </div>
+                            <h3>@category.CategoryName</h3>
+                            <p>@category.Description</p>
+                            <div class="service-count">
+                                <i class="bi bi-grid-3x3-gap"></i>
+                                <span>@category.ServiceCount @(category.ServiceCount == 1 ? "Service" : "Services")</span>
+                            </div>
+                            <div class="service-arrow">
+                                <i class="bi bi-arrow-right"></i>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+            <div class="text-center mt-5">
+                <a asp-area="" asp-controller="Services" asp-action="Index" class="btn btn-primary btn-lg">
+                    <i class="bi bi-grid-fill"></i>
+                    View All Services
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="empty-services">
+                <i class="bi bi-inbox"></i>
+                <p>Services coming soon...</p>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header text-center">
+            <h2 class="section-title">Why Choose LebAssist?</h2>
+            <p class="section-subtitle">We make home services simple, safe, and reliable</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Verified Professionals</h4>
+                    <p>All service providers are thoroughly vetted and background-checked</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <h4>Quality Guaranteed</h4>
+                    <p>Read reviews and ratings from real customers before you book</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h4>24/7 Support</h4>
+                    <p>Our customer support team is always ready to help you</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                    <h4>Fair Pricing</h4>
+                    <p>Transparent pricing with no hidden fees or surprises</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section for Providers -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-box">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h2 class="cta-title">Are You a Service Provider?</h2>
+                    <p class="cta-text">Join our platform and grow your business by connecting with customers in your area</p>
+                </div>
+                <div class="col-lg-4 text-lg-end">
+                    @if (User?.Identity?.IsAuthenticated == true)
+                    {
+                        <a asp-area="" asp-controller="Provider" asp-action="Apply" class="btn btn-light btn-lg">
+                            <i class="bi bi-briefcase"></i>
+                            Become a Provider
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-area="" asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg">
+                            <i class="bi bi-briefcase"></i>
+                            Join as Provider
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Banner -->
+<section class="emergency-section">
+    <div class="container">
+        <div class="emergency-banner">
+            <div class="emergency-icon">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <div class="emergency-content">
+                <h3>Need Emergency Service?</h3>
+                <p>Get immediate help from available providers in your area</p>
+            </div>
+            @if (User?.Identity?.IsAuthenticated == true)
+            {
+                <a asp-area="" asp-controller="Emergency" asp-action="Create" class="btn btn-danger btn-lg">
+                    <i class="bi bi-lightning-fill"></i>
+                    Request Emergency Service
+                </a>
+            }
+            else
+            {
+                <a asp-area="" asp-controller="Account" asp-action="Login" class="btn btn-danger btn-lg">
+                    <i class="bi bi-box-arrow-in-right"></i>
+                    Login for Emergency
+                </a>
+            }
+        </div>
+    </div>
+</section>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/landing.css" />
+}
+
+@section Scripts {
+    <script src="~/js/landing.js"></script>
+}

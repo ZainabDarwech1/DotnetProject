@@ -1,0 +1,812 @@
+/* ============================================
+       Assigned Emergencies Page Styles
+       ============================================ */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+.assigned-emergencies-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #e9ecef 0%, #f8f9fa 100%);
+}
+
+/* ============================================
+               Page Header
+               ============================================ */
+
+.page-header {
+    background: #4361ee;
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow: hidden;
+}
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+    }
+
+    .page-header .container {
+        position: relative;
+        z-index: 1;
+    }
+
+/* Breadcrumb */
+.custom-breadcrumb {
+    margin-bottom: 24px;
+}
+
+.breadcrumb-list {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+    .breadcrumb-item a {
+        color: rgba(255, 255, 255, 0.9);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+    }
+
+        .breadcrumb-item a:hover {
+            color: white;
+        }
+
+    .breadcrumb-item.active {
+        color: white;
+        font-weight: 600;
+    }
+
+.breadcrumb-separator {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.75rem;
+}
+
+/* Page Title */
+.page-title-section {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.page-title {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+}
+
+    .page-title i {
+        font-size: 2.2rem;
+    }
+
+.page-subtitle {
+    color: rgba(255, 255, 255, 0.95);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Stats Badge */
+.stats-badge {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 28px;
+    background: white;
+    border-radius: 50px;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.6s ease-out;
+}
+
+    .stat-item i {
+        font-size: 1.8rem;
+    }
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.stat-accepted i {
+    color: var(--warning);
+}
+
+.stat-accepted .stat-value {
+    color: var(--warning);
+}
+
+.stat-in-progress i {
+    color: var(--info);
+}
+
+.stat-in-progress .stat-value {
+    color: var(--info);
+}
+
+.stat-completed i {
+    color: var(--success);
+}
+
+.stat-completed .stat-value {
+    color: var(--success);
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+               Content Section
+               ============================================ */
+
+.emergencies-content {
+    padding: 0 20px 60px;
+    margin-top: -30px;
+    position: relative;
+}
+
+/* ============================================
+               Empty State
+               ============================================ */
+
+.empty-state {
+    background: white;
+    border-radius: 24px;
+    padding: 80px 40px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    max-width: 600px;
+    margin: 0 auto;
+    animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.empty-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 24px;
+    background: rgba(67, 97, 238, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .empty-icon i {
+        font-size: 4rem;
+        color: var(--primary);
+        opacity: 0.6;
+    }
+
+.empty-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+}
+
+.empty-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 32px;
+}
+
+.empty-state .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* ============================================
+               Emergency Tabs
+               ============================================ */
+
+.emergency-tabs {
+    background: white;
+    border-radius: 20px 20px 0 0;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    margin-bottom: 0;
+}
+
+.nav-tabs {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+    .nav-tabs .nav-item {
+        margin: 0;
+    }
+
+    .nav-tabs .nav-link {
+        border: none;
+        padding: 20px 24px;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+        background: transparent;
+    }
+
+        .nav-tabs .nav-link i {
+            font-size: 1.2rem;
+        }
+
+        .nav-tabs .nav-link .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.05);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background: rgba(67, 97, 238, 0.08);
+            border-bottom-color: var(--primary);
+        }
+
+/* Tab Content */
+.tab-content {
+    background: white;
+    border-radius: 0 0 20px 20px;
+    box-shadow: var(--shadow-sm);
+    padding: 28px;
+    min-height: 400px;
+}
+
+.tab-pane {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.tab-empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+}
+
+    .tab-empty-state i {
+        font-size: 4rem;
+        margin-bottom: 16px;
+        opacity: 0.5;
+    }
+
+    .tab-empty-state p {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+/* ============================================
+               Emergencies Grid
+               ============================================ */
+
+.emergencies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+}
+
+/* ============================================
+               Emergency Card
+               ============================================ */
+
+.emergency-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    border-left: 5px solid;
+}
+
+    .emergency-card:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-4px);
+    }
+
+.emergency-card.status-accepted {
+    border-left-color: var(--warning);
+}
+
+.emergency-card.status-in-progress {
+    border-left-color: var(--info);
+}
+
+.emergency-card.status-completed {
+    border-left-color: var(--success);
+}
+
+/* Card Header */
+.emergency-card .card-header {
+    padding: 20px 24px;
+    background: var(--bg-light);
+    border-bottom: 2px solid #e9ecef;
+}
+
+.emergency-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.emergency-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+    .emergency-title i {
+        color: var(--primary);
+        font-size: 1.3rem;
+    }
+
+.badge-status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+}
+
+    .badge-status i {
+        font-size: 0.9rem;
+    }
+
+.badge-status.status-accepted {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning);
+}
+
+.badge-status.status-in-progress {
+    background: rgba(59, 130, 246, 0.1);
+    color: var(--info);
+}
+
+.badge-status.status-completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.emergency-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.time-elapsed {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+    .time-elapsed i {
+        font-size: 0.95rem;
+    }
+
+.time-elapsed.urgent {
+    color: var(--info);
+}
+
+/* Card Body */
+.emergency-card .card-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Client Info */
+.client-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.client-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(67, 97, 238, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.client-avatar.completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success);
+}
+
+.client-details {
+    flex: 1;
+}
+
+    .client-details h4 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 6px 0;
+    }
+
+.client-phone {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: color 0.2s;
+}
+
+    .client-phone:hover {
+        color: var(--primary-dark);
+    }
+
+    .client-phone i {
+        font-size: 0.95rem;
+    }
+
+/* Emergency Details */
+.emergency-details {
+    padding: 16px;
+    background: var(--bg-light);
+    border-radius: 12px;
+}
+
+.details-text {
+    margin: 0;
+    color: var(--text-dark);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Location Info */
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: rgba(67, 97, 238, 0.05);
+    border-radius: 10px;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+    .location-info i {
+        font-size: 1.1rem;
+    }
+
+/* Timeline Info */
+.timeline-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+    .timeline-item i {
+        color: var(--primary);
+        font-size: 1rem;
+    }
+
+/* Card Footer */
+.emergency-card .card-footer {
+    padding: 20px 24px;
+    background: var(--bg-light);
+    border-top: 2px solid #e9ecef;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+    .emergency-card .card-footer .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+    }
+
+        .emergency-card .card-footer .btn i {
+            font-size: 1rem;
+        }
+
+.btn-sm {
+    padding: 10px 18px;
+    font-size: 0.85rem;
+}
+
+.btn-outline-primary {
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    background: white;
+}
+
+    .btn-outline-primary:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+    }
+
+.btn-success {
+    background: var(--success);
+    color: white;
+}
+
+    .btn-success:hover {
+        background: #059669;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+    }
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+    .btn-primary:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+    }
+
+.btn-outline-secondary {
+    border: 2px solid var(--text-muted);
+    color: var(--text-muted);
+    background: white;
+}
+
+    .btn-outline-secondary:hover {
+        background: var(--text-muted);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+.completed-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+    color: var(--success);
+    font-weight: 600;
+    padding: 8px 16px;
+}
+
+    .completed-indicator i {
+        font-size: 1.3rem;
+    }
+
+.text-success {
+    color: var(--success) !important;
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+/* ============================================
+               Badge Styles
+               ============================================ */
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.bg-warning {
+    background: var(--warning);
+    color: white;
+}
+
+.bg-info {
+    background: var(--info);
+    color: white;
+}
+
+.bg-success {
+    background: var(--success);
+    color: white;
+}
+
+/* ============================================
+               Responsive Design
+               ============================================ */
+
+@media (max-width: 992px) {
+    .emergencies-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .page-title {
+        font-size: 2rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .page-subtitle {
+        font-size: 1rem;
+    }
+
+    .page-header {
+        padding: 30px 20px 50px;
+    }
+
+    .stats-badge {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stat-item {
+        justify-content: center;
+    }
+
+    .nav-tabs {
+        flex-direction: column;
+    }
+
+    .nav-tabs .nav-link {
+        border-bottom: 2px solid #e9ecef;
+        border-left: 3px solid transparent;
+    }
+
+        .nav-tabs .nav-link.active {
+            border-left-color: var(--primary);
+            border-bottom-color: #e9ecef;
+        }
+
+    .emergencies-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .emergency-card .card-footer {
+        flex-direction: column;
+    }
+
+        .emergency-card .card-footer .btn {
+            width: 100%;
+            justify-content: center;
+        }
+}
+
+@media (max-width: 480px) {
+    .page-title {
+        font-size: 1.75rem;
+    }
+
+    .breadcrumb-list {
+        font-size: 0.85rem;
+    }
+
+    .emergency-card .card-header,
+    .emergency-card .card-body,
+    .emergency-card .card-footer {
+        padding: 16px;
+    }
+
+    .emergency-title {
+        font-size: 1.05rem;
+    }
+
+    .client-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+    }
+}

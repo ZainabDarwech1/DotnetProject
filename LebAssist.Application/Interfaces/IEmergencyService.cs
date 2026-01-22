@@ -13,5 +13,6 @@ namespace LebAssist.Application.Interfaces
         Task<EmergencyRequest?> GetEmergencyDetailsAsync(int emergencyId);
         Task<IEnumerable<EmergencyRequest>> GetClientEmergenciesAsync(int clientId);
         Task<IEnumerable<EmergencyRequest>> GetPendingEmergenciesAsync();
+        Task<IEnumerable<EmergencyRequest>> GetProviderAssignedEmergenciesAsync(int providerId);
     }
 }

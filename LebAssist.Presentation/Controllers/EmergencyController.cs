@@ -193,6 +193,41 @@ namespace LebAssist.Presentation.Controllers
             return View(model);
         }
 
+        // GET: /Emergency/MyAssignedEmergencies
+        [Authorize(Roles = "Provider")]
+        public async Task<IActionResult> MyAssignedEmergencies()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId)) return Unauthorized();
+
+            var profile = await _clientService.GetProfileAsync(userId);
+            if (profile == null) return Unauthorized();
+
+            var emergencies = await _emergencyService.GetProviderAssignedEmergenciesAsync(profile.ClientId);
+
+            var model = emergencies.Select(e => new AssignedEmergencyViewModel
+            {
+                EmergencyRequestId = e.EmergencyRequestId,
+                ClientName = e.Client != null ? $"{e.Client.FirstName} {e.Client.LastName}" : "Unknown",
+                ClientPhone = e.Client?.PhoneNumber ?? "N/A",
+                ServiceName = e.Service?.ServiceName ?? "Unknown",
+                Details = e.Details ?? "",
+                Status = e.Status.ToString(),
+                RequestDateTime = e.RequestDateTime,
+                AcceptedDateTime = e.AcceptedDateTime,
+                CompletedDate = e.CompletedDate,
+                Latitude = (double)e.Latitude,
+                Longitude = (double)e.Longitude,
+                Distance = CalculateDistance(
+                    (double)profile.Latitude,
+                    (double)profile.Longitude,
+                    (double)e.Latitude,
+                    (double)e.Longitude)
+            }).OrderByDescending(e => e.RequestDateTime).ToList();
+
+            return View(model);
+        }
+
         // POST: /Emergency/Accept
         [Authorize(Roles = "Provider")]
         [HttpPost]

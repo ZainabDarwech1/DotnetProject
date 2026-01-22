@@ -1,0 +1,634 @@
+/* ===== Global Color Variables ===== */
+:root {
+    --primary: #4361ee;
+    --primary-dark: #3651d4;
+    --secondary: #4361ee;
+    --accent: #f72585;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text-dark: #2c3e50;
+    --text-muted: #6c757d;
+    --bg-light: #f8f9fa;
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* ===== Hero Section ===== */
+.hero-section {
+    position: relative;
+    min-height: 90vh;
+    background: #4361ee;
+    color: white;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.05" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,138.7C960,139,1056,117,1152,122.7C1248,128,1344,160,1392,176L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-size: cover;
+    opacity: 0.3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+    padding: 4rem 0;
+}
+
+.hero-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+}
+
+    .hero-title .highlight {
+        background: linear-gradient(to right, #ffd89b, #19547b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+    .hero-buttons .btn {
+        padding: 0.875rem 2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        transition: all 0.3s ease;
+    }
+
+    .hero-buttons .btn-primary {
+        background: white;
+        color: #4361ee;
+        border: none;
+    }
+
+        .hero-buttons .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+    .hero-buttons .btn-outline-light {
+        border: 2px solid white;
+        color: white;
+        background: transparent;
+    }
+
+        .hero-buttons .btn-outline-light:hover {
+            background: white;
+            color: #4361ee;
+            transform: translateY(-3px);
+        }
+
+.hero-note {
+    margin-top: 1.5rem;
+    opacity: 0.9;
+}
+
+    .hero-note a {
+        color: white;
+        text-decoration: underline;
+        font-weight: 600;
+    }
+
+        .hero-note a:hover {
+            opacity: 0.8;
+        }
+
+.hero-image {
+    position: relative;
+}
+
+.hero-card {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    padding: 3rem;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+    .hero-card i {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+
+    .hero-card h3 {
+        font-size: 1.75rem;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+.hero-wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    overflow: hidden;
+    line-height: 0;
+}
+
+    .hero-wave svg {
+        position: relative;
+        display: block;
+        width: calc(100% + 1.3px);
+        height: 100px;
+    }
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.animate-fade-in {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+.animate-fade-in-delay {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+.animate-fade-in-delay-2 {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+}
+
+.animate-fade-in-delay-3 {
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* ===== Stats Section ===== */
+.stats-section {
+    padding: 4rem 0;
+    background: white;
+}
+
+.stat-box {
+    text-align: center;
+    padding: 2rem 1rem;
+    transition: transform 0.3s ease;
+}
+
+    .stat-box:hover {
+        transform: translateY(-10px);
+    }
+
+.stat-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: #4361ee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 2.5rem;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #4361ee;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #6c757d;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ===== How It Works Section ===== */
+.how-it-works-section {
+    padding: 5rem 0;
+    background: #f8f9fa;
+}
+
+.section-header {
+    margin-bottom: 4rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.section-subtitle {
+    font-size: 1.2rem;
+    color: #6c757d;
+}
+
+.step-card {
+    background: white;
+    padding: 3rem 2rem;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    text-align: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+    .step-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+.step-number {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    background: #4361ee;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.4);
+}
+
+.step-icon {
+    font-size: 4rem;
+    color: #4361ee;
+    margin: 2rem 0 1.5rem;
+}
+
+.step-card h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.step-card p {
+    color: #6c757d;
+    line-height: 1.7;
+}
+
+/* ===== Services Section ===== */
+.services-section {
+    padding: 5rem 0;
+    background: white;
+}
+
+.service-card {
+    display: block;
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
+}
+
+    .service-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: #4361ee;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .service-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
+.service-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: rgba(67, 97, 238, 0.1);
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #4361ee;
+}
+
+    .service-icon img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+    }
+
+.service-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: #2c3e50;
+}
+
+.service-card p {
+    color: #6c757d;
+    font-size: 0.95rem;
+    margin-bottom: 1rem;
+    line-height: 1.6;
+    min-height: 45px;
+}
+
+.service-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #4361ee;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.service-arrow {
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    width: 40px;
+    height: 40px;
+    background: #4361ee;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.service-card:hover .service-arrow {
+    opacity: 1;
+    transform: translateX(5px);
+}
+
+.empty-services {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #6c757d;
+}
+
+    .empty-services i {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+/* ===== Features Section ===== */
+.features-section {
+    padding: 5rem 0;
+    background: #f8f9fa;
+}
+
+.feature-box {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+    .feature-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+
+.feature-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 1.5rem;
+    background: #4361ee;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+}
+
+.feature-box h4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.feature-box p {
+    color: #6c757d;
+    line-height: 1.7;
+}
+
+/* ===== CTA Section ===== */
+.cta-section {
+    background: white;
+}
+
+.cta-box {
+    background: #4361ee;
+    padding: 4rem 3rem;
+    border-radius: 20px;
+    color: white;
+    box-shadow: 0 10px 40px rgba(67, 97, 238, 0.3);
+}
+
+.cta-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.cta-text {
+    font-size: 1.2rem;
+    opacity: 0.95;
+    margin-bottom: 0;
+}
+
+.cta-box .btn-light {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+    .cta-box .btn-light:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    }
+
+/* ===== Emergency Section ===== */
+.emergency-section {
+    padding: 1rem 0 1rem;
+    background: white;
+}
+
+.emergency-banner {
+    background: linear-gradient(135deg, #e74a3b 0%, #c0392b 100%);
+    padding: 3rem;
+    border-radius: 20px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    box-shadow: 0 10px 40px rgba(231, 74, 59, 0.3);
+}
+
+.emergency-icon {
+    font-size: 4rem;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+}
+
+.emergency-content h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.emergency-content p {
+    margin: 0;
+    opacity: 0.95;
+}
+
+.emergency-banner .btn {
+    padding: 1rem 2rem;
+    font-weight: 600;
+    border-radius: 50px;
+    white-space: nowrap;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.1rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .cta-title {
+        font-size: 2rem;
+    }
+
+    .emergency-banner {
+        flex-direction: column;
+        text-align: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-section {
+        min-height: auto;
+        padding: 4rem 0;
+    }
+
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+        .hero-buttons .btn {
+            width: 100%;
+        }
+
+    .stat-box {
+        margin-bottom: 2rem;
+    }
+
+    .cta-box {
+        padding: 2.5rem 2rem;
+    }
+
+    .cta-title {
+        font-size: 1.75rem;
+    }
+
+    .emergency-banner {
+        padding: 2rem;
+    }
+
+    .emergency-icon {
+        font-size: 3rem;
+    }
+}

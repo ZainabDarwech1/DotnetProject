@@ -1,0 +1,727 @@
+@model LebAssist.Presentation.Areas.Admin.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Page Header -->
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="header-content">
+            <div>
+                <h1 class="dashboard-title">
+                    <i class="bi bi-speedometer2"></i>
+                    Dashboard
+                </h1>
+                <p class="dashboard-subtitle">Welcome to the admin analytics dashboard</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                    <i class="bi bi-printer"></i>
+                    Print Report
+                </button>
+                <button class="btn btn-outline-primary" onclick="refreshDashboard()">
+                    <i class="bi bi-arrow-clockwise"></i>
+                    Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="container-fluid mt-4">
+    <div class="row g-4">
+        <!-- Total Users Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card stat-card-primary">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-details">
+                    <h3 class="stat-value">@Model.Stats.TotalUsers.ToString("N0")</h3>
+                    <p class="stat-label">Total Users</p>
+                    <small class="stat-change text-success">
+                        <i class="bi bi-arrow-up"></i>
+                        @Model.Stats.NewUsersThisMonth new this month
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Providers Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card stat-card-success">
+                <div class="stat-icon">
+                    <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="stat-details">
+                    <h3 class="stat-value">@Model.Stats.TotalProviders.ToString("N0")</h3>
+                    <p class="stat-label">Active Providers</p>
+                    <small class="stat-change">
+                        @Model.Stats.TotalServices services offered
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Bookings Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card stat-card-warning">
+                <div class="stat-icon">
+                    <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="stat-details">
+                    <h3 class="stat-value">@Model.Stats.TotalBookings.ToString("N0")</h3>
+                    <p class="stat-label">Total Bookings</p>
+                    <small class="stat-change text-success">
+                        <i class="bi bi-arrow-up"></i>
+                        @Model.Stats.BookingsThisMonth this month
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Average Rating Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="stat-card stat-card-info">
+                <div class="stat-icon">
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <div class="stat-details">
+                    <h3 class="stat-value">@Model.Stats.AverageRating.ToString("F1")</h3>
+                    <p class="stat-label">Average Rating</p>
+                    <small class="stat-change">
+                        From @Model.Stats.TotalReviews.ToString("N0") reviews
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Stats Row -->
+    <div class="row g-4 mt-2">
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon bg-primary">
+                    <i class="bi bi-grid"></i>
+                </div>
+                <div>
+                    <h4>@Model.Stats.TotalCategories</h4>
+                    <p>Categories</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon bg-success">
+                    <i class="bi bi-check-circle"></i>
+                </div>
+                <div>
+                    <h4>@Model.Stats.CompletedBookings</h4>
+                    <p>Completed</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon bg-warning">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+                <div>
+                    <h4>@Model.Stats.PendingBookings</h4>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon bg-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                </div>
+                <div>
+                    <h4>@Model.Stats.TotalEmergencies</h4>
+                    <p>Emergencies</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon bg-info">
+                    <i class="bi bi-chat-square-text"></i>
+                </div>
+                <div>
+                    <h4>@Model.Stats.TotalReviews</h4>
+                    <p>Reviews</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-md-4 col-6">
+            <div class="mini-stat-card">
+                <div class="mini-stat-icon bg-secondary">
+                    <i class="bi bi-tools"></i>
+                </div>
+                <div>
+                    <h4>@Model.Stats.TotalServices</h4>
+                    <p>Services</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row g-4 mt-4">
+        <!-- Booking Trends Line Chart -->
+        <div class="col-xl-8">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-graph-up"></i>
+                        Booking Trends (Last 6 Months)
+                    </h5>
+                    <div class="chart-legend">
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: #4e73df;"></span>
+                            Total
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: #1cc88a;"></span>
+                            Completed
+                        </span>
+                        <span class="legend-item">
+                            <span class="legend-color" style="background: #e74a3b;"></span>
+                            Cancelled
+                        </span>
+                    </div>
+                </div>
+                <div class="chart-body">
+                    <canvas id="bookingTrendsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Booking Status Distribution Pie Chart -->
+        <div class="col-xl-4">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-pie-chart"></i>
+                        Booking Status Distribution
+                    </h5>
+                </div>
+                <div class="chart-body">
+                    <canvas id="statusDistributionChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row g-4 mt-4">
+        <!-- Category Statistics Bar Chart -->
+        <div class="col-xl-6">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-bar-chart"></i>
+                        Category Performance
+                    </h5>
+                </div>
+                <div class="chart-body">
+                    <canvas id="categoryStatsChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Growth Chart -->
+        <div class="col-xl-6">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-graph-up-arrow"></i>
+                        User Growth (Last 12 Months)
+                    </h5>
+                </div>
+                <div class="chart-body">
+                    <canvas id="userGrowthChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 3 -->
+    <div class="row g-4 mt-4">
+        <!-- Emergency Stats -->
+        <div class="col-xl-12">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        Emergency Requests (Last 30 Days)
+                    </h5>
+                </div>
+                <div class="chart-body">
+                    <canvas id="emergencyStatsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tables Row -->
+    <div class="row g-4 mt-4">
+        <!-- Top Services Table -->
+        <div class="col-xl-6">
+            <div class="table-card">
+                <div class="table-header">
+                    <h5 class="table-title">
+                        <i class="bi bi-trophy"></i>
+                        Top 10 Services
+                    </h5>
+                </div>
+                <div class="table-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Service Name</th>
+                                <th>Category</th>
+                                <th>Bookings</th>
+                                <th>Providers</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int serviceRank = 1;
+                            }
+                            @foreach (var service in Model.TopServices)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (serviceRank <= 3)
+                                        {
+                                            <span class="badge bg-warning">@serviceRank</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@serviceRank</span>
+                                        }
+                                    </td>
+                                    <td><strong>@service.ServiceName</strong></td>
+                                    <td><span class="badge bg-primary">@service.CategoryName</span></td>
+                                    <td>@service.BookingCount</td>
+                                    <td>@service.ProviderCount</td>
+                                    <td>
+                                        <span class="rating">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            @service.AverageRating.ToString("F1")
+                                        </span>
+                                    </td>
+                                </tr>
+                                serviceRank++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Providers Table -->
+        <div class="col-xl-6">
+            <div class="table-card">
+                <div class="table-header">
+                    <h5 class="table-title">
+                        <i class="bi bi-award"></i>
+                        Top 10 Providers
+                    </h5>
+                </div>
+                <div class="table-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Provider</th>
+                                <th>Completed</th>
+                                <th>Reviews</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                int providerRank = 1;
+                            }
+                            @foreach (var provider in Model.TopProviders)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (providerRank <= 3)
+                                        {
+                                            <span class="badge bg-success">@providerRank</span>
+                                        }
+                                        else
+                                        {
+                                            <span>@providerRank</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="provider-info">
+                                            @if (!string.IsNullOrEmpty(provider.ProfilePhotoPath))
+                                            {
+                                                <img src="@provider.ProfilePhotoPath" alt="@provider.ProviderName" class="provider-avatar">
+                                            }
+                                            else
+                                            {
+                                                <div class="provider-avatar-placeholder">
+                                                    <i class="bi bi-person"></i>
+                                                </div>
+                                            }
+                                            <strong>@provider.ProviderName</strong>
+                                        </div>
+                                    </td>
+                                    <td>@provider.CompletedBookings</td>
+                                    <td>@provider.TotalReviews</td>
+                                    <td>
+                                        <span class="rating">
+                                            <i class="bi bi-star-fill text-warning"></i>
+                                            @provider.AverageRating.ToString("F1")
+                                        </span>
+                                    </td>
+                                </tr>
+                                providerRank++;
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminDashboard.css" />
+}
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+        // Chart.js configuration
+        Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        Chart.defaults.color = '#858796';
+
+        // Booking Trends Line Chart
+        const bookingTrendsCtx = document.getElementById('bookingTrendsChart').getContext('2d');
+        new Chart(bookingTrendsCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.BookingTrends.Select(b => b.Month))),
+                datasets: [
+                    {
+                        label: 'Total Bookings',
+                        data: @Html.Raw(Json.Serialize(Model.BookingTrends.Select(b => b.TotalBookings))),
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: 'Completed',
+                        data: @Html.Raw(Json.Serialize(Model.BookingTrends.Select(b => b.CompletedBookings))),
+                        borderColor: '#1cc88a',
+                        backgroundColor: 'rgba(28, 200, 138, 0.05)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    },
+                    {
+                        label: 'Cancelled',
+                        data: @Html.Raw(Json.Serialize(Model.BookingTrends.Select(b => b.CancelledBookings))),
+                        borderColor: '#e74a3b',
+                        backgroundColor: 'rgba(231, 74, 59, 0.05)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointHoverRadius: 7
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 12,
+                        titleFont: {
+                            size: 14
+                        },
+                        bodyFont: {
+                            size: 13
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Booking Status Distribution Pie Chart
+        const statusDistCtx = document.getElementById('statusDistributionChart').getContext('2d');
+        new Chart(statusDistCtx, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.BookingStatusDistribution.Select(s => s.Status))),
+                datasets: [{
+                    data: @Html.Raw(Json.Serialize(Model.BookingStatusDistribution.Select(s => s.Count))),
+                    backgroundColor: [
+                        '#f6c23e',
+                        '#1cc88a',
+                        '#4e73df',
+                        '#e74a3b',
+                        '#858796'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 15,
+                            font: {
+                                size: 12
+                            }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.parsed || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Category Stats Bar Chart
+        const categoryStatsCtx = document.getElementById('categoryStatsChart').getContext('2d');
+        new Chart(categoryStatsCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.CategoryStats.Select(c => c.CategoryName))),
+                datasets: [
+                    {
+                        label: 'Bookings',
+                        data: @Html.Raw(Json.Serialize(Model.CategoryStats.Select(c => c.BookingCount))),
+                        backgroundColor: '#4e73df',
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Services',
+                        data: @Html.Raw(Json.Serialize(Model.CategoryStats.Select(c => c.ServiceCount))),
+                        backgroundColor: '#1cc88a',
+                        borderRadius: 8
+                    },
+                    {
+                        label: 'Providers',
+                        data: @Html.Raw(Json.Serialize(Model.CategoryStats.Select(c => c.ProviderCount))),
+                        backgroundColor: '#36b9cc',
+                        borderRadius: 8
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // User Growth Chart
+        const userGrowthCtx = document.getElementById('userGrowthChart').getContext('2d');
+        new Chart(userGrowthCtx, {
+            type: 'line',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.UserGrowth.Select(u => u.Month))),
+                datasets: [
+                    {
+                        label: 'Total Users',
+                        data: @Html.Raw(Json.Serialize(Model.UserGrowth.Select(u => u.TotalUsers))),
+                        borderColor: '#4e73df',
+                        backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'New Users',
+                        data: @Html.Raw(Json.Serialize(Model.UserGrowth.Select(u => u.NewUsers))),
+                        borderColor: '#1cc88a',
+                        backgroundColor: 'rgba(28, 200, 138, 0.1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Total Users'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false,
+                        },
+                        title: {
+                            display: true,
+                            text: 'New Users'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        // Emergency Stats Chart
+        const emergencyStatsCtx = document.getElementById('emergencyStatsChart').getContext('2d');
+        new Chart(emergencyStatsCtx, {
+            type: 'bar',
+            data: {
+                labels: @Html.Raw(Json.Serialize(Model.EmergencyStats.Select(e => e.Date))),
+                datasets: [
+                    {
+                        label: 'Total Emergencies',
+                        data: @Html.Raw(Json.Serialize(Model.EmergencyStats.Select(e => e.TotalEmergencies))),
+                        backgroundColor: '#e74a3b',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Accepted',
+                        data: @Html.Raw(Json.Serialize(Model.EmergencyStats.Select(e => e.AcceptedEmergencies))),
+                        backgroundColor: '#1cc88a',
+                        borderRadius: 6
+                    },
+                    {
+                        label: 'Pending',
+                        data: @Html.Raw(Json.Serialize(Model.EmergencyStats.Select(e => e.PendingEmergencies))),
+                        backgroundColor: '#f6c23e',
+                        borderRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.05)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+
+        function refreshDashboard() {
+            location.reload();
+        }
+
+        // Animation on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.stat-card, .mini-stat-card, .chart-card, .table-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 50);
+            });
+        });
+    </script>
+}

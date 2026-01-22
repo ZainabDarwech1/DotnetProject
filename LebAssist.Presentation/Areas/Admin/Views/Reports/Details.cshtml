@@ -1,0 +1,198 @@
+@model LebAssist.Application.DTOs.ReportDto
+@{
+    ViewData["Title"] = $"Report #{Model.ReportId}";
+    
+    var statusColor = Model.Status switch
+    {
+        Domain.Enums.ReportStatus.Pending => "warning",
+        Domain.Enums.ReportStatus.UnderReview => "info",
+        Domain.Enums.ReportStatus.Resolved => "success",
+        Domain.Enums.ReportStatus.Dismissed => "secondary",
+        _ => "secondary"
+    };
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3>Report #@Model.ReportId</h3>
+                    <span class="badge bg-@statusColor">@Model.Status</span>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible">
+                            @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <h5>Report Information</h5>
+                    <table class="table table-borderless">
+                        <tr>
+                            <th width="30%">Report ID:</th>
+                            <td><strong>#@Model.ReportId</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Reporter:</th>
+                            <td>
+                                @Model.ReporterName
+                                @if (!string.IsNullOrEmpty(Model.ReporterPhone))
+                                {
+                                    <br><small>Phone: @Model.ReporterPhone</small>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Reported Provider:</th>
+                            <td>@Model.ProviderName</td>
+                        </tr>
+                        <tr>
+                            <th>Reason:</th>
+                            <td><span class="badge bg-secondary">@Model.Reason</span></td>
+                        </tr>
+                        @if (Model.BookingId.HasValue)
+                        {
+                            <tr>
+                                <th>Booking ID:</th>
+                                <td>
+                                    <a asp-area="" asp-controller="BookingDetails" asp-action="Details" asp-route-id="@Model.BookingId" target="_blank">
+                                        #@Model.BookingId
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.ServiceName))
+                        {
+                            <tr>
+                                <th>Service:</th>
+                                <td>@Model.ServiceName</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th>Report Date:</th>
+                            <td>@Model.ReportDate.ToString("MMMM dd, yyyy 'at' h:mm tt")</td>
+                        </tr>
+                        <tr>
+                            <th>Current Status:</th>
+                            <td><span class="badge bg-@statusColor">@Model.Status</span></td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.ResolvedBy))
+                        {
+                            <tr>
+                                <th>Resolved By:</th>
+                                <td>@Model.ResolvedBy</td>
+                            </tr>
+                        }
+                        @if (Model.ResolvedDate.HasValue)
+                        {
+                            <tr>
+                                <th>Resolved Date:</th>
+                                <td>@Model.ResolvedDate.Value.ToString("MMMM dd, yyyy 'at' h:mm tt")</td>
+                            </tr>
+                        }
+                    </table>
+
+                    <hr>
+
+                    <h5>Description</h5>
+                    <div class="p-3 bg-light rounded">
+                        <p>@Model.Description</p>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.AdminNotes))
+                    {
+                        <hr>
+                        <div class="alert alert-info">
+                            <h5><i class="bi bi-chat-dots"></i> Current Admin Notes</h5>
+                            <p class="mb-0">@Model.AdminNotes</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- Update Status Form -->
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="bi bi-gear"></i> Update Report Status</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="UpdateStatus" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="reportId" value="@Model.ReportId" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Status *</label>
+                            <select name="status" class="form-select" required>
+                                <option value="Pending" @(Model.Status == Domain.Enums.ReportStatus.Pending ? "selected" : "")>
+                                    Pending
+                                </option>
+                                <option value="UnderReview" @(Model.Status == Domain.Enums.ReportStatus.UnderReview ? "selected" : "")>
+                                    Under Review
+                                </option>
+                                <option value="Resolved" @(Model.Status == Domain.Enums.ReportStatus.Resolved ? "selected" : "")>
+                                    Resolved
+                                </option>
+                                <option value="Dismissed" @(Model.Status == Domain.Enums.ReportStatus.Dismissed ? "selected" : "")>
+                                    Dismissed
+                                </option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Admin Notes</label>
+                            <textarea name="adminNotes" class="form-control" rows="5" 
+                                      placeholder="Add notes about your decision...">@Model.AdminNotes</textarea>
+                            <small class="form-text text-muted">
+                                These notes will be visible to the reporter
+                            </small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Update Status
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Back to List
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5><i class="bi bi-lightning"></i> Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a asp-area="" asp-controller="Provider" asp-action="Profile" asp-route-id="@Model.ReportedProviderId" 
+                           target="_blank" class="btn btn-outline-primary">
+                            <i class="bi bi-person"></i> View Provider Profile
+                        </a>
+                        @if (Model.BookingId.HasValue)
+                        {
+                            <a asp-area="" asp-controller="BookingDetails" asp-action="Details" asp-route-id="@Model.BookingId" 
+                               target="_blank" class="btn btn-outline-primary">
+                                <i class="bi bi-calendar"></i> View Booking Details
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

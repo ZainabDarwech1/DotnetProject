@@ -1,0 +1,426 @@
+@model LebAssist.Application.DTOs.ClientProfileDto
+@{
+    ViewData["Title"] = "Provider Details";
+    var services = ViewBag.Services as IEnumerable<LebAssist.Application.DTOs.ProviderServiceDto> ?? Enumerable.Empty<LebAssist.Application.DTOs.ProviderServiceDto>();
+    var portfolio = ViewBag.Portfolio as IEnumerable<LebAssist.Application.DTOs.PortfolioPhotoDto> ?? Enumerable.Empty<LebAssist.Application.DTOs.PortfolioPhotoDto>();
+}
+
+<!-- Page Header -->
+<div class="page-header">
+    <div class="container-fluid">
+        <nav class="custom-breadcrumb" aria-label="breadcrumb">
+            <ol class="breadcrumb-list">
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                        <i class="bi bi-speedometer2"></i>
+                        Admin Dashboard
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item">
+                    <a asp-area="Admin" asp-controller="Providers" asp-action="Index">
+                        Providers
+                    </a>
+                </li>
+                <li class="breadcrumb-separator">
+                    <i class="bi bi-chevron-right"></i>
+                </li>
+                <li class="breadcrumb-item active">
+                    @Model.FirstName @Model.LastName
+                </li>
+            </ol>
+        </nav>
+
+        <div class="page-title-section">
+            <h1 class="page-title">
+                <i class="bi bi-person-badge-fill"></i>
+                Provider Details
+            </h1>
+        </div>
+    </div>
+</div>
+
+<!-- Content -->
+<div class="container-fluid">
+    <div class="row g-4">
+        <!-- Provider Info Card -->
+        <div class="col-md-4">
+            <div class="detail-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-person-fill"></i> Profile Information</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.ProfilePhotoPath))
+                    {
+                        <img src="@Model.ProfilePhotoPath" alt="@Model.FirstName @Model.LastName" class="profile-photo">
+                    }
+                    else
+                    {
+                        <div class="profile-photo-placeholder">
+                            <i class="bi bi-person-fill"></i>
+                        </div>
+                    }
+                    <h4 class="mt-3">@Model.FirstName @Model.LastName</h4>
+                    <p class="text-muted">Provider ID: @Model.ClientId</p>
+
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="bi bi-envelope"></i>
+                            <span>@Model.Email</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-telephone"></i>
+                            <span>@(Model.PhoneNumber ?? "N/A")</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="bi bi-calendar"></i>
+                            <span>Joined @Model.DateRegistered.ToString("MMM dd, yyyy")</span>
+                        </div>
+                        @if (Model.YearsOfExperience.HasValue)
+                        {
+                            <div class="info-item">
+                                <i class="bi bi-award"></i>
+                                <span>@Model.YearsOfExperience years experience</span>
+                            </div>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Bio))
+                    {
+                        <div class="bio-section">
+                            <h6><i class="bi bi-file-text"></i> Bio</h6>
+                            <p>@Model.Bio</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Services & Portfolio -->
+        <div class="col-md-8">
+            <!-- Services Card -->
+            <div class="detail-card mb-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-tools"></i> Services Offered (@services.Count())</h5>
+                </div>
+                <div class="card-body">
+                    @if (services.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Category</th>
+                                        <th>Price/Hour</th>
+                                        <th>Added</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var service in services)
+                                    {
+                                        <tr>
+                                            <td><strong>@service.ServiceName</strong></td>
+                                            <td><span class="badge bg-info">@service.CategoryName</span></td>
+                                            <td><strong>$@service.PricePerHour.ToString("F2")</strong></td>
+                                            <td>@service.DateAdded.ToString("MMM dd, yyyy")</td>
+                                            <td>
+                                                @if (service.IsActive)
+                                                {
+                                                    <span class="badge bg-success">Active</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-secondary">Inactive</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">No services added yet.</p>
+                    }
+                </div>
+            </div>
+
+            <!-- Portfolio Card -->
+            <div class="detail-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-images"></i> Portfolio (@portfolio.Count())</h5>
+                </div>
+                <div class="card-body">
+                    @if (portfolio.Any())
+                    {
+                        <div class="portfolio-grid">
+                            @foreach (var photo in portfolio)
+                            {
+                                <div class="portfolio-item">
+                                    <img src="@photo.PhotoPath" alt="@photo.Caption">
+                                    @if (!string.IsNullOrEmpty(photo.Caption))
+                                    {
+                                        <p class="portfolio-caption">@photo.Caption</p>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center py-3">No portfolio photos added yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="action-bar">
+                <a href="@Url.Action("Index", "Providers")" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i>
+                    Back to Providers
+                </a>
+                <button type="button" class="btn btn-danger" onclick="showDeactivateModal(@Model.ClientId, '@Model.FirstName @Model.LastName')">
+                    <i class="bi bi-x-circle"></i>
+                    Deactivate Provider
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deactivate Modal -->
+<div class="modal fade" id="deactivateModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle text-danger"></i>
+                    Deactivate Provider
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="deactivateForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="deactivateProviderId" name="clientId" />
+                <div class="modal-body">
+                    <div class="alert alert-danger">
+                        <i class="bi bi-info-circle"></i>
+                        <strong>Warning:</strong> This action will deactivate <strong id="providerNameDisplay"></strong>'s provider account.
+                    </div>
+                    <div class="form-group">
+                        <label for="deactivateReason" class="form-label">
+                            Deactivation Reason <span class="text-danger">*</span>
+                        </label>
+                        <textarea name="reason" id="deactivateReason" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="bi bi-x"></i> Cancel
+                    </button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-check"></i> Confirm Deactivation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Providerdetails.css"/>
+}
+
+@section Scripts {
+    <script>
+        function showDeactivateModal(providerId, providerName) {
+            document.getElementById('deactivateProviderId').value = providerId;
+            document.getElementById('providerNameDisplay').textContent = providerName;
+            document.getElementById('deactivateReason').value = '';
+
+            const modal = new bootstrap.Modal(document.getElementById('deactivateModal'));
+            modal.show();
+        }
+
+        document.getElementById('deactivateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            try {
+                const response = await fetch('@Url.Action("Deactivate", "Providers", new { area = "Admin" })', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams(formData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Provider Deactivated',
+                        text: 'The provider has been successfully deactivated.',
+                        timer: 2000
+                    }).then(() => {
+                        window.location.href = '@Url.Action("Index", "Providers", new { area = "Admin" })';
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Deactivation Failed',
+                        text: result.message || 'Failed to deactivate provider.'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while deactivating the provider.'
+                });
+            }
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deactivateModal'));
+            modal.hide();
+        });
+    </script>
+
+    <script>
+        // Photo Viewer Functionality
+        let currentPhotoIndex = 0;
+        let photos = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all portfolio photos
+            const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+            portfolioItems.forEach((item, index) => {
+                const img = item.querySelector('img');
+                const caption = item.querySelector('.portfolio-caption');
+
+                if (img) {
+                    photos.push({
+                        src: img.src,
+                        alt: img.alt,
+                        caption: caption ? caption.textContent : ''
+                    });
+
+                    item.addEventListener('click', function() {
+                        openPhotoViewer(index);
+                    });
+                }
+            });
+        });
+
+        function openPhotoViewer(index) {
+            currentPhotoIndex = index;
+
+            // Create modal if it doesn't exist
+            let modal = document.getElementById('photoViewerModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'photoViewerModal';
+                modal.className = 'photo-viewer-modal';
+                modal.innerHTML = `
+                    <div class="photo-viewer-content">
+                        <button class="photo-viewer-close" onclick="closePhotoViewer()">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                        <button class="photo-viewer-nav prev" onclick="previousPhoto()">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <img id="viewerImage" class="photo-viewer-image" src="" alt="">
+                        <button class="photo-viewer-nav next" onclick="nextPhoto()">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <div class="photo-viewer-counter" id="viewerCounter"></div>
+                        <div class="photo-viewer-caption" id="viewerCaption"></div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+
+                // Close on background click
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal || e.target.className === 'photo-viewer-content') {
+                        closePhotoViewer();
+                    }
+                });
+
+                // Keyboard navigation
+                document.addEventListener('keydown', function(e) {
+                    if (modal.style.display === 'block') {
+                        if (e.key === 'Escape') closePhotoViewer();
+                        if (e.key === 'ArrowLeft') previousPhoto();
+                        if (e.key === 'ArrowRight') nextPhoto();
+                    }
+                });
+            }
+
+            updatePhotoViewer();
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closePhotoViewer() {
+            const modal = document.getElementById('photoViewerModal');
+            if (modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        }
+
+        function updatePhotoViewer() {
+            const photo = photos[currentPhotoIndex];
+            document.getElementById('viewerImage').src = photo.src;
+            document.getElementById('viewerImage').alt = photo.alt;
+            document.getElementById('viewerCounter').textContent = `${currentPhotoIndex + 1} / ${photos.length}`;
+
+            const captionEl = document.getElementById('viewerCaption');
+            if (photo.caption) {
+                captionEl.textContent = photo.caption;
+                captionEl.style.display = 'block';
+            } else {
+                captionEl.style.display = 'none';
+            }
+
+            // Hide/show navigation buttons
+            const prevBtn = document.querySelector('.photo-viewer-nav.prev');
+            const nextBtn = document.querySelector('.photo-viewer-nav.next');
+
+            if (photos.length <= 1) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+                prevBtn.style.opacity = currentPhotoIndex === 0 ? '0.5' : '1';
+                nextBtn.style.opacity = currentPhotoIndex === photos.length - 1 ? '0.5' : '1';
+            }
+        }
+
+        function previousPhoto() {
+            if (currentPhotoIndex > 0) {
+                currentPhotoIndex--;
+                updatePhotoViewer();
+            }
+        }
+
+        function nextPhoto() {
+            if (currentPhotoIndex < photos.length - 1) {
+                currentPhotoIndex++;
+                updatePhotoViewer();
+            }
+        }
+    </script>
+}

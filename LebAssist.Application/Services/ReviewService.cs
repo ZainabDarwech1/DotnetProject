@@ -77,17 +77,13 @@ namespace LebAssist.Application.Services
                 await UpdateProviderRatingAsync(booking.ProviderId);
 
                 // Send notification to provider
-                var client = await _unitOfWork.Clients.GetByIdAsync(clientId);
-                var clientName = dto.IsAnonymous ? "A client" : $"{client?.FirstName} {client?.LastName}";
-
                 var provider = await _unitOfWork.Clients.GetByIdAsync(booking.ProviderId);
-                if (provider != null)
+                if (provider != null && !string.IsNullOrEmpty(provider.AspNetUserId))
                 {
-                    await _notificationService.CreateNotificationAsync(
+                    await _notificationService.NotifyReviewReceivedAsync(
                         provider.AspNetUserId,
-                        NotificationType.Review,
-                        $"{clientName} left you a {dto.Rating}-star review!",
-                        review.Comment ?? ""
+                        review.ReviewId,
+                        dto.Rating
                     );
                 }
 

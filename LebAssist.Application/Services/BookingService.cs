@@ -9,10 +9,12 @@ namespace LebAssist.Application.Services
     public class BookingService : IBookingService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly INotificationService _notificationService;
 
-        public BookingService(IUnitOfWork unitOfWork)
+        public BookingService(IUnitOfWork unitOfWork, INotificationService notificationService)
         {
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
         }
 
         // =========================
@@ -34,6 +36,22 @@ namespace LebAssist.Application.Services
 
             await _unitOfWork.Bookings.AddAsync(booking);
             await _unitOfWork.SaveChangesAsync();
+
+            // Notify provider about new booking request
+            try
+            {
+                var client = await _unitOfWork.Clients.GetByIdAsync(clientId);
+                var provider = await _unitOfWork.Clients.GetByIdAsync(dto.ProviderId);
+                if (provider != null && !string.IsNullOrEmpty(provider.AspNetUserId))
+                {
+                    var clientName = client != null ? $"{client.FirstName} {client.LastName}" : "A client";
+                    await _notificationService.NotifyBookingCreatedAsync(provider.AspNetUserId, booking.BookingId, clientName);
+                }
+            }
+            catch
+            {
+                // don't fail booking if notification fails
+            }
 
             return booking.BookingId;
         }
@@ -87,6 +105,22 @@ namespace LebAssist.Application.Services
             booking.Status = BookingStatus.Accepted;
             await _unitOfWork.SaveChangesAsync();
 
+            // Notify client
+            try
+            {
+                var client = await _unitOfWork.Clients.GetByIdAsync(booking.ClientId);
+                var provider = await _unitOfWork.Clients.GetByIdAsync(providerId);
+                if (client != null && !string.IsNullOrEmpty(client.AspNetUserId))
+                {
+                    var providerName = provider != null ? $"{provider.FirstName} {provider.LastName}" : "Provider";
+                    await _notificationService.NotifyBookingStatusChangedAsync(client.AspNetUserId, booking.BookingId, "Accepted");
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
             return true;
         }
 
@@ -107,6 +141,21 @@ namespace LebAssist.Application.Services
             booking.CancellationReason = reason;
 
             await _unitOfWork.SaveChangesAsync();
+
+            // Notify client
+            try
+            {
+                var client = await _unitOfWork.Clients.GetByIdAsync(booking.ClientId);
+                if (client != null && !string.IsNullOrEmpty(client.AspNetUserId))
+                {
+                    await _notificationService.NotifyBookingStatusChangedAsync(client.AspNetUserId, booking.BookingId, "Rejected");
+                }
+            }
+            catch
+            {
+                // ignore
+            }
+
             return true;
         }
 
@@ -125,6 +174,20 @@ namespace LebAssist.Application.Services
 
             booking.Status = BookingStatus.InProgress;
             await _unitOfWork.SaveChangesAsync();
+
+            // Notify client
+            try
+            {
+                var client = await _unitOfWork.Clients.GetByIdAsync(booking.ClientId);
+                if (client != null && !string.IsNullOrEmpty(client.AspNetUserId))
+                {
+                    await _notificationService.NotifyBookingStatusChangedAsync(client.AspNetUserId, booking.BookingId, "In Progress");
+                }
+            }
+            catch
+            {
+            }
+
             return true;
         }
 
@@ -145,6 +208,20 @@ namespace LebAssist.Application.Services
             booking.CompletedDate = DateTime.UtcNow;
 
             await _unitOfWork.SaveChangesAsync();
+
+            // Notify client
+            try
+            {
+                var client = await _unitOfWork.Clients.GetByIdAsync(booking.ClientId);
+                if (client != null && !string.IsNullOrEmpty(client.AspNetUserId))
+                {
+                    await _notificationService.NotifyBookingStatusChangedAsync(client.AspNetUserId, booking.BookingId, "Completed");
+                }
+            }
+            catch
+            {
+            }
+
             return true;
         }
 
@@ -233,6 +310,21 @@ namespace LebAssist.Application.Services
             booking.CancellationReason = reason;
 
             await _unitOfWork.SaveChangesAsync();
+
+            // Notify provider
+            try
+            {
+                var provider = await _unitOfWork.Clients.GetByIdAsync(booking.ProviderId);
+                if (provider != null && !string.IsNullOrEmpty(provider.AspNetUserId))
+                {
+                    await _notificationService.CreateNotificationAsync(provider.AspNetUserId, Domain.Enums.NotificationType.Booking,
+                        "Booking Cancelled", $"Booking #{booking.BookingId} was cancelled by the client.", booking.BookingId);
+                }
+            }
+            catch
+            {
+            }
+
             return true;
         }
     }

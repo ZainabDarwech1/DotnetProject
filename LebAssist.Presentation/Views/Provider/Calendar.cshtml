@@ -1,0 +1,276 @@
+@model LebAssist.Application.DTOs.ProviderCalendarDto
+@{
+    ViewData["Title"] = "My Calendar";
+    var today = DateTime.Today;
+    var todayAppointments = Model.Days.FirstOrDefault(d => d.IsToday)?.DayAppointments ?? new List<LebAssist.Application.DTOs.AppointmentDto>();
+}
+
+<!-- Page Header -->
+<div class="dashboard-header">
+    <div class="container-fluid">
+        <div class="header-content">
+            <div>
+                <h1 class="dashboard-title">
+                    <i class="bi bi-calendar-event"></i>
+                    My Appointments Calendar
+                </h1>
+                <p class="dashboard-subtitle">@Model.MonthName</p>
+            </div>
+            <div class="header-actions">
+                <a asp-action="Calendar" asp-route-year="@today.Year" asp-route-month="@today.Month" class="btn btn-outline-primary">
+                    <i class="bi bi-calendar-today"></i>
+                    Today
+                </a>
+                <button class="btn btn-outline-primary" onclick="window.print()">
+                    <i class="bi bi-printer"></i>
+                    Print
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid mt-4">
+    <div class="row g-4">
+        <!-- Calendar Section -->
+        <div class="col-lg-8">
+            <div class="calendar-card">
+                <!-- Calendar Navigation -->
+                <div class="calendar-nav">
+                    <a asp-action="Calendar" 
+                       asp-route-year="@(Model.Month == 1 ? Model.Year - 1 : Model.Year)" 
+                       asp-route-month="@(Model.Month == 1 ? 12 : Model.Month - 1)"
+                       class="btn btn-sm btn-secondary">
+                        <i class="bi bi-chevron-left"></i>
+                        Previous
+                    </a>
+                    <h3 class="calendar-title">@Model.MonthName</h3>
+                    <a asp-action="Calendar" 
+                       asp-route-year="@(Model.Month == 12 ? Model.Year + 1 : Model.Year)" 
+                       asp-route-month="@(Model.Month == 12 ? 1 : Model.Month + 1)"
+                       class="btn btn-sm btn-secondary">
+                        Next
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+
+                <!-- Calendar Grid -->
+                <div class="calendar-grid">
+                    <!-- Day Headers -->
+                    <div class="calendar-header">
+                        <div class="day-name">Sun</div>
+                        <div class="day-name">Mon</div>
+                        <div class="day-name">Tue</div>
+                        <div class="day-name">Wed</div>
+                        <div class="day-name">Thu</div>
+                        <div class="day-name">Fri</div>
+                        <div class="day-name">Sat</div>
+                    </div>
+
+                    <!-- Calendar Days -->
+                    <div class="calendar-body">
+                        @foreach (var day in Model.Days)
+                        {
+                            var cssClass = "calendar-day";
+                            if (!day.IsCurrentMonth) cssClass += " other-month";
+                            if (day.IsToday) cssClass += " today";
+                            if (day.AppointmentCount > 0) cssClass += " has-appointments";
+
+                            <div class="@cssClass" data-date="@day.Date.ToString("yyyy-MM-dd")" onclick="showDayAppointments('@day.Date.ToString("yyyy-MM-dd")', '@day.Date.ToString("MMMM dd, yyyy")')">
+                                <div class="day-number">@day.Day</div>
+                                @if (day.AppointmentCount > 0)
+                                {
+                                    <div class="appointment-indicator">
+                                        <span class="badge bg-primary">@day.AppointmentCount</span>
+                                    </div>
+                                    <div class="day-appointments-preview">
+                                        @foreach (var apt in day.DayAppointments.Take(2))
+                                        {
+                                            var statusColor = apt.Status switch
+                                            {
+                                                "Completed" => "success",
+                                                "Pending" => "warning",
+                                                "Accepted" => "info",
+                                                "InProgress" => "primary",
+                                                _ => "secondary"
+                                            };
+                                            <div class="appointment-preview @statusColor">
+                                                <i class="bi bi-clock"></i>
+                                                @apt.ScheduledTime.ToString(@"hh\:mm")
+                                                <small>@apt.ServiceName.Substring(0, Math.Min(15, apt.ServiceName.Length))@(apt.ServiceName.Length > 15 ? "..." : "")</small>
+                                            </div>
+                                        }
+                                        @if (day.AppointmentCount > 2)
+                                        {
+                                            <div class="more-appointments">
+                                                +@(day.AppointmentCount - 2) more
+                                            </div>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Today's Appointments Sidebar -->
+        <div class="col-lg-4">
+            <div class="appointments-sidebar">
+                <div class="calendar-sidebar-header">
+                    <h4>
+                        <i class="bi bi-calendar-day"></i>
+                        <span id="selectedDayTitle">Today's Appointments</span>
+                    </h4>
+                    <span class="badge bg-danger" id="appointmentCount">@todayAppointments.Count</span>
+                </div>
+                
+                <div class="appointments-list" id="appointmentsList">
+                    @if (todayAppointments.Any())
+                    {
+                        foreach (var appointment in todayAppointments.OrderBy(a => a.ScheduledTime))
+                        {
+                            <partial name="_AppointmentCard" model="appointment" />
+                        }
+                    }
+                    else
+                    {
+                        <div class="no-appointments">
+                            <i class="bi bi-calendar-x"></i>
+                            <p>No appointments today</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="quick-stats mt-4">
+                <h5><i class="bi bi-bar-chart"></i> This Month</h5>
+                <div class="stat-row">
+                    <span>Total Appointments</span>
+                    <strong>@Model.Appointments.Count</strong>
+                </div>
+                <div class="stat-row">
+                    <span>Completed</span>
+                    <strong class="text-success">@Model.Appointments.Count(a => a.Status == "Completed")</strong>
+                </div>
+                <div class="stat-row">
+                    <span>Pending</span>
+                    <strong class="text-warning">@Model.Appointments.Count(a => a.Status == "Pending")</strong>
+                </div>
+                <div class="stat-row">
+                    <span>In Progress</span>
+                    <strong class="text-info">@Model.Appointments.Count(a => a.Status == "InProgress" || a.Status == "Accepted")</strong>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/adminDashboard.css" />
+    <link rel="stylesheet" href="~/css/providerCalendar.css" />
+    <link rel="stylesheet" href="~/css/appointmentcard.css" />
+}
+
+@section Scripts {
+    <script>
+        function showDayAppointments(date, displayDate) {
+            // Update sidebar title
+            document.getElementById('selectedDayTitle').textContent = displayDate + ' Appointments';
+            
+            // Fetch appointments for the day
+            fetch('/Provider/GetDayAppointments?date=' + date)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const appointmentsList = document.getElementById('appointmentsList');
+                        const appointmentCount = document.getElementById('appointmentCount');
+                        
+                        appointmentCount.textContent = data.appointments.length;
+                        
+                        if (data.appointments.length === 0) {
+                            appointmentsList.innerHTML = `
+                                <div class="no-appointments">
+                                    <i class="bi bi-calendar-x"></i>
+                                    <p>No appointments on this day</p>
+                                </div>
+                            `;
+                        } else {
+                            appointmentsList.innerHTML = data.appointments
+                                .sort((a, b) => new Date('1970/01/01 ' + a.scheduledTime) - new Date('1970/01/01 ' + b.scheduledTime))
+                                .map(apt => createAppointmentCard(apt))
+                                .join('');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching appointments:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to load appointments'
+                    });
+                });
+        }
+
+        function createAppointmentCard(apt) {
+            const statusColors = {
+                'Completed': 'success',
+                'Pending': 'warning',
+                'Accepted': 'info',
+                'InProgress': 'primary',
+                'Cancelled': 'danger',
+                'Rejected': 'secondary'
+            };
+            
+            const statusColor = statusColors[apt.status] || 'secondary';
+            const time = apt.scheduledTime.substring(0, 5);
+            
+            return `
+                <div class="appointment-card">
+                    <div class="appointment-header">
+                        <div class="appointment-time">
+                            <i class="bi bi-clock"></i>
+                            ${time}
+                        </div>
+                        <span class="badge bg-${statusColor}">${apt.status}</span>
+                    </div>
+                    <div class="appointment-body">
+                        <div class="client-info">
+                            ${apt.clientPhoto ? 
+                                `<img src="${apt.clientPhoto}" alt="${apt.clientName}" class="client-photo">` :
+                                `<div class="client-photo-placeholder"><i class="bi bi-person"></i></div>`
+                            }
+                            <div>
+                                <strong>${apt.clientName}</strong>
+                                ${apt.clientPhone ? `<small><i class="bi bi-telephone"></i> ${apt.clientPhone}</small>` : ''}
+                            </div>
+                        </div>
+                        <div class="service-info">
+                            <i class="bi bi-tools"></i>
+                            ${apt.serviceName}
+                        </div>
+                        ${apt.notes ? `<div class="appointment-notes"><i class="bi bi-sticky"></i> ${apt.notes}</div>` : ''}
+                    </div>
+                    <div class="appointment-footer">
+                        <a href="/BookingDetails/Details/${apt.bookingId}" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye"></i>
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Highlight active day
+        document.addEventListener('DOMContentLoaded', function() {
+            const todayDate = new Date().toISOString().split('T')[0];
+            const todayCell = document.querySelector(`[data-date="${todayDate}"]`);
+            if (todayCell) {
+                todayCell.classList.add('selected');
+            }
+        });
+    </script>
+}

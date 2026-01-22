@@ -88,4 +88,20 @@ namespace LebAssist.Presentation.ViewModels.Emergency
         public double Longitude { get; set; }
         public double? Distance { get; set; }
     }
+
+    public class AssignedEmergencyViewModel
+    {
+        public int EmergencyRequestId { get; set; }
+        public string ClientName { get; set; } = string.Empty;
+        public string ClientPhone { get; set; } = string.Empty;
+        public string ServiceName { get; set; } = string.Empty;
+        public string Details { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public DateTime RequestDateTime { get; set; }
+        public DateTime? AcceptedDateTime { get; set; }
+        public DateTime? CompletedDate { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+        public double? Distance { get; set; }
+    }
 }
