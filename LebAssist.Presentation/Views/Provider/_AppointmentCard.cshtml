@@ -16,7 +16,7 @@
     <div class="appointment-header">
         <div class="appointment-time">
             <i class="bi bi-clock"></i>
-            @Model.ScheduledTime.ToString(@"hh\:mm\ tt")
+            @Model.ScheduledDateTime.ToString("hh:mm tt")
         </div>
         <span class="badge bg-@statusColor">@Model.Status</span>
     </div>

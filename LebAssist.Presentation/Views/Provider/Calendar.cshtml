@@ -96,7 +96,7 @@
                                             };
                                             <div class="appointment-preview @statusColor">
                                                 <i class="bi bi-clock"></i>
-                                                @apt.ScheduledTime.ToString(@"hh\:mm")
+                                                @apt.ScheduledDateTime.ToString("hh:mm")
                                                 <small>@apt.ServiceName.Substring(0, Math.Min(15, apt.ServiceName.Length))@(apt.ServiceName.Length > 15 ? "..." : "")</small>
                                             </div>
                                         }
